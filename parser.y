@@ -177,13 +177,15 @@ class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_b
 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block {};
 block: NEWLINE INDENT statements DEDENT
 args:
-      |args member_expression COMMA
-      |member_expression
+      | args IDENTIFIER COMMA
+      | args IDENTIFIER 
+      | IDENTIFIER COMMA
+      | IDENTIFIER 
       ;
 
 member_expression:
                   IDENTIFIER 
-                  | member_expression '.' IDENTIFIER 
+                  | member_expression %prec '.' IDENTIFIER 
                   ;
 
 %%
