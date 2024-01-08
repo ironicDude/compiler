@@ -1,7 +1,4 @@
-class classy():
-    x = 5
-    def function (self, l,):
-        return self.e.x
-    def function2 (self):
-        pass
-    
+while  mohamad and 5 + 5 > 10 :
+    y = 2
+    if (mohamad == 3):
+        break
