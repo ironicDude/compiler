@@ -128,6 +128,7 @@ statement   : compound_statement
 
 simple_statement  : assignment
                   | return_statement
+                  | yield_statement
                   | KEYWORD_PASS
                   | KEYWORD_BREAK
                   | KEYWORD_CONTINUE
@@ -148,22 +149,29 @@ expression  : expression ADD expression         { }
             | expression MINUS expression       { }
             | expression MULTIPLY expression    { }
             | expression DIVIDE expression      { }
+            | expression POWER expression      { }
             | '|' expression  %prec UMINUS      { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                                       rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
                                                 }
             | '(' expression ')'                { }
             | '-' expression %prec UMINUS       { }
-            | INTEGER                           { }
-            | FLOAT                             { }
+            | number                            { }
+            | IDENTIFIER
+            | function_call
             ;
 
 number: INTEGER 
       | FLOAT
       ;
 
-return_statement  : KEYWORD_RETURN number { }
-                  | KEYWORD_RETURN member_expression { }
+return_statement  :
+                   KEYWORD_RETURN member_expression { }
+                  | KEYWORD_RETURN expression
+                  ;
+yield_statement  :
+                   KEYWORD_YIELD member_expression { }
+                  | KEYWORD_YIELD expression
                   ;
 
 class : class_with_inheritance 
@@ -222,17 +230,13 @@ elif_statement    : KEYWORD_ELSE_IF logical_expression COLON block
                   | KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
                   ;
 
-expression_or_identifier: expression
-                        | IDENTIFIER
-                        ;
-
-logical_expression: expression_or_identifier
-                  | expression_or_identifier GREATEROREQUAL expression_or_identifier
-                  | expression_or_identifier GREATERTHAN expression_or_identifier
-                  | expression_or_identifier LESSOREQUAL expression_or_identifier
-                  | expression_or_identifier LESSTHAN expression_or_identifier
-                  | expression_or_identifier EQUAL expression_or_identifier
-                  | expression_or_identifier NOTEQUAL expression_or_identifier
+logical_expression: expression
+                  | expression GREATEROREQUAL expression
+                  | expression GREATERTHAN expression
+                  | expression LESSOREQUAL expression
+                  | expression LESSTHAN expression
+                  | expression EQUAL expression
+                  | expression NOTEQUAL expression
                   | logical_expression KEYWORD_AND logical_expression
                   | logical_expression KEYWORD_OR logical_expression
                   | KEYWORD_NOT logical_expression
@@ -240,8 +244,9 @@ logical_expression: expression_or_identifier
                   | KEYWORD_FALSE
                   ;
 
-function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES
-                  | IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES
+function_call     :  IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES
+                  |  IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES
+                  | IDENTIFIER LEFT_PARENTHES function_call RIGHT_PARENTHES
                   ;
 
 for_statement     : KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block
@@ -249,6 +254,7 @@ for_statement     : KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block
                   | KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block
                   | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON block
                   | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call COLON block
+                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block
                   ;
 
 while_statement   : KEYWORD_WHILE logical_expression COLON block
