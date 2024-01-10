@@ -41,7 +41,7 @@ extern int yylex();
 prog        : /*empty */    { /* for empty put % empty */}
             | NEWLINE
             | statements prog {
-                              printf("prog accepted:\n");
+                              printf("------------ PROGRMAE ACCEPTED ------------\n");
                               YYACCEPT;
                         }
             ;
@@ -122,83 +122,87 @@ statements  : statements statement
             | statements NEWLINE
             ;
 
-statement   : compound_statement | simple_statement{};
-
-simple_statement:
-            assignment
-            | return_statement
-            | KEYWORD_PASS
-            | KEYWORD_BREAK
-            | KEYWORD_CONTINUE
+statement   : compound_statement 
+            | simple_statement
             ;
 
-compound_statement:
-            function
-            | if_statement
-            | class
-            | for_statement
-            | while_statement
-            /* | try_statement */
-            ;
-assignment  : member_expression ASSIGN expression  { printf("assignment\n"); }
+simple_statement  : assignment
+                  | return_statement
+                  | KEYWORD_PASS
+                  | KEYWORD_BREAK
+                  | KEYWORD_CONTINUE
+                  ;
+
+compound_statement: function
+                  | conditional_statement
+                  | class
+                  | for_statement
+                  | while_statement
+                  /* | try_statement */
+                  ;
+
+assignment  : member_expression ASSIGN expression
             ;
 
-expression  : /* empty */
-            expression ADD expression     { printf("expression\n"); } 
-            | expression MINUS expression     { }
-            | expression MULTIPLY expression     { }
-            | expression DIVIDE expression     { }
-            | '|' expression  %prec UMINUS  { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
-                                                which has low precedence, but we want unary minus to have higher precedence than multiplication 
-                                                rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
-                                          }
-            | '(' expression ')'            { }
-            | '-' expression %prec UMINUS   { }
-            | INTEGER                       { printf("integer\n"); }
-            | FLOAT                         { }
+expression  : expression ADD expression         { } 
+            | expression MINUS expression       { }
+            | expression MULTIPLY expression    { }
+            | expression DIVIDE expression      { }
+            | '|' expression  %prec UMINUS      { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
+                                                      which has low precedence, but we want unary minus to have higher precedence than multiplication 
+                                                      rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
+                                                }
+            | '(' expression ')'                { }
+            | '-' expression %prec UMINUS       { }
+            | INTEGER                           { }
+            | FLOAT                             { }
             ;
-number : INTEGER | FLOAT;
-return_statement : KEYWORD_RETURN number { }
-            | KEYWORD_RETURN member_expression { }
-            ;
-class: class_with_inheritance | class_without_inheritance;
-class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT;
+
+number: INTEGER 
+      | FLOAT
+      ;
+
+return_statement  : KEYWORD_RETURN number { }
+                  | KEYWORD_RETURN member_expression { }
+                  ;
+
+class : class_with_inheritance 
+      | class_without_inheritance
+      ;
+
+class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
+                        ;
+
 class_block: 
             | class_block assignment
             | class_block function
             | class_block NEWLINE
             ;
-class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT;
-function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block {};
+
+class_without_inheritance     : KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT
+                              ;
+
+function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block
+            ;
+
 block: NEWLINE INDENT statements DEDENT
-args:
+
+args  :
       | args IDENTIFIER COMMA
       | args IDENTIFIER 
       | IDENTIFIER COMMA
       | IDENTIFIER 
       ;
 
-member_expression:
-                  IDENTIFIER 
+member_expression : IDENTIFIER 
                   | member_expression %prec '.' IDENTIFIER 
                   ;
-if_statement: KEYWORD_IF logical_expression COLON block
-            | KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
-            ;
-else_statement: KEYWORD_ELSE COLON block
 
-elif_statement: KEYWORD_ELSE_IF logical_expression COLON block
-            | KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
-            ;
+conditional_statement   : if_statement elif_else
+                        ;
 
-conditional_statement     : if_statement elif_else_                           
-            ;
-
-elif_else_  :
-            | elif_else { }
-            ;
-
-elif_else   : elif_stmts else_statement
+elif_else   : 
+            | elif_stmts else_statement
             | elif_stmts
             | else_statement
             ;
@@ -206,37 +210,50 @@ elif_else   : elif_stmts else_statement
 elif_stmts  : elif_statement
             | elif_stmts elif_statement 
             ;
-/* conditional_statement:
-      if_statement
-      | if_statement else_statement
-      | if_statement elif_statement
-      | if_statement elif_statement else_statement
-      ; */
-logical_expression:
-      expression_or_identifier
-      |expression_or_identifier GREATEROREQUAL expression_or_identifier
-      |expression_or_identifier GREATERTHAN expression_or_identifier
-      |expression_or_identifier LESSOREQUAL expression_or_identifier
-      |expression_or_identifier LESSTHAN expression_or_identifier
-      |expression_or_identifier EQUAL expression_or_identifier
-      |expression_or_identifier NOTEQUAL expression_or_identifier
-      |KEYWORD_TRUE
-      |KEYWORD_FALSE
-      |logical_expression KEYWORD_AND logical_expression
-      |logical_expression KEYWORD_OR logical_expression
-      |KEYWORD_NOT logical_expression
-      ;
-expression_or_identifier:
-      expression
-      | IDENTIFIER
-      ;
-for_statement: KEYWORD_FOR logical_expression COLON block
-            | KEYWORD_FOR LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
-            ;
 
-while_statement: KEYWORD_WHILE logical_expression COLON block
-            | KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
-            ;
+if_statement      : KEYWORD_IF logical_expression COLON block
+                  | KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+                  ;
+
+else_statement    : KEYWORD_ELSE COLON block
+                  ;
+
+elif_statement    : KEYWORD_ELSE_IF logical_expression COLON block
+                  | KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+                  ;
+
+expression_or_identifier: expression
+                        | IDENTIFIER
+                        ;
+
+logical_expression: expression_or_identifier
+                  | expression_or_identifier GREATEROREQUAL expression_or_identifier
+                  | expression_or_identifier GREATERTHAN expression_or_identifier
+                  | expression_or_identifier LESSOREQUAL expression_or_identifier
+                  | expression_or_identifier LESSTHAN expression_or_identifier
+                  | expression_or_identifier EQUAL expression_or_identifier
+                  | expression_or_identifier NOTEQUAL expression_or_identifier
+                  | logical_expression KEYWORD_AND logical_expression
+                  | logical_expression KEYWORD_OR logical_expression
+                  | KEYWORD_NOT logical_expression
+                  | KEYWORD_TRUE
+                  | KEYWORD_FALSE
+                  ;
+
+function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES
+                  | IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES
+                  ;
+
+for_statement     : KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block
+                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST COLON block
+                  | KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block
+                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON block
+                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call COLON block
+                  ;
+
+while_statement   : KEYWORD_WHILE logical_expression COLON block
+                  | KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+                  ;
 
 %%
 

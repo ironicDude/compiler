@@ -1,4 +1,6 @@
-while  mohamad and 5 + 5 > 10 :
-    y = 2
-    if (mohamad == 3):
-        break
+for layer in mlp.layers():
+    for neuron in layer.neurons():
+        if (neuron == 3):
+            break
+        elif (neuron > 9 * 3 + 2):
+            continue
