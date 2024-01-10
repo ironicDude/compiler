@@ -1,0 +1,1 @@
+print(list(gen)) # Output: [9, 16]
