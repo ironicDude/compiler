@@ -41,7 +41,7 @@ extern int yylex();
 prog        : /*empty */    { /* for empty put % empty */}
             | NEWLINE
             | statements prog {
-                              printf("------------ PROGRMAE ACCEPTED ------------\n");
+                              printf("------------ PROGRAM ACCEPTED ------------\n");
                               YYACCEPT;
                         }
             ;
