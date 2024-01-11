@@ -166,17 +166,6 @@ import_statment   : KEYWORD_IMPORT member_expression
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
 
-import_statments  : import_statment NEWLINE
-                  | import_statments import_statment
-                  ;
-
-import_statment   : KEYWORD_IMPORT member_expression 
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT '*'
-                  | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
-                  ;
-
 assignment  : member_expression ASSIGN expression
             ;
 
@@ -257,7 +246,6 @@ finally: KEYWORD_FINALLY COLON block
 except_statements: except_statements except
       | except
       ;
-                  ;
 
 with_statment     : KEYWORD_WITH with_stmt COLON block
                   ;
