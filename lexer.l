@@ -193,7 +193,11 @@ int handle_indent(char *str) {
     return NEWLINE;
 }
 
-<indent>. { 
+<indent>[\"|\']{3} { 
+    BEGIN comment;
+}
+
+<indent>. {
     unput(*yytext);
     BEGIN normal;
 }
@@ -201,7 +205,7 @@ int handle_indent(char *str) {
 <comment>[^\\\\|\"|\']+         { /*printf("inside triple comment1: %s \n", yytext);*/ }
 <comment>\\\\(.|\\n)            { /*printf("inside triple comment2: %s \n", yytext);*/ }
 <comment>[\"|\'][\"|\']?        { /*printf("inside triple comment3: %s \n", yytext);*/ }
-<comment>[\"|\']{3}             { /*printf("end of triple comment: %s \n", yytext);*/ BEGIN (indent);  }
+<comment>[\"|\']{3}             { /*printf("end of triple comment: %s \n", yytext);*/ BEGIN (indent); return MULTILINECOMMENT; }
 
 "\n" {
     // printf("NEWLINE\n"); 
@@ -216,7 +220,7 @@ int handle_indent(char *str) {
 <string>[^\\\\|\"|\']+         { /*printf("inside triple string: %s \n", yytext);*/ }
 <string>\\\\(.|\\n)            { /*printf("inside triple string: %s \n", yytext);*/ }
 <string>[\"|\'][\"|\']?        { /*printf("inside triple string: %s \n", yytext);*/ }
-<string>[\"|\']{3}             { /*printf("end of triple string: %s \n", yytext);*/ BEGIN (indent); }
+<string>[\"|\']{3}             { /*printf("end of triple string: %s \n", yytext);*/ BEGIN (indent); return MULTILINESTRING; }
 
 {ADD}                   {/*printf("ADD: %s\n", yytext);*/return ADD;}
 {MINUS}                 {/*printf("MINUS: %s\n", yytext);*/return MINUS;}
