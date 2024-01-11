@@ -27,7 +27,7 @@ extern int yylex();
 %token NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
 %token LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
 %token LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
-%token INCREMENT DECREMENT INTEGER FLOAT DEDENT INDENT NEWLINE
+%token INCREMENT DECREMENT INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
 
 %error-verbose
 %nonassoc EQUAL
@@ -129,6 +129,10 @@ statement   : compound_statement
 simple_statement  : assignment
                   | return_statement
                   | yield_statement
+                  | assert_statement
+                  | raise_statement
+                  | global_statement
+                  | nonlocal_statement
                   | KEYWORD_PASS
                   | KEYWORD_BREAK
                   | KEYWORD_CONTINUE
@@ -139,7 +143,8 @@ compound_statement: function
                   | class
                   | for_statement
                   | while_statement
-                  /* | try_statement */
+                  | match_statement
+                  | try_statement
                   ;
 
 assignment  : member_expression ASSIGN expression
@@ -150,6 +155,7 @@ expression  : expression ADD expression         { }
             | expression MULTIPLY expression    { }
             | expression DIVIDE expression      { }
             | expression POWER expression      { }
+            | expression MODULO expression
             | '|' expression  %prec UMINUS      { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                                       rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
@@ -159,6 +165,7 @@ expression  : expression ADD expression         { }
             | number                            { }
             | IDENTIFIER
             | function_call
+            | LITERALSTRING
             ;
 
 number: INTEGER 
@@ -168,11 +175,57 @@ number: INTEGER
 return_statement  :
                    KEYWORD_RETURN member_expression { }
                   | KEYWORD_RETURN expression
+                  | KEYWORD_RETURN KEYWORD_TRUE
+                  | KEYWORD_RETURN KEYWORD_FALSE
+                  | KEYWORD_RETURN KEYWORD_NONE
+                  | KEYWORD_RETURN logical_expression
                   ;
 yield_statement  :
                    KEYWORD_YIELD member_expression { }
                   | KEYWORD_YIELD expression
                   ;
+
+assert_statement: KEYWORD_ASSERT logical_expression
+                  | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING;
+
+raise_statement: KEYWORD_RAISE function_call
+                  | KEYWORD_RAISE function_call KEYWORD_FROM IDENTIFIER
+                  ;
+
+global_statement: KEYWORD_GLOBAL global_nonlocal_targets
+                  ;
+nonlocal_statement: KEYWORD_NONLOCAL global_nonlocal_targets
+                  ;
+
+global_nonlocal_targets: IDENTIFIER
+                  | IDENTIFIER COMMA global_nonlocal_targets
+                  ;
+
+match_statement: KEYWORD_MATCH IDENTIFIER COLON match_block;
+
+match_block: NEWLINE INDENT cases DEDENT;
+
+cases: cases case
+      | case
+      ;
+case: KEYWORD_CASE expression COLON block;
+
+try_statement: try finally
+            | try except_statements
+            | try except_statements finally
+            | try except_statements else_statement
+            | try except_statements else_statement finally
+            ;
+
+try: KEYWORD_TRY COLON block
+except: KEYWORD_EXCEPT COLON block
+      | KEYWORD_EXCEPT member_expression COLON block
+      ;
+finally: KEYWORD_FINALLY COLON block
+
+except_statements: except_statements except
+      | except
+      ;
 
 class : class_with_inheritance 
       | class_without_inheritance
@@ -196,10 +249,10 @@ function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON b
 block: NEWLINE INDENT statements DEDENT
 
 args  :
-      | args IDENTIFIER COMMA
-      | args IDENTIFIER 
-      | IDENTIFIER COMMA
-      | IDENTIFIER 
+      | args expression COMMA
+      | args expression 
+      | expression COMMA
+      | expression
       ;
 
 member_expression : IDENTIFIER 

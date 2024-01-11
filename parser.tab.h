@@ -125,7 +125,9 @@
      DEDENT = 341,
      INDENT = 342,
      NEWLINE = 343,
-     UMINUS = 344
+     KEYWORD_MATCH = 344,
+     KEYWORD_CASE = 345,
+     UMINUS = 346
    };
 #endif
 
