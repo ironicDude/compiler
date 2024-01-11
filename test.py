@@ -1,5 +1,5 @@
 try:
-    f = x
+    y = 4
 except FileNotFoundError:
     print("File not found")
 else:

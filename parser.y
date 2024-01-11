@@ -120,6 +120,7 @@ block       : NEWLINE INDENT statements DEDENT  { }
 statements  : statements statement
             | statement
             | statements NEWLINE
+            | NEWLINE
             ;
 
 statement   : compound_statement 
@@ -175,8 +176,6 @@ number: INTEGER
 return_statement  :
                    KEYWORD_RETURN member_expression { }
                   | KEYWORD_RETURN expression
-                  | KEYWORD_RETURN KEYWORD_TRUE
-                  | KEYWORD_RETURN KEYWORD_FALSE
                   | KEYWORD_RETURN KEYWORD_NONE
                   | KEYWORD_RETURN logical_expression
                   ;
