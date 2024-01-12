@@ -48,6 +48,8 @@ KEYWORD_WITH            with
 KEYWORD_ASYNC           async
 KEYWORD_OR              or
 KEYWORD_YIELD           yield
+KEYWORD_MATCH           match
+KEYWORD_CASE            case
 OPERATORS               [+\-*/=(){}\[\]:,;<>!]=?
 COMMENT                 "#".*
 ADD                     "+"
@@ -306,6 +308,8 @@ int handle_indent(char *str) {
 {KEYWORD_ASYNC}         {/*printf("KEYWORD_ASYNC: %s \n",yytext);*/return KEYWORD_ASYNC;}
 {KEYWORD_OR}            {/*printf("KEYWORD_OR: %s \n",yytext);*/return KEYWORD_OR;}
 {KEYWORD_YIELD}         {/*printf("KEYWORD_YIELD: %s \n",yytext);*/return KEYWORD_YIELD;}
+{KEYWORD_MATCH}         {/*printf("KEYWORD_MATCH: %s \n",yytext);*/return KEYWORD_MATCH;}
+{KEYWORD_CASE}         {/*printf("KEYWORD_CASE: %s \n",yytext);*/return KEYWORD_CASE;}
 {LITERALSTRING}         {/*printf("STRING_LITERAL: %s\n", yytext);*/return LITERALSTRING;}
 {LITERALCHAR}           {/*printf("CHAR_LITERAL: %s\n", yytext);*/return LITERALCHAR;}
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}

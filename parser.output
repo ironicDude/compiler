@@ -6,45 +6,26 @@ Terminals unused in grammar
    LITERALCHAR
    MULTILINESTRING
    KEYWORD_AWAIT
-   KEYWORD_NONE
-   KEYWORD_EXCEPT
-   KEYWORD_RAISE
-   KEYWORD_FINALLY
    KEYWORD_IS
    KEYWORD_LAMBDA
-   KEYWORD_TRY
-   KEYWORD_NONLOCAL
-   KEYWORD_ASSERT
-   KEYWORD_GLOBAL
    KEYWORD_ASYNC
    OPERATORS
-   MODULO
-   ASSIGNADD
-   ASSIGNMINUS
-   ASSIGNMULTIPLY
-   ASSIGNDIVIDE
-   ASSIGNMODULO
-   ASSIGNFLOORDIVISION
-   ASSIGNEXPONINTIATION
    ASSIGNBITWISEAND
    ASSIGNBITWISEOR
    ASSIGNBITWISEXOR
-   ASSIGNRIGHTSHIFT
-   ASSIGNLEFTSHIFT
    NOT
    LEFT_BRACES
    RIGHT_BRACES
    LEFT_BRACKETS
    RIGHT_BRACKETS
    SEMICOLON
-   INCREMENT
-   DECREMENT
    '+'
    '*'
    '/'
 
 
 State 0 conflicts: 1 shift/reduce
+<<<<<<< HEAD
 State 22 conflicts: 18 shift/reduce
 State 26 conflicts: 2 shift/reduce
 State 43 conflicts: 1 shift/reduce
@@ -65,6 +46,33 @@ State 142 conflicts: 5 shift/reduce
 State 149 conflicts: 2 shift/reduce
 State 150 conflicts: 2 shift/reduce
 State 179 conflicts: 1 shift/reduce
+=======
+State 28 conflicts: 24 shift/reduce
+State 40 conflicts: 2 shift/reduce
+State 56 conflicts: 9 shift/reduce
+State 72 conflicts: 1 shift/reduce
+State 75 conflicts: 1 shift/reduce
+State 77 conflicts: 1 shift/reduce
+State 79 conflicts: 26 reduce/reduce
+State 82 conflicts: 9 shift/reduce
+State 97 conflicts: 26 reduce/reduce
+State 123 conflicts: 1 shift/reduce
+State 125 conflicts: 1 shift/reduce
+State 126 conflicts: 1 shift/reduce
+State 128 conflicts: 2 shift/reduce
+State 130 conflicts: 6 shift/reduce
+State 131 conflicts: 6 shift/reduce
+State 150 conflicts: 9 shift/reduce
+State 156 conflicts: 9 shift/reduce
+State 196 conflicts: 6 shift/reduce
+State 197 conflicts: 6 shift/reduce
+State 198 conflicts: 6 shift/reduce
+State 199 conflicts: 6 shift/reduce
+State 200 conflicts: 6 shift/reduce
+State 201 conflicts: 6 shift/reduce
+State 208 conflicts: 2 shift/reduce
+State 209 conflicts: 2 shift/reduce
+>>>>>>> main
 
 
 Grammar
@@ -88,31 +96,65 @@ Grammar
    12 simple_statement: assignment
    13                 | return_statement
    14                 | yield_statement
-   15                 | del_statment
-   16                 | import_statments
-   17                 | function_call
-   18                 | with_statment
-   19                 | KEYWORD_PASS
-   20                 | KEYWORD_BREAK
-   21                 | KEYWORD_CONTINUE
+   15                 | assert_statement
+   16                 | raise_statement
+   17                 | global_statement
+   18                 | nonlocal_statement
+   19                 | del_statment
+   20                 | import_statments
+   21                 | function_call
+   22                 | with_statment
+   23                 | KEYWORD_PASS
+   24                 | KEYWORD_BREAK
+   25                 | KEYWORD_CONTINUE
 
-   22 compound_statement: function
-   23                   | conditional_statement
-   24                   | class
-   25                   | for_statement
-   26                   | while_statement
+   26 compound_statement: function
+   27                   | conditional_statement
+   28                   | class
+   29                   | for_statement
+   30                   | while_statement
+   31                   | match_statement
+   32                   | try_statement
 
-   27 import_statments: import_statment NEWLINE
-   28                 | import_statments import_statment
+   33 assignment: member_expression ASSIGN expression
+   34           | member_expression ASSIGNADD expression
+   35           | member_expression ASSIGNDIVIDE expression
+   36           | member_expression ASSIGNEXPONINTIATION expression
+   37           | member_expression ASSIGNMULTIPLY expression
+   38           | member_expression ASSIGNMODULO expression
+   39           | member_expression ASSIGNMINUS expression
+   40           | member_expression ASSIGNFLOORDIVISION expression
+   41           | member_expression ASSIGNRIGHTSHIFT expression
+   42           | member_expression ASSIGNLEFTSHIFT expression
 
+<<<<<<< HEAD
    29 import_statment: KEYWORD_IMPORT member_expression
    30                | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
    31                | KEYWORD_FROM member_expression KEYWORD_IMPORT MULTIPLY
    32                | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
    33                | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
+=======
+   43 expression: expression ADD expression
+   44           | expression MINUS expression
+   45           | expression MULTIPLY expression
+   46           | expression DIVIDE expression
+   47           | expression POWER expression
+   48           | expression MODULO expression
+   49           | '|' expression
+   50           | '(' expression ')'
+   51           | '-' expression
+   52           | number
+   53           | member_expression
+   54           | function_call
+   55           | LITERALSTRING
+   56           | LIST
+   57           | KEYWORD_NONE
+>>>>>>> main
 
-   34 assignment: member_expression ASSIGN expression
+   58 number: INTEGER
+   59       | FLOAT
 
+<<<<<<< HEAD
    35 expression: expression ADD expression
    36           | expression MINUS expression
    37           | expression MULTIPLY expression
@@ -124,13 +166,17 @@ Grammar
    43           | number
    44           | member_expression
    45           | function_call
+=======
+   60 del_statment: KEYWORD_DEL IDENTIFIER
+   61             | KEYWORD_DEL IDENTIFIER LIST
+>>>>>>> main
 
-   46 number: INTEGER
-   47       | FLOAT
+   62 return_statement: KEYWORD_RETURN expression
+   63                 | KEYWORD_RETURN logical_expression
 
-   48 del_statment: KEYWORD_DEL IDENTIFIER
-   49             | KEYWORD_DEL IDENTIFIER LIST
+   64 yield_statement: KEYWORD_YIELD expression
 
+<<<<<<< HEAD
    50 return_statement: KEYWORD_RETURN expression
 
    51 yield_statement: KEYWORD_YIELD expression
@@ -211,23 +257,157 @@ Grammar
 
   107 while_statement: KEYWORD_WHILE logical_expression COLON block
   108                | KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+=======
+   65 assert_statement: KEYWORD_ASSERT logical_expression
+   66                 | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING
+
+   67 raise_statement: KEYWORD_RAISE function_call
+   68                | KEYWORD_RAISE function_call KEYWORD_FROM IDENTIFIER
+
+   69 global_statement: KEYWORD_GLOBAL global_nonlocal_targets
+
+   70 nonlocal_statement: KEYWORD_NONLOCAL global_nonlocal_targets
+
+   71 global_nonlocal_targets: IDENTIFIER
+   72                        | IDENTIFIER COMMA global_nonlocal_targets
+
+   73 import_statments: import_statment NEWLINE
+   74                 | import_statments import_statment
+
+   75 import_statment: KEYWORD_IMPORT member_expression
+   76                | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
+   77                | KEYWORD_FROM member_expression KEYWORD_IMPORT '*'
+   78                | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
+   79                | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
+
+   80 match_statement: KEYWORD_MATCH IDENTIFIER COLON match_block
+
+   81 match_block: NEWLINE INDENT cases DEDENT
+
+   82 cases: cases case
+   83      | case
+
+   84 case: KEYWORD_CASE expression COLON block
+
+   85 try_statement: try finally
+   86              | try except_statements
+   87              | try except_statements finally
+   88              | try except_statements else_statement
+   89              | try except_statements else_statement finally
+
+   90 try: KEYWORD_TRY COLON block
+
+   91 except: KEYWORD_EXCEPT COLON block
+   92       | KEYWORD_EXCEPT member_expression COLON block
+
+   93 finally: KEYWORD_FINALLY COLON block
+
+   94 except_statements: except_statements except
+   95                  | except
+
+   96 with_statment: KEYWORD_WITH with_stmt COLON block
+
+   97 with_stmt: function_call KEYWORD_AS IDENTIFIER
+   98          | with_stmt COMMA function_call KEYWORD_AS IDENTIFIER
+
+   99 class: class_with_inheritance
+  100      | class_without_inheritance
+
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
+
+  102 class_block: /* empty */
+  103            | class_block assignment
+  104            | class_block function
+  105            | class_block NEWLINE
+
+  106 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT
+
+  107 function_call: IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES
+  108              | IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES
+  109              | IDENTIFIER LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES
+  110              | IDENTIFIER LEFT_PARENTHES function_call RIGHT_PARENTHES
+
+  111 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block
+
+  112 block: NEWLINE INDENT statements DEDENT
+
+  113 args: /* empty */
+  114     | args expression COMMA
+  115     | args expression
+  116     | expression COMMA
+  117     | expression
+
+  118 member_expression: IDENTIFIER
+  119                  | member_expression IDENTIFIER
+
+  120 logical_expression: expression
+  121                   | expression GREATEROREQUAL expression
+  122                   | expression GREATERTHAN expression
+  123                   | expression LESSOREQUAL expression
+  124                   | expression LESSTHAN expression
+  125                   | expression EQUAL expression
+  126                   | expression NOTEQUAL expression
+  127                   | logical_expression KEYWORD_AND logical_expression
+  128                   | logical_expression KEYWORD_OR logical_expression
+  129                   | KEYWORD_NOT logical_expression
+  130                   | KEYWORD_TRUE
+  131                   | KEYWORD_FALSE
+
+  132 conditional_statement: if_statement elif_else
+
+  133 elif_else: /* empty */
+  134          | elif_stmts else_statement
+  135          | elif_stmts
+  136          | else_statement
+
+  137 elif_stmts: elif_statement
+  138           | elif_stmts elif_statement
+
+  139 if_statement: KEYWORD_IF logical_expression COLON block
+  140             | KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+
+  141 else_statement: KEYWORD_ELSE COLON block
+
+  142 elif_statement: KEYWORD_ELSE_IF logical_expression COLON block
+  143               | KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+
+  144 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block
+  145              | KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST COLON block
+  146              | KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block
+  147              | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON block
+  148              | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call COLON block
+  149              | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block
+
+  150 while_statement: KEYWORD_WHILE logical_expression COLON block
+  151                | KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+>>>>>>> main
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
+<<<<<<< HEAD
 '(' (40) 41
 ')' (41) 41
 '*' (42)
 '+' (43)
 '-' (45) 42
 '.' (46) 106
+=======
+'(' (40) 50
+')' (41) 50
+'*' (42) 77
+'+' (43)
+'-' (45) 51
+'.' (46) 149
+>>>>>>> main
 '/' (47)
-'|' (124) 40
+'|' (124) 49
 error (256)
 WHITESPACE (258)
 LETTER (259)
 ALPHANUM (260)
+<<<<<<< HEAD
 IDENTIFIER (261) 30 32 33 48 49 53 54 57 62 63 64 65 66 67 70 71 72
     73 74 75 101 102 104 105 106
 LIST (262) 49 102
@@ -274,21 +454,70 @@ COMMENT (302) 10
 ADD (303) 35
 MINUS (304) 36
 MULTIPLY (305) 31 37
+=======
+IDENTIFIER (261) 60 61 68 71 72 76 78 79 80 97 98 101 106 107 108 109
+    110 111 118 119 144 145 147 148 149
+LIST (262) 56 61 145
+LITERALSTRING (263) 55 66 109
+LITERALCHAR (264)
+KEYWORD_FALSE (265) 131
+KEYWORD_TRUE (266) 130
+MULTILINESTRING (267)
+KEYWORD_AWAIT (268)
+KEYWORD_IF (269) 139 140
+KEYWORD_ELSE (270) 141
+KEYWORD_ELSE_IF (271) 142 143
+KEYWORD_IMPORT (272) 75 76 77 78 79
+KEYWORD_PASS (273) 23
+KEYWORD_NONE (274) 57
+KEYWORD_BREAK (275) 24
+KEYWORD_EXCEPT (276) 91 92
+KEYWORD_IN (277) 144 145 146 147 148 149
+KEYWORD_RAISE (278) 67 68
+KEYWORD_CLASS (279) 101 106
+KEYWORD_FINALLY (280) 93
+KEYWORD_IS (281)
+KEYWORD_RETURN (282) 62 63
+KEYWORD_AND (283) 127
+KEYWORD_CONTINUE (284) 25
+KEYWORD_FOR (285) 144 145 146 147 148 149
+KEYWORD_LAMBDA (286)
+KEYWORD_TRY (287) 90
+KEYWORD_AS (288) 78 79 97 98
+KEYWORD_DEF (289) 111
+KEYWORD_FROM (290) 68 76 77 79
+KEYWORD_NONLOCAL (291) 70
+KEYWORD_WHILE (292) 150 151
+KEYWORD_ASSERT (293) 65 66
+KEYWORD_DEL (294) 60 61
+KEYWORD_GLOBAL (295) 69
+KEYWORD_NOT (296) 129
+KEYWORD_WITH (297) 96
+KEYWORD_ASYNC (298)
+KEYWORD_OR (299) 128
+KEYWORD_YIELD (300) 64
+OPERATORS (301)
+COMMENT (302) 10
+ADD (303) 43
+MINUS (304) 44
+MULTIPLY (305) 45
+>>>>>>> main
 MULTILINECOMMENT (306) 11
-DIVIDE (307) 38
-POWER (308) 39
-MODULO (309)
-ASSIGN (310) 34
-ASSIGNADD (311)
-ASSIGNMINUS (312)
-ASSIGNMULTIPLY (313)
-ASSIGNDIVIDE (314)
-ASSIGNMODULO (315)
-ASSIGNFLOORDIVISION (316)
-ASSIGNEXPONINTIATION (317)
+DIVIDE (307) 46
+POWER (308) 47
+MODULO (309) 48
+ASSIGN (310) 33
+ASSIGNADD (311) 34
+ASSIGNMINUS (312) 39
+ASSIGNMULTIPLY (313) 37
+ASSIGNDIVIDE (314) 35
+ASSIGNMODULO (315) 38
+ASSIGNFLOORDIVISION (316) 40
+ASSIGNEXPONINTIATION (317) 36
 ASSIGNBITWISEAND (318)
 ASSIGNBITWISEOR (319)
 ASSIGNBITWISEXOR (320)
+<<<<<<< HEAD
 ASSIGNRIGHTSHIFT (321)
 ASSIGNLEFTSHIFT (322)
 EQUAL (323) 82
@@ -300,10 +529,24 @@ LESSTHAN (328) 81
 LESSOREQUAL (329) 80
 LEFT_PARENTHES (330) 57 63 64 65 66 67 97 100 103 108
 RIGHT_PARENTHES (331) 57 63 64 65 66 67 97 100 103 108
+=======
+ASSIGNRIGHTSHIFT (321) 41
+ASSIGNLEFTSHIFT (322) 42
+EQUAL (323) 125
+NOT (324)
+NOTEQUAL (325) 126
+GREATERTHAN (326) 122
+GREATEROREQUAL (327) 121
+LESSTHAN (328) 124
+LESSOREQUAL (329) 123
+LEFT_PARENTHES (330) 101 107 108 109 110 111 140 143 146 151
+RIGHT_PARENTHES (331) 101 107 108 109 110 111 140 143 146 151
+>>>>>>> main
 LEFT_BRACES (332)
 RIGHT_BRACES (333)
 LEFT_BRACKETS (334)
 RIGHT_BRACKETS (335)
+<<<<<<< HEAD
 COLON (336) 52 57 62 67 96 97 98 99 100 101 102 103 104 105 106 107
     108
 COMMA (337) 54 70 72
@@ -315,6 +558,19 @@ FLOAT (342) 47
 DEDENT (343) 57 62 68
 INDENT (344) 57 62 68
 NEWLINE (345) 2 6 9 27 57 61 62 68
+=======
+COLON (336) 80 84 90 91 92 93 96 101 106 111 139 140 141 142 143 144
+    145 146 147 148 149 150 151
+COMMA (337) 66 72 98 114 116
+SEMICOLON (338)
+INTEGER (339) 58
+FLOAT (340) 59
+DEDENT (341) 81 101 106 112
+INDENT (342) 81 101 106 112
+NEWLINE (343) 2 6 9 73 81 101 105 106 112
+KEYWORD_MATCH (344) 80
+KEYWORD_CASE (345) 84
+>>>>>>> main
 UMINUS (346)
 
 
@@ -325,12 +581,17 @@ $accept (100)
 prog (101)
     on left: 1 2 3, on right: 0 3
 statements (102)
+<<<<<<< HEAD
     on left: 4 5 6, on right: 3 4 6 68
+=======
+    on left: 4 5 6, on right: 3 4 6 112
+>>>>>>> main
 statement (103)
     on left: 7 8 9 10 11, on right: 4 5
 simple_statement (104)
-    on left: 12 13 14 15 16 17 18 19 20 21, on right: 8
+    on left: 12 13 14 15 16 17 18 19 20 21 22 23 24 25, on right: 8
 compound_statement (105)
+<<<<<<< HEAD
     on left: 22 23 24 25 26, on right: 7
 import_statments (106)
     on left: 27 28, on right: 16 28
@@ -392,6 +653,99 @@ for_statement (132)
     on left: 101 102 103 104 105 106, on right: 25
 while_statement (133)
     on left: 107 108, on right: 26
+=======
+    on left: 26 27 28 29 30 31 32, on right: 7
+assignment (106)
+    on left: 33 34 35 36 37 38 39 40 41 42, on right: 12 103
+expression (107)
+    on left: 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57, on right:
+    33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 62 64
+    84 114 115 116 117 120 121 122 123 124 125 126
+number (108)
+    on left: 58 59, on right: 52 108
+del_statment (109)
+    on left: 60 61, on right: 19
+return_statement (110)
+    on left: 62 63, on right: 13
+yield_statement (111)
+    on left: 64, on right: 14
+assert_statement (112)
+    on left: 65 66, on right: 15
+raise_statement (113)
+    on left: 67 68, on right: 16
+global_statement (114)
+    on left: 69, on right: 17
+nonlocal_statement (115)
+    on left: 70, on right: 18
+global_nonlocal_targets (116)
+    on left: 71 72, on right: 69 70 72
+import_statments (117)
+    on left: 73 74, on right: 20 74
+import_statment (118)
+    on left: 75 76 77 78 79, on right: 73 74
+match_statement (119)
+    on left: 80, on right: 31
+match_block (120)
+    on left: 81, on right: 80
+cases (121)
+    on left: 82 83, on right: 81 82
+case (122)
+    on left: 84, on right: 82 83
+try_statement (123)
+    on left: 85 86 87 88 89, on right: 32
+try (124)
+    on left: 90, on right: 85 86 87 88 89
+except (125)
+    on left: 91 92, on right: 94 95
+finally (126)
+    on left: 93, on right: 85 87 89
+except_statements (127)
+    on left: 94 95, on right: 86 87 88 89 94
+with_statment (128)
+    on left: 96, on right: 22
+with_stmt (129)
+    on left: 97 98, on right: 96 98
+class (130)
+    on left: 99 100, on right: 28
+class_with_inheritance (131)
+    on left: 101, on right: 99
+class_block (132)
+    on left: 102 103 104 105, on right: 101 103 104 105 106
+class_without_inheritance (133)
+    on left: 106, on right: 100
+function_call (134)
+    on left: 107 108 109 110, on right: 21 54 67 68 97 98 110 144 146
+    148 149
+function (135)
+    on left: 111, on right: 26 104
+block (136)
+    on left: 112, on right: 84 90 91 92 93 96 111 139 140 141 142 143
+    144 145 146 147 148 149 150 151
+args (137)
+    on left: 113 114 115 116 117, on right: 101 107 111 114 115 146
+member_expression (138)
+    on left: 118 119, on right: 33 34 35 36 37 38 39 40 41 42 53 75
+    76 77 78 79 92 119 147 148 149
+logical_expression (139)
+    on left: 120 121 122 123 124 125 126 127 128 129 130 131, on right:
+    63 65 66 127 128 129 139 140 142 143 150 151
+conditional_statement (140)
+    on left: 132, on right: 27
+elif_else (141)
+    on left: 133 134 135 136, on right: 132
+elif_stmts (142)
+    on left: 137 138, on right: 134 135 138
+if_statement (143)
+    on left: 139 140, on right: 132
+else_statement (144)
+    on left: 141, on right: 88 89 134 136
+elif_statement (145)
+    on left: 142 143, on right: 137 138
+for_statement (146)
+    on left: 144 145 146 147 148 149, on right: 29
+while_statement (147)
+    on left: 150 151, on right: 30
+>>>>>>> main
 
 
 state 0
@@ -424,41 +778,54 @@ state 2
     KEYWORD_IMPORT    shift, and go to state 6
     KEYWORD_PASS      shift, and go to state 7
     KEYWORD_BREAK     shift, and go to state 8
-    KEYWORD_CLASS     shift, and go to state 9
-    KEYWORD_RETURN    shift, and go to state 10
-    KEYWORD_CONTINUE  shift, and go to state 11
-    KEYWORD_FOR       shift, and go to state 12
-    KEYWORD_DEF       shift, and go to state 13
-    KEYWORD_FROM      shift, and go to state 14
-    KEYWORD_WHILE     shift, and go to state 15
-    KEYWORD_DEL       shift, and go to state 16
-    KEYWORD_WITH      shift, and go to state 17
-    KEYWORD_YIELD     shift, and go to state 18
-    COMMENT           shift, and go to state 19
-    MULTILINECOMMENT  shift, and go to state 20
-    NEWLINE           shift, and go to state 21
+    KEYWORD_RAISE     shift, and go to state 9
+    KEYWORD_CLASS     shift, and go to state 10
+    KEYWORD_RETURN    shift, and go to state 11
+    KEYWORD_CONTINUE  shift, and go to state 12
+    KEYWORD_FOR       shift, and go to state 13
+    KEYWORD_TRY       shift, and go to state 14
+    KEYWORD_DEF       shift, and go to state 15
+    KEYWORD_FROM      shift, and go to state 16
+    KEYWORD_NONLOCAL  shift, and go to state 17
+    KEYWORD_WHILE     shift, and go to state 18
+    KEYWORD_ASSERT    shift, and go to state 19
+    KEYWORD_DEL       shift, and go to state 20
+    KEYWORD_GLOBAL    shift, and go to state 21
+    KEYWORD_WITH      shift, and go to state 22
+    KEYWORD_YIELD     shift, and go to state 23
+    COMMENT           shift, and go to state 24
+    MULTILINECOMMENT  shift, and go to state 25
+    NEWLINE           shift, and go to state 26
+    KEYWORD_MATCH     shift, and go to state 27
 
-    statements                 go to state 22
-    statement                  go to state 23
-    simple_statement           go to state 24
-    compound_statement         go to state 25
-    import_statments           go to state 26
-    import_statment            go to state 27
-    assignment                 go to state 28
-    del_statment               go to state 29
-    return_statement           go to state 30
-    yield_statement            go to state 31
-    with_statment              go to state 32
-    class                      go to state 33
-    class_with_inheritance     go to state 34
-    class_without_inheritance  go to state 35
-    function_call              go to state 36
-    function                   go to state 37
-    member_expression          go to state 38
-    conditional_statement      go to state 39
-    if_statement               go to state 40
-    for_statement              go to state 41
-    while_statement            go to state 42
+    statements                 go to state 28
+    statement                  go to state 29
+    simple_statement           go to state 30
+    compound_statement         go to state 31
+    assignment                 go to state 32
+    del_statment               go to state 33
+    return_statement           go to state 34
+    yield_statement            go to state 35
+    assert_statement           go to state 36
+    raise_statement            go to state 37
+    global_statement           go to state 38
+    nonlocal_statement         go to state 39
+    import_statments           go to state 40
+    import_statment            go to state 41
+    match_statement            go to state 42
+    try_statement              go to state 43
+    try                        go to state 44
+    with_statment              go to state 45
+    class                      go to state 46
+    class_with_inheritance     go to state 47
+    class_without_inheritance  go to state 48
+    function_call              go to state 49
+    function                   go to state 50
+    member_expression          go to state 51
+    conditional_statement      go to state 52
+    if_statement               go to state 53
+    for_statement              go to state 54
+    while_statement            go to state 55
 
 
 state 3
@@ -470,19 +837,32 @@ state 3
 
 state 4
 
+<<<<<<< HEAD
    63 function_call: IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES
    64              | IDENTIFIER . LEFT_PARENTHES number RIGHT_PARENTHES
    65              | IDENTIFIER . LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES
    66              | IDENTIFIER . LEFT_PARENTHES function_call RIGHT_PARENTHES
    74 member_expression: IDENTIFIER .
+=======
+  107 function_call: IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES
+  108              | IDENTIFIER . LEFT_PARENTHES number RIGHT_PARENTHES
+  109              | IDENTIFIER . LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES
+  110              | IDENTIFIER . LEFT_PARENTHES function_call RIGHT_PARENTHES
+  118 member_expression: IDENTIFIER .
+>>>>>>> main
 
-    LEFT_PARENTHES  shift, and go to state 43
+    LEFT_PARENTHES  shift, and go to state 56
 
+<<<<<<< HEAD
     $default  reduce using rule 74 (member_expression)
+=======
+    $default  reduce using rule 118 (member_expression)
+>>>>>>> main
 
 
 state 5
 
+<<<<<<< HEAD
    96 if_statement: KEYWORD_IF . logical_expression COLON block
    97             | KEYWORD_IF . LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
 
@@ -502,42 +882,74 @@ state 5
     function_call       go to state 55
     member_expression   go to state 56
     logical_expression  go to state 57
+=======
+  139 if_statement: KEYWORD_IF . logical_expression COLON block
+  140             | KEYWORD_IF . LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+
+    IDENTIFIER      shift, and go to state 4
+    LIST            shift, and go to state 57
+    LITERALSTRING   shift, and go to state 58
+    KEYWORD_FALSE   shift, and go to state 59
+    KEYWORD_TRUE    shift, and go to state 60
+    KEYWORD_NONE    shift, and go to state 61
+    KEYWORD_NOT     shift, and go to state 62
+    LEFT_PARENTHES  shift, and go to state 63
+    INTEGER         shift, and go to state 64
+    FLOAT           shift, and go to state 65
+    '-'             shift, and go to state 66
+    '|'             shift, and go to state 67
+    '('             shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 73
+>>>>>>> main
 
 
 state 6
 
-   29 import_statment: KEYWORD_IMPORT . member_expression
-   32                | KEYWORD_IMPORT . member_expression KEYWORD_AS IDENTIFIER
+   75 import_statment: KEYWORD_IMPORT . member_expression
+   78                | KEYWORD_IMPORT . member_expression KEYWORD_AS IDENTIFIER
 
-    IDENTIFIER  shift, and go to state 58
+    IDENTIFIER  shift, and go to state 74
 
-    member_expression  go to state 59
+    member_expression  go to state 75
 
 
 state 7
 
-   19 simple_statement: KEYWORD_PASS .
+   23 simple_statement: KEYWORD_PASS .
 
-    $default  reduce using rule 19 (simple_statement)
+    $default  reduce using rule 23 (simple_statement)
 
 
 state 8
 
-   20 simple_statement: KEYWORD_BREAK .
+   24 simple_statement: KEYWORD_BREAK .
 
-    $default  reduce using rule 20 (simple_statement)
+    $default  reduce using rule 24 (simple_statement)
 
 
 state 9
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS . IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
    62 class_without_inheritance: KEYWORD_CLASS . IDENTIFIER COLON NEWLINE INDENT class_block DEDENT
+=======
+   67 raise_statement: KEYWORD_RAISE . function_call
+   68                | KEYWORD_RAISE . function_call KEYWORD_FROM IDENTIFIER
+>>>>>>> main
 
-    IDENTIFIER  shift, and go to state 60
+    IDENTIFIER  shift, and go to state 76
+
+    function_call  go to state 77
 
 
 state 10
 
+<<<<<<< HEAD
    50 return_statement: KEYWORD_RETURN . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -551,17 +963,42 @@ state 10
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+  101 class_with_inheritance: KEYWORD_CLASS . IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
+  106 class_without_inheritance: KEYWORD_CLASS . IDENTIFIER COLON NEWLINE INDENT class_block DEDENT
+
+    IDENTIFIER  shift, and go to state 78
+>>>>>>> main
 
 
 state 11
 
-   21 simple_statement: KEYWORD_CONTINUE .
+   62 return_statement: KEYWORD_RETURN . expression
+   63                 | KEYWORD_RETURN . logical_expression
 
-    $default  reduce using rule 21 (simple_statement)
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_FALSE  shift, and go to state 59
+    KEYWORD_TRUE   shift, and go to state 60
+    KEYWORD_NONE   shift, and go to state 61
+    KEYWORD_NOT    shift, and go to state 62
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression          go to state 79
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 80
 
 
 state 12
 
+<<<<<<< HEAD
   101 for_statement: KEYWORD_FOR . IDENTIFIER KEYWORD_IN function_call COLON block
   102              | KEYWORD_FOR . IDENTIFIER KEYWORD_IN LIST COLON block
   103              | KEYWORD_FOR . LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block
@@ -571,17 +1008,35 @@ state 12
 
     IDENTIFIER      shift, and go to state 62
     LEFT_PARENTHES  shift, and go to state 63
+=======
+   25 simple_statement: KEYWORD_CONTINUE .
+
+    $default  reduce using rule 25 (simple_statement)
+>>>>>>> main
 
 
 state 13
 
+<<<<<<< HEAD
    67 function: KEYWORD_DEF . IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block
 
     IDENTIFIER  shift, and go to state 64
+=======
+  144 for_statement: KEYWORD_FOR . IDENTIFIER KEYWORD_IN function_call COLON block
+  145              | KEYWORD_FOR . IDENTIFIER KEYWORD_IN LIST COLON block
+  146              | KEYWORD_FOR . LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block
+  147              | KEYWORD_FOR . IDENTIFIER KEYWORD_IN member_expression COLON block
+  148              | KEYWORD_FOR . IDENTIFIER KEYWORD_IN member_expression function_call COLON block
+  149              | KEYWORD_FOR . IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block
+
+    IDENTIFIER      shift, and go to state 81
+    LEFT_PARENTHES  shift, and go to state 82
+>>>>>>> main
 
 
 state 14
 
+<<<<<<< HEAD
    30 import_statment: KEYWORD_FROM . member_expression KEYWORD_IMPORT IDENTIFIER
    31                | KEYWORD_FROM . member_expression KEYWORD_IMPORT MULTIPLY
    33                | KEYWORD_FROM . member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
@@ -589,10 +1044,16 @@ state 14
     IDENTIFIER  shift, and go to state 58
 
     member_expression  go to state 65
+=======
+   90 try: KEYWORD_TRY . COLON block
+
+    COLON  shift, and go to state 83
+>>>>>>> main
 
 
 state 15
 
+<<<<<<< HEAD
   107 while_statement: KEYWORD_WHILE . logical_expression COLON block
   108                | KEYWORD_WHILE . LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
 
@@ -612,28 +1073,49 @@ state 15
     function_call       go to state 55
     member_expression   go to state 56
     logical_expression  go to state 67
+=======
+  111 function: KEYWORD_DEF . IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block
+
+    IDENTIFIER  shift, and go to state 84
+>>>>>>> main
 
 
 state 16
 
-   48 del_statment: KEYWORD_DEL . IDENTIFIER
-   49             | KEYWORD_DEL . IDENTIFIER LIST
+   76 import_statment: KEYWORD_FROM . member_expression KEYWORD_IMPORT IDENTIFIER
+   77                | KEYWORD_FROM . member_expression KEYWORD_IMPORT '*'
+   79                | KEYWORD_FROM . member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
 
+<<<<<<< HEAD
     IDENTIFIER  shift, and go to state 68
+=======
+    IDENTIFIER  shift, and go to state 74
+
+    member_expression  go to state 85
+>>>>>>> main
 
 
 state 17
 
+<<<<<<< HEAD
    52 with_statment: KEYWORD_WITH . with_stmt COLON block
 
     IDENTIFIER  shift, and go to state 69
 
     with_stmt      go to state 70
     function_call  go to state 71
+=======
+   70 nonlocal_statement: KEYWORD_NONLOCAL . global_nonlocal_targets
+
+    IDENTIFIER  shift, and go to state 86
+
+    global_nonlocal_targets  go to state 87
+>>>>>>> main
 
 
 state 18
 
+<<<<<<< HEAD
    51 yield_statement: KEYWORD_YIELD . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -647,30 +1129,133 @@ state 18
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+  150 while_statement: KEYWORD_WHILE . logical_expression COLON block
+  151                | KEYWORD_WHILE . LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+
+    IDENTIFIER      shift, and go to state 4
+    LIST            shift, and go to state 57
+    LITERALSTRING   shift, and go to state 58
+    KEYWORD_FALSE   shift, and go to state 59
+    KEYWORD_TRUE    shift, and go to state 60
+    KEYWORD_NONE    shift, and go to state 61
+    KEYWORD_NOT     shift, and go to state 62
+    LEFT_PARENTHES  shift, and go to state 88
+    INTEGER         shift, and go to state 64
+    FLOAT           shift, and go to state 65
+    '-'             shift, and go to state 66
+    '|'             shift, and go to state 67
+    '('             shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 89
+>>>>>>> main
 
 
 state 19
+
+   65 assert_statement: KEYWORD_ASSERT . logical_expression
+   66                 | KEYWORD_ASSERT . logical_expression COMMA LITERALSTRING
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_FALSE  shift, and go to state 59
+    KEYWORD_TRUE   shift, and go to state 60
+    KEYWORD_NONE   shift, and go to state 61
+    KEYWORD_NOT    shift, and go to state 62
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 90
+
+
+state 20
+
+   60 del_statment: KEYWORD_DEL . IDENTIFIER
+   61             | KEYWORD_DEL . IDENTIFIER LIST
+
+    IDENTIFIER  shift, and go to state 91
+
+
+state 21
+
+   69 global_statement: KEYWORD_GLOBAL . global_nonlocal_targets
+
+    IDENTIFIER  shift, and go to state 86
+
+    global_nonlocal_targets  go to state 92
+
+
+state 22
+
+   96 with_statment: KEYWORD_WITH . with_stmt COLON block
+
+    IDENTIFIER  shift, and go to state 76
+
+    with_stmt      go to state 93
+    function_call  go to state 94
+
+
+state 23
+
+   64 yield_statement: KEYWORD_YIELD . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 95
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+
+
+state 24
 
    10 statement: COMMENT .
 
     $default  reduce using rule 10 (statement)
 
 
-state 20
+state 25
 
    11 statement: MULTILINECOMMENT .
 
     $default  reduce using rule 11 (statement)
 
 
-state 21
+state 26
 
     9 statement: NEWLINE .
 
     $default  reduce using rule 9 (statement)
 
 
-state 22
+state 27
+
+   80 match_statement: KEYWORD_MATCH . IDENTIFIER COLON match_block
+
+    IDENTIFIER  shift, and go to state 96
+
+
+state 28
 
     3 prog: prog statements .
     4 statements: statements . statement
@@ -681,6 +1266,7 @@ state 22
     KEYWORD_IMPORT    shift, and go to state 6
     KEYWORD_PASS      shift, and go to state 7
     KEYWORD_BREAK     shift, and go to state 8
+<<<<<<< HEAD
     KEYWORD_CLASS     shift, and go to state 9
     KEYWORD_RETURN    shift, and go to state 10
     KEYWORD_CONTINUE  shift, and go to state 11
@@ -694,27 +1280,55 @@ state 22
     COMMENT           shift, and go to state 19
     MULTILINECOMMENT  shift, and go to state 20
     NEWLINE           shift, and go to state 73
+=======
+    KEYWORD_RAISE     shift, and go to state 9
+    KEYWORD_CLASS     shift, and go to state 10
+    KEYWORD_RETURN    shift, and go to state 11
+    KEYWORD_CONTINUE  shift, and go to state 12
+    KEYWORD_FOR       shift, and go to state 13
+    KEYWORD_TRY       shift, and go to state 14
+    KEYWORD_DEF       shift, and go to state 15
+    KEYWORD_FROM      shift, and go to state 16
+    KEYWORD_NONLOCAL  shift, and go to state 17
+    KEYWORD_WHILE     shift, and go to state 18
+    KEYWORD_ASSERT    shift, and go to state 19
+    KEYWORD_DEL       shift, and go to state 20
+    KEYWORD_GLOBAL    shift, and go to state 21
+    KEYWORD_WITH      shift, and go to state 22
+    KEYWORD_YIELD     shift, and go to state 23
+    COMMENT           shift, and go to state 24
+    MULTILINECOMMENT  shift, and go to state 25
+    NEWLINE           shift, and go to state 97
+    KEYWORD_MATCH     shift, and go to state 27
+>>>>>>> main
 
     IDENTIFIER        [reduce using rule 3 (prog)]
     KEYWORD_IF        [reduce using rule 3 (prog)]
     KEYWORD_IMPORT    [reduce using rule 3 (prog)]
     KEYWORD_PASS      [reduce using rule 3 (prog)]
     KEYWORD_BREAK     [reduce using rule 3 (prog)]
+    KEYWORD_RAISE     [reduce using rule 3 (prog)]
     KEYWORD_CLASS     [reduce using rule 3 (prog)]
     KEYWORD_RETURN    [reduce using rule 3 (prog)]
     KEYWORD_CONTINUE  [reduce using rule 3 (prog)]
     KEYWORD_FOR       [reduce using rule 3 (prog)]
+    KEYWORD_TRY       [reduce using rule 3 (prog)]
     KEYWORD_DEF       [reduce using rule 3 (prog)]
     KEYWORD_FROM      [reduce using rule 3 (prog)]
+    KEYWORD_NONLOCAL  [reduce using rule 3 (prog)]
     KEYWORD_WHILE     [reduce using rule 3 (prog)]
+    KEYWORD_ASSERT    [reduce using rule 3 (prog)]
     KEYWORD_DEL       [reduce using rule 3 (prog)]
+    KEYWORD_GLOBAL    [reduce using rule 3 (prog)]
     KEYWORD_WITH      [reduce using rule 3 (prog)]
     KEYWORD_YIELD     [reduce using rule 3 (prog)]
     COMMENT           [reduce using rule 3 (prog)]
     MULTILINECOMMENT  [reduce using rule 3 (prog)]
     NEWLINE           [reduce using rule 3 (prog)]
+    KEYWORD_MATCH     [reduce using rule 3 (prog)]
     $default          reduce using rule 3 (prog)
 
+<<<<<<< HEAD
     statement                  go to state 74
     simple_statement           go to state 24
     compound_statement         go to state 25
@@ -735,29 +1349,59 @@ state 22
     if_statement               go to state 40
     for_statement              go to state 41
     while_statement            go to state 42
+=======
+    statement                  go to state 98
+    simple_statement           go to state 30
+    compound_statement         go to state 31
+    assignment                 go to state 32
+    del_statment               go to state 33
+    return_statement           go to state 34
+    yield_statement            go to state 35
+    assert_statement           go to state 36
+    raise_statement            go to state 37
+    global_statement           go to state 38
+    nonlocal_statement         go to state 39
+    import_statments           go to state 40
+    import_statment            go to state 41
+    match_statement            go to state 42
+    try_statement              go to state 43
+    try                        go to state 44
+    with_statment              go to state 45
+    class                      go to state 46
+    class_with_inheritance     go to state 47
+    class_without_inheritance  go to state 48
+    function_call              go to state 49
+    function                   go to state 50
+    member_expression          go to state 51
+    conditional_statement      go to state 52
+    if_statement               go to state 53
+    for_statement              go to state 54
+    while_statement            go to state 55
+>>>>>>> main
 
 
-state 23
+state 29
 
     5 statements: statement .
 
     $default  reduce using rule 5 (statements)
 
 
-state 24
+state 30
 
     8 statement: simple_statement .
 
     $default  reduce using rule 8 (statement)
 
 
-state 25
+state 31
 
     7 statement: compound_statement .
 
     $default  reduce using rule 7 (statement)
 
 
+<<<<<<< HEAD
 state 26
 
    16 simple_statement: import_statments .
@@ -781,33 +1425,37 @@ state 27
 
 
 state 28
+=======
+state 32
+>>>>>>> main
 
    12 simple_statement: assignment .
 
     $default  reduce using rule 12 (simple_statement)
 
 
-state 29
+state 33
 
-   15 simple_statement: del_statment .
+   19 simple_statement: del_statment .
 
-    $default  reduce using rule 15 (simple_statement)
+    $default  reduce using rule 19 (simple_statement)
 
 
-state 30
+state 34
 
    13 simple_statement: return_statement .
 
     $default  reduce using rule 13 (simple_statement)
 
 
-state 31
+state 35
 
    14 simple_statement: yield_statement .
 
     $default  reduce using rule 14 (simple_statement)
 
 
+<<<<<<< HEAD
 state 32
 
    18 simple_statement: with_statment .
@@ -836,22 +1484,25 @@ state 35
     $default  reduce using rule 56 (class)
 
 
+=======
+>>>>>>> main
 state 36
 
-   17 simple_statement: function_call .
+   15 simple_statement: assert_statement .
 
-    $default  reduce using rule 17 (simple_statement)
+    $default  reduce using rule 15 (simple_statement)
 
 
 state 37
 
-   22 compound_statement: function .
+   16 simple_statement: raise_statement .
 
-    $default  reduce using rule 22 (compound_statement)
+    $default  reduce using rule 16 (simple_statement)
 
 
 state 38
 
+<<<<<<< HEAD
    34 assignment: member_expression . ASSIGN expression
    75 member_expression: member_expression . IDENTIFIER
    76                  | member_expression . function_call
@@ -860,17 +1511,23 @@ state 38
     ASSIGN      shift, and go to state 78
 
     function_call  go to state 79
+=======
+   17 simple_statement: global_statement .
+
+    $default  reduce using rule 17 (simple_statement)
+>>>>>>> main
 
 
 state 39
 
-   23 compound_statement: conditional_statement .
+   18 simple_statement: nonlocal_statement .
 
-    $default  reduce using rule 23 (compound_statement)
+    $default  reduce using rule 18 (simple_statement)
 
 
 state 40
 
+<<<<<<< HEAD
    89 conditional_statement: if_statement . elif_else
 
     KEYWORD_ELSE     shift, and go to state 80
@@ -882,24 +1539,38 @@ state 40
     elif_stmts      go to state 83
     else_statement  go to state 84
     elif_statement  go to state 85
+=======
+   20 simple_statement: import_statments .
+   74 import_statments: import_statments . import_statment
+
+    KEYWORD_IMPORT  shift, and go to state 6
+    KEYWORD_FROM    shift, and go to state 16
+
+    KEYWORD_IMPORT  [reduce using rule 20 (simple_statement)]
+    KEYWORD_FROM    [reduce using rule 20 (simple_statement)]
+    $default        reduce using rule 20 (simple_statement)
+
+    import_statment  go to state 99
+>>>>>>> main
 
 
 state 41
 
-   25 compound_statement: for_statement .
+   73 import_statments: import_statment . NEWLINE
 
-    $default  reduce using rule 25 (compound_statement)
+    NEWLINE  shift, and go to state 100
 
 
 state 42
 
-   26 compound_statement: while_statement .
+   31 compound_statement: match_statement .
 
-    $default  reduce using rule 26 (compound_statement)
+    $default  reduce using rule 31 (compound_statement)
 
 
 state 43
 
+<<<<<<< HEAD
    63 function_call: IDENTIFIER LEFT_PARENTHES . args RIGHT_PARENTHES
    64              | IDENTIFIER LEFT_PARENTHES . number RIGHT_PARENTHES
    65              | IDENTIFIER LEFT_PARENTHES . LITERALSTRING RIGHT_PARENTHES
@@ -916,13 +1587,45 @@ state 43
     number         go to state 88
     function_call  go to state 89
     args           go to state 90
+=======
+   32 compound_statement: try_statement .
+
+    $default  reduce using rule 32 (compound_statement)
+>>>>>>> main
 
 
 state 44
 
+<<<<<<< HEAD
    88 logical_expression: KEYWORD_FALSE .
+=======
+   85 try_statement: try . finally
+   86              | try . except_statements
+   87              | try . except_statements finally
+   88              | try . except_statements else_statement
+   89              | try . except_statements else_statement finally
 
-    $default  reduce using rule 88 (logical_expression)
+    KEYWORD_EXCEPT   shift, and go to state 101
+    KEYWORD_FINALLY  shift, and go to state 102
+
+    except             go to state 103
+    finally            go to state 104
+    except_statements  go to state 105
+
+
+state 45
+
+   22 simple_statement: with_statment .
+
+    $default  reduce using rule 22 (simple_statement)
+
+
+state 46
+
+   28 compound_statement: class .
+>>>>>>> main
+
+    $default  reduce using rule 28 (compound_statement)
 
 
 state 45
@@ -955,6 +1658,7 @@ state 46
 
 state 47
 
+<<<<<<< HEAD
    97 if_statement: KEYWORD_IF LEFT_PARENTHES . logical_expression RIGHT_PARENTHES COLON block
 
     IDENTIFIER     shift, and go to state 4
@@ -972,26 +1676,53 @@ state 47
     function_call       go to state 55
     member_expression   go to state 56
     logical_expression  go to state 92
+=======
+   99 class: class_with_inheritance .
+
+    $default  reduce using rule 99 (class)
+>>>>>>> main
 
 
 state 48
 
+<<<<<<< HEAD
    46 number: INTEGER .
+=======
+  100 class: class_without_inheritance .
 
-    $default  reduce using rule 46 (number)
+    $default  reduce using rule 100 (class)
 
 
 state 49
 
-   47 number: FLOAT .
+   21 simple_statement: function_call .
+>>>>>>> main
 
-    $default  reduce using rule 47 (number)
+    $default  reduce using rule 21 (simple_statement)
+
+
+state 49
+
+   26 compound_statement: function .
+
+    $default  reduce using rule 26 (compound_statement)
 
 
 state 50
 
-   42 expression: '-' . expression
+   33 assignment: member_expression . ASSIGN expression
+   34           | member_expression . ASSIGNADD expression
+   35           | member_expression . ASSIGNDIVIDE expression
+   36           | member_expression . ASSIGNEXPONINTIATION expression
+   37           | member_expression . ASSIGNMULTIPLY expression
+   38           | member_expression . ASSIGNMODULO expression
+   39           | member_expression . ASSIGNMINUS expression
+   40           | member_expression . ASSIGNFLOORDIVISION expression
+   41           | member_expression . ASSIGNRIGHTSHIFT expression
+   42           | member_expression . ASSIGNLEFTSHIFT expression
+  119 member_expression: member_expression . IDENTIFIER
 
+<<<<<<< HEAD
     IDENTIFIER  shift, and go to state 4
     INTEGER     shift, and go to state 48
     FLOAT       shift, and go to state 49
@@ -1020,10 +1751,24 @@ state 51
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+    IDENTIFIER            shift, and go to state 106
+    ASSIGN                shift, and go to state 107
+    ASSIGNADD             shift, and go to state 108
+    ASSIGNMINUS           shift, and go to state 109
+    ASSIGNMULTIPLY        shift, and go to state 110
+    ASSIGNDIVIDE          shift, and go to state 111
+    ASSIGNMODULO          shift, and go to state 112
+    ASSIGNFLOORDIVISION   shift, and go to state 113
+    ASSIGNEXPONINTIATION  shift, and go to state 114
+    ASSIGNRIGHTSHIFT      shift, and go to state 115
+    ASSIGNLEFTSHIFT       shift, and go to state 116
+>>>>>>> main
 
 
 state 52
 
+<<<<<<< HEAD
    41 expression: '(' . expression ')'
 
     IDENTIFIER  shift, and go to state 4
@@ -1037,10 +1782,16 @@ state 52
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+   27 compound_statement: conditional_statement .
+
+    $default  reduce using rule 27 (compound_statement)
+>>>>>>> main
 
 
 state 53
 
+<<<<<<< HEAD
    35 expression: expression . ADD expression
    36           | expression . MINUS expression
    37           | expression . MULTIPLY expression
@@ -1067,20 +1818,68 @@ state 53
     LESSOREQUAL     shift, and go to state 106
 
     $default  reduce using rule 77 (logical_expression)
+=======
+  132 conditional_statement: if_statement . elif_else
+
+    KEYWORD_ELSE     shift, and go to state 117
+    KEYWORD_ELSE_IF  shift, and go to state 118
+
+    $default  reduce using rule 133 (elif_else)
+
+    elif_else       go to state 119
+    elif_stmts      go to state 120
+    else_statement  go to state 121
+    elif_statement  go to state 122
 
 
 state 54
 
-   43 expression: number .
+   29 compound_statement: for_statement .
 
-    $default  reduce using rule 43 (expression)
+    $default  reduce using rule 29 (compound_statement)
+>>>>>>> main
+
+
+state 54
+
+   30 compound_statement: while_statement .
+
+    $default  reduce using rule 30 (compound_statement)
 
 
 state 55
 
-   45 expression: function_call .
+  107 function_call: IDENTIFIER LEFT_PARENTHES . args RIGHT_PARENTHES
+  108              | IDENTIFIER LEFT_PARENTHES . number RIGHT_PARENTHES
+  109              | IDENTIFIER LEFT_PARENTHES . LITERALSTRING RIGHT_PARENTHES
+  110              | IDENTIFIER LEFT_PARENTHES . function_call RIGHT_PARENTHES
 
-    $default  reduce using rule 45 (expression)
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 123
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    IDENTIFIER     [reduce using rule 113 (args)]
+    LIST           [reduce using rule 113 (args)]
+    LITERALSTRING  [reduce using rule 113 (args)]
+    KEYWORD_NONE   [reduce using rule 113 (args)]
+    INTEGER        [reduce using rule 113 (args)]
+    FLOAT          [reduce using rule 113 (args)]
+    '-'            [reduce using rule 113 (args)]
+    '|'            [reduce using rule 113 (args)]
+    '('            [reduce using rule 113 (args)]
+    $default       reduce using rule 113 (args)
+
+    expression         go to state 124
+    number             go to state 125
+    function_call      go to state 126
+    args               go to state 127
+    member_expression  go to state 72
 
 
 state 56
@@ -1099,6 +1898,7 @@ state 56
 
 state 57
 
+<<<<<<< HEAD
    84 logical_expression: logical_expression . KEYWORD_AND logical_expression
    85                   | logical_expression . KEYWORD_OR logical_expression
    96 if_statement: KEYWORD_IF logical_expression . COLON block
@@ -1106,17 +1906,29 @@ state 57
     KEYWORD_AND  shift, and go to state 107
     KEYWORD_OR   shift, and go to state 108
     COLON        shift, and go to state 109
+=======
+   56 expression: LIST .
+
+    $default  reduce using rule 56 (expression)
+>>>>>>> main
 
 
 state 58
 
+<<<<<<< HEAD
    74 member_expression: IDENTIFIER .
 
     $default  reduce using rule 74 (member_expression)
+=======
+   55 expression: LITERALSTRING .
+
+    $default  reduce using rule 55 (expression)
+>>>>>>> main
 
 
 state 59
 
+<<<<<<< HEAD
    29 import_statment: KEYWORD_IMPORT member_expression .
    32                | KEYWORD_IMPORT member_expression . KEYWORD_AS IDENTIFIER
    75 member_expression: member_expression . IDENTIFIER
@@ -1127,21 +1939,33 @@ state 59
 
     IDENTIFIER  [reduce using rule 29 (import_statment)]
     $default    reduce using rule 29 (import_statment)
+=======
+  131 logical_expression: KEYWORD_FALSE .
+
+    $default  reduce using rule 131 (logical_expression)
+>>>>>>> main
 
     function_call  go to state 79
 
 
 state 60
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
    62 class_without_inheritance: KEYWORD_CLASS IDENTIFIER . COLON NEWLINE INDENT class_block DEDENT
 
     LEFT_PARENTHES  shift, and go to state 111
     COLON           shift, and go to state 112
+=======
+  130 logical_expression: KEYWORD_TRUE .
+
+    $default  reduce using rule 130 (logical_expression)
+>>>>>>> main
 
 
 state 61
 
+<<<<<<< HEAD
    35 expression: expression . ADD expression
    36           | expression . MINUS expression
    37           | expression . MULTIPLY expression
@@ -1156,10 +1980,16 @@ state 61
     POWER     shift, and go to state 100
 
     $default  reduce using rule 50 (return_statement)
+=======
+   57 expression: KEYWORD_NONE .
+
+    $default  reduce using rule 57 (expression)
+>>>>>>> main
 
 
 state 62
 
+<<<<<<< HEAD
   101 for_statement: KEYWORD_FOR IDENTIFIER . KEYWORD_IN function_call COLON block
   102              | KEYWORD_FOR IDENTIFIER . KEYWORD_IN LIST COLON block
   104              | KEYWORD_FOR IDENTIFIER . KEYWORD_IN member_expression COLON block
@@ -1167,10 +1997,33 @@ state 62
   106              | KEYWORD_FOR IDENTIFIER . KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block
 
     KEYWORD_IN  shift, and go to state 113
+=======
+  129 logical_expression: KEYWORD_NOT . logical_expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_FALSE  shift, and go to state 59
+    KEYWORD_TRUE   shift, and go to state 60
+    KEYWORD_NONE   shift, and go to state 61
+    KEYWORD_NOT    shift, and go to state 62
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 128
+>>>>>>> main
 
 
 state 63
 
+<<<<<<< HEAD
   103 for_statement: KEYWORD_FOR LEFT_PARENTHES . args RIGHT_PARENTHES KEYWORD_IN function_call COLON block
 
     IDENTIFIER  shift, and go to state 114
@@ -1179,17 +2032,46 @@ state 63
     $default    reduce using rule 69 (args)
 
     args  go to state 115
+=======
+  140 if_statement: KEYWORD_IF LEFT_PARENTHES . logical_expression RIGHT_PARENTHES COLON block
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_FALSE  shift, and go to state 59
+    KEYWORD_TRUE   shift, and go to state 60
+    KEYWORD_NONE   shift, and go to state 61
+    KEYWORD_NOT    shift, and go to state 62
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 129
+>>>>>>> main
 
 
 state 64
 
+<<<<<<< HEAD
    67 function: KEYWORD_DEF IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES COLON block
 
     LEFT_PARENTHES  shift, and go to state 116
+=======
+   58 number: INTEGER .
+
+    $default  reduce using rule 58 (number)
+>>>>>>> main
 
 
 state 65
 
+<<<<<<< HEAD
    30 import_statment: KEYWORD_FROM member_expression . KEYWORD_IMPORT IDENTIFIER
    31                | KEYWORD_FROM member_expression . KEYWORD_IMPORT MULTIPLY
    33                | KEYWORD_FROM member_expression . KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
@@ -1200,10 +2082,16 @@ state 65
     KEYWORD_IMPORT  shift, and go to state 117
 
     function_call  go to state 79
+=======
+   59 number: FLOAT .
+
+    $default  reduce using rule 59 (number)
+>>>>>>> main
 
 
 state 66
 
+<<<<<<< HEAD
   108 while_statement: KEYWORD_WHILE LEFT_PARENTHES . logical_expression RIGHT_PARENTHES COLON block
 
     IDENTIFIER     shift, and go to state 4
@@ -1221,10 +2109,29 @@ state 66
     function_call       go to state 55
     member_expression   go to state 56
     logical_expression  go to state 118
+=======
+   51 expression: '-' . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 130
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 67
 
+<<<<<<< HEAD
    84 logical_expression: logical_expression . KEYWORD_AND logical_expression
    85                   | logical_expression . KEYWORD_OR logical_expression
   107 while_statement: KEYWORD_WHILE logical_expression . COLON block
@@ -1232,26 +2139,106 @@ state 67
     KEYWORD_AND  shift, and go to state 107
     KEYWORD_OR   shift, and go to state 108
     COLON        shift, and go to state 119
+=======
+   49 expression: '|' . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 131
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 68
 
+<<<<<<< HEAD
    48 del_statment: KEYWORD_DEL IDENTIFIER .
    49             | KEYWORD_DEL IDENTIFIER . LIST
 
     LIST  shift, and go to state 120
 
     $default  reduce using rule 48 (del_statment)
+=======
+   50 expression: '(' . expression ')'
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 132
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
 
 
 state 69
 
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  120 logical_expression: expression .
+  121                   | expression . GREATEROREQUAL expression
+  122                   | expression . GREATERTHAN expression
+  123                   | expression . LESSOREQUAL expression
+  124                   | expression . LESSTHAN expression
+  125                   | expression . EQUAL expression
+  126                   | expression . NOTEQUAL expression
+
+    ADD             shift, and go to state 133
+    MINUS           shift, and go to state 134
+    MULTIPLY        shift, and go to state 135
+    DIVIDE          shift, and go to state 136
+    POWER           shift, and go to state 137
+    MODULO          shift, and go to state 138
+    EQUAL           shift, and go to state 139
+    NOTEQUAL        shift, and go to state 140
+    GREATERTHAN     shift, and go to state 141
+    GREATEROREQUAL  shift, and go to state 142
+    LESSTHAN        shift, and go to state 143
+    LESSOREQUAL     shift, and go to state 144
+
+    $default  reduce using rule 120 (logical_expression)
+
+
+state 70
+
+   52 expression: number .
+
+    $default  reduce using rule 52 (expression)
+>>>>>>> main
+
+
+state 69
+
+<<<<<<< HEAD
    63 function_call: IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES
    64              | IDENTIFIER . LEFT_PARENTHES number RIGHT_PARENTHES
    65              | IDENTIFIER . LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES
    66              | IDENTIFIER . LEFT_PARENTHES function_call RIGHT_PARENTHES
+=======
+   54 expression: function_call .
+>>>>>>> main
 
-    LEFT_PARENTHES  shift, and go to state 43
+    $default  reduce using rule 54 (expression)
 
 
 state 70
@@ -1272,6 +2259,7 @@ state 71
 
 state 72
 
+<<<<<<< HEAD
    35 expression: expression . ADD expression
    36           | expression . MINUS expression
    37           | expression . MULTIPLY expression
@@ -1289,6 +2277,374 @@ state 72
 
 
 state 73
+=======
+   53 expression: member_expression .
+  119 member_expression: member_expression . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 106
+
+    IDENTIFIER  [reduce using rule 53 (expression)]
+    $default    reduce using rule 53 (expression)
+
+
+state 73
+
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+  139 if_statement: KEYWORD_IF logical_expression . COLON block
+
+    KEYWORD_AND  shift, and go to state 145
+    KEYWORD_OR   shift, and go to state 146
+    COLON        shift, and go to state 147
+
+
+state 74
+
+  118 member_expression: IDENTIFIER .
+
+    $default  reduce using rule 118 (member_expression)
+
+
+state 75
+
+   75 import_statment: KEYWORD_IMPORT member_expression .
+   78                | KEYWORD_IMPORT member_expression . KEYWORD_AS IDENTIFIER
+  119 member_expression: member_expression . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 106
+    KEYWORD_AS  shift, and go to state 148
+
+    IDENTIFIER  [reduce using rule 75 (import_statment)]
+    $default    reduce using rule 75 (import_statment)
+
+
+state 76
+>>>>>>> main
+
+  107 function_call: IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES
+  108              | IDENTIFIER . LEFT_PARENTHES number RIGHT_PARENTHES
+  109              | IDENTIFIER . LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES
+  110              | IDENTIFIER . LEFT_PARENTHES function_call RIGHT_PARENTHES
+
+    LEFT_PARENTHES  shift, and go to state 56
+
+
+state 77
+
+   67 raise_statement: KEYWORD_RAISE function_call .
+   68                | KEYWORD_RAISE function_call . KEYWORD_FROM IDENTIFIER
+
+    KEYWORD_FROM  shift, and go to state 149
+
+    KEYWORD_FROM  [reduce using rule 67 (raise_statement)]
+    $default      reduce using rule 67 (raise_statement)
+
+
+state 78
+
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
+  106 class_without_inheritance: KEYWORD_CLASS IDENTIFIER . COLON NEWLINE INDENT class_block DEDENT
+
+    LEFT_PARENTHES  shift, and go to state 150
+    COLON           shift, and go to state 151
+
+
+state 79
+
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+   62 return_statement: KEYWORD_RETURN expression .
+  120 logical_expression: expression .
+  121                   | expression . GREATEROREQUAL expression
+  122                   | expression . GREATERTHAN expression
+  123                   | expression . LESSOREQUAL expression
+  124                   | expression . LESSTHAN expression
+  125                   | expression . EQUAL expression
+  126                   | expression . NOTEQUAL expression
+
+    ADD             shift, and go to state 133
+    MINUS           shift, and go to state 134
+    MULTIPLY        shift, and go to state 135
+    DIVIDE          shift, and go to state 136
+    POWER           shift, and go to state 137
+    MODULO          shift, and go to state 138
+    EQUAL           shift, and go to state 139
+    NOTEQUAL        shift, and go to state 140
+    GREATERTHAN     shift, and go to state 141
+    GREATEROREQUAL  shift, and go to state 142
+    LESSTHAN        shift, and go to state 143
+    LESSOREQUAL     shift, and go to state 144
+
+    $end              reduce using rule 62 (return_statement)
+    $end              [reduce using rule 120 (logical_expression)]
+    IDENTIFIER        reduce using rule 62 (return_statement)
+    IDENTIFIER        [reduce using rule 120 (logical_expression)]
+    KEYWORD_IF        reduce using rule 62 (return_statement)
+    KEYWORD_IF        [reduce using rule 120 (logical_expression)]
+    KEYWORD_IMPORT    reduce using rule 62 (return_statement)
+    KEYWORD_IMPORT    [reduce using rule 120 (logical_expression)]
+    KEYWORD_PASS      reduce using rule 62 (return_statement)
+    KEYWORD_PASS      [reduce using rule 120 (logical_expression)]
+    KEYWORD_BREAK     reduce using rule 62 (return_statement)
+    KEYWORD_BREAK     [reduce using rule 120 (logical_expression)]
+    KEYWORD_RAISE     reduce using rule 62 (return_statement)
+    KEYWORD_RAISE     [reduce using rule 120 (logical_expression)]
+    KEYWORD_CLASS     reduce using rule 62 (return_statement)
+    KEYWORD_CLASS     [reduce using rule 120 (logical_expression)]
+    KEYWORD_RETURN    reduce using rule 62 (return_statement)
+    KEYWORD_RETURN    [reduce using rule 120 (logical_expression)]
+    KEYWORD_AND       reduce using rule 120 (logical_expression)
+    KEYWORD_CONTINUE  reduce using rule 62 (return_statement)
+    KEYWORD_CONTINUE  [reduce using rule 120 (logical_expression)]
+    KEYWORD_FOR       reduce using rule 62 (return_statement)
+    KEYWORD_FOR       [reduce using rule 120 (logical_expression)]
+    KEYWORD_TRY       reduce using rule 62 (return_statement)
+    KEYWORD_TRY       [reduce using rule 120 (logical_expression)]
+    KEYWORD_DEF       reduce using rule 62 (return_statement)
+    KEYWORD_DEF       [reduce using rule 120 (logical_expression)]
+    KEYWORD_FROM      reduce using rule 62 (return_statement)
+    KEYWORD_FROM      [reduce using rule 120 (logical_expression)]
+    KEYWORD_NONLOCAL  reduce using rule 62 (return_statement)
+    KEYWORD_NONLOCAL  [reduce using rule 120 (logical_expression)]
+    KEYWORD_WHILE     reduce using rule 62 (return_statement)
+    KEYWORD_WHILE     [reduce using rule 120 (logical_expression)]
+    KEYWORD_ASSERT    reduce using rule 62 (return_statement)
+    KEYWORD_ASSERT    [reduce using rule 120 (logical_expression)]
+    KEYWORD_DEL       reduce using rule 62 (return_statement)
+    KEYWORD_DEL       [reduce using rule 120 (logical_expression)]
+    KEYWORD_GLOBAL    reduce using rule 62 (return_statement)
+    KEYWORD_GLOBAL    [reduce using rule 120 (logical_expression)]
+    KEYWORD_WITH      reduce using rule 62 (return_statement)
+    KEYWORD_WITH      [reduce using rule 120 (logical_expression)]
+    KEYWORD_OR        reduce using rule 120 (logical_expression)
+    KEYWORD_YIELD     reduce using rule 62 (return_statement)
+    KEYWORD_YIELD     [reduce using rule 120 (logical_expression)]
+    COMMENT           reduce using rule 62 (return_statement)
+    COMMENT           [reduce using rule 120 (logical_expression)]
+    MULTILINECOMMENT  reduce using rule 62 (return_statement)
+    MULTILINECOMMENT  [reduce using rule 120 (logical_expression)]
+    DEDENT            reduce using rule 62 (return_statement)
+    DEDENT            [reduce using rule 120 (logical_expression)]
+    NEWLINE           reduce using rule 62 (return_statement)
+    NEWLINE           [reduce using rule 120 (logical_expression)]
+    KEYWORD_MATCH     reduce using rule 62 (return_statement)
+    KEYWORD_MATCH     [reduce using rule 120 (logical_expression)]
+    $default          reduce using rule 62 (return_statement)
+
+
+state 80
+
+   63 return_statement: KEYWORD_RETURN logical_expression .
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+
+    KEYWORD_AND  shift, and go to state 145
+    KEYWORD_OR   shift, and go to state 146
+
+    $default  reduce using rule 63 (return_statement)
+
+
+state 81
+
+  144 for_statement: KEYWORD_FOR IDENTIFIER . KEYWORD_IN function_call COLON block
+  145              | KEYWORD_FOR IDENTIFIER . KEYWORD_IN LIST COLON block
+  147              | KEYWORD_FOR IDENTIFIER . KEYWORD_IN member_expression COLON block
+  148              | KEYWORD_FOR IDENTIFIER . KEYWORD_IN member_expression function_call COLON block
+  149              | KEYWORD_FOR IDENTIFIER . KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block
+
+    KEYWORD_IN  shift, and go to state 152
+
+
+state 82
+
+  146 for_statement: KEYWORD_FOR LEFT_PARENTHES . args RIGHT_PARENTHES KEYWORD_IN function_call COLON block
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    IDENTIFIER     [reduce using rule 113 (args)]
+    LIST           [reduce using rule 113 (args)]
+    LITERALSTRING  [reduce using rule 113 (args)]
+    KEYWORD_NONE   [reduce using rule 113 (args)]
+    INTEGER        [reduce using rule 113 (args)]
+    FLOAT          [reduce using rule 113 (args)]
+    '-'            [reduce using rule 113 (args)]
+    '|'            [reduce using rule 113 (args)]
+    '('            [reduce using rule 113 (args)]
+    $default       reduce using rule 113 (args)
+
+    expression         go to state 124
+    number             go to state 70
+    function_call      go to state 71
+    args               go to state 153
+    member_expression  go to state 72
+
+
+state 83
+
+   90 try: KEYWORD_TRY COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 155
+
+
+state 84
+
+  111 function: KEYWORD_DEF IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES COLON block
+
+    LEFT_PARENTHES  shift, and go to state 156
+
+
+state 85
+
+   76 import_statment: KEYWORD_FROM member_expression . KEYWORD_IMPORT IDENTIFIER
+   77                | KEYWORD_FROM member_expression . KEYWORD_IMPORT '*'
+   79                | KEYWORD_FROM member_expression . KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
+  119 member_expression: member_expression . IDENTIFIER
+
+    IDENTIFIER      shift, and go to state 106
+    KEYWORD_IMPORT  shift, and go to state 157
+
+
+state 86
+
+   71 global_nonlocal_targets: IDENTIFIER .
+   72                        | IDENTIFIER . COMMA global_nonlocal_targets
+
+    COMMA  shift, and go to state 158
+
+    $default  reduce using rule 71 (global_nonlocal_targets)
+
+
+state 87
+
+   70 nonlocal_statement: KEYWORD_NONLOCAL global_nonlocal_targets .
+
+    $default  reduce using rule 70 (nonlocal_statement)
+
+
+state 88
+
+  151 while_statement: KEYWORD_WHILE LEFT_PARENTHES . logical_expression RIGHT_PARENTHES COLON block
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_FALSE  shift, and go to state 59
+    KEYWORD_TRUE   shift, and go to state 60
+    KEYWORD_NONE   shift, and go to state 61
+    KEYWORD_NOT    shift, and go to state 62
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 159
+
+
+state 89
+
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+  150 while_statement: KEYWORD_WHILE logical_expression . COLON block
+
+    KEYWORD_AND  shift, and go to state 145
+    KEYWORD_OR   shift, and go to state 146
+    COLON        shift, and go to state 160
+
+
+state 90
+
+   65 assert_statement: KEYWORD_ASSERT logical_expression .
+   66                 | KEYWORD_ASSERT logical_expression . COMMA LITERALSTRING
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+
+    KEYWORD_AND  shift, and go to state 145
+    KEYWORD_OR   shift, and go to state 146
+    COMMA        shift, and go to state 161
+
+    $default  reduce using rule 65 (assert_statement)
+
+
+state 91
+
+   60 del_statment: KEYWORD_DEL IDENTIFIER .
+   61             | KEYWORD_DEL IDENTIFIER . LIST
+
+    LIST  shift, and go to state 162
+
+    $default  reduce using rule 60 (del_statment)
+
+
+state 92
+
+   69 global_statement: KEYWORD_GLOBAL global_nonlocal_targets .
+
+    $default  reduce using rule 69 (global_statement)
+
+
+state 93
+
+   96 with_statment: KEYWORD_WITH with_stmt . COLON block
+   98 with_stmt: with_stmt . COMMA function_call KEYWORD_AS IDENTIFIER
+
+    COLON  shift, and go to state 163
+    COMMA  shift, and go to state 164
+
+
+state 94
+
+   97 with_stmt: function_call . KEYWORD_AS IDENTIFIER
+
+    KEYWORD_AS  shift, and go to state 165
+
+
+state 95
+
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+   64 yield_statement: KEYWORD_YIELD expression .
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 64 (yield_statement)
+
+
+state 96
+
+   80 match_statement: KEYWORD_MATCH IDENTIFIER . COLON match_block
+
+    COLON  shift, and go to state 166
+
+
+state 97
 
     6 statements: statements NEWLINE .
     9 statement: NEWLINE .
@@ -1305,6 +2661,8 @@ state 73
     KEYWORD_PASS      [reduce using rule 9 (statement)]
     KEYWORD_BREAK     reduce using rule 6 (statements)
     KEYWORD_BREAK     [reduce using rule 9 (statement)]
+    KEYWORD_RAISE     reduce using rule 6 (statements)
+    KEYWORD_RAISE     [reduce using rule 9 (statement)]
     KEYWORD_CLASS     reduce using rule 6 (statements)
     KEYWORD_CLASS     [reduce using rule 9 (statement)]
     KEYWORD_RETURN    reduce using rule 6 (statements)
@@ -1313,14 +2671,22 @@ state 73
     KEYWORD_CONTINUE  [reduce using rule 9 (statement)]
     KEYWORD_FOR       reduce using rule 6 (statements)
     KEYWORD_FOR       [reduce using rule 9 (statement)]
+    KEYWORD_TRY       reduce using rule 6 (statements)
+    KEYWORD_TRY       [reduce using rule 9 (statement)]
     KEYWORD_DEF       reduce using rule 6 (statements)
     KEYWORD_DEF       [reduce using rule 9 (statement)]
     KEYWORD_FROM      reduce using rule 6 (statements)
     KEYWORD_FROM      [reduce using rule 9 (statement)]
+    KEYWORD_NONLOCAL  reduce using rule 6 (statements)
+    KEYWORD_NONLOCAL  [reduce using rule 9 (statement)]
     KEYWORD_WHILE     reduce using rule 6 (statements)
     KEYWORD_WHILE     [reduce using rule 9 (statement)]
+    KEYWORD_ASSERT    reduce using rule 6 (statements)
+    KEYWORD_ASSERT    [reduce using rule 9 (statement)]
     KEYWORD_DEL       reduce using rule 6 (statements)
     KEYWORD_DEL       [reduce using rule 9 (statement)]
+    KEYWORD_GLOBAL    reduce using rule 6 (statements)
+    KEYWORD_GLOBAL    [reduce using rule 9 (statement)]
     KEYWORD_WITH      reduce using rule 6 (statements)
     KEYWORD_WITH      [reduce using rule 9 (statement)]
     KEYWORD_YIELD     reduce using rule 6 (statements)
@@ -1333,16 +2699,23 @@ state 73
     DEDENT            [reduce using rule 9 (statement)]
     NEWLINE           reduce using rule 6 (statements)
     NEWLINE           [reduce using rule 9 (statement)]
+    KEYWORD_MATCH     reduce using rule 6 (statements)
+    KEYWORD_MATCH     [reduce using rule 9 (statement)]
     $default          reduce using rule 6 (statements)
 
 
+<<<<<<< HEAD
 state 74
+=======
+state 98
+>>>>>>> main
 
     4 statements: statements statement .
 
     $default  reduce using rule 4 (statements)
 
 
+<<<<<<< HEAD
 state 75
 
    28 import_statments: import_statments import_statment .
@@ -1660,10 +3033,18 @@ state 99
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+state 99
+
+   74 import_statments: import_statments import_statment .
+
+    $default  reduce using rule 74 (import_statments)
+>>>>>>> main
 
 
 state 100
 
+<<<<<<< HEAD
    39 expression: expression POWER . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -1677,10 +3058,16 @@ state 100
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+   73 import_statments: import_statment NEWLINE .
+
+    $default  reduce using rule 73 (import_statments)
+>>>>>>> main
 
 
 state 101
 
+<<<<<<< HEAD
    82 logical_expression: expression EQUAL . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -1694,10 +3081,20 @@ state 101
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+   91 except: KEYWORD_EXCEPT . COLON block
+   92       | KEYWORD_EXCEPT . member_expression COLON block
+
+    IDENTIFIER  shift, and go to state 74
+    COLON       shift, and go to state 167
+
+    member_expression  go to state 168
+>>>>>>> main
 
 
 state 102
 
+<<<<<<< HEAD
    83 logical_expression: expression NOTEQUAL . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -1711,10 +3108,16 @@ state 102
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+   93 finally: KEYWORD_FINALLY . COLON block
+
+    COLON  shift, and go to state 169
+>>>>>>> main
 
 
 state 103
 
+<<<<<<< HEAD
    79 logical_expression: expression GREATERTHAN . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -1728,10 +3131,16 @@ state 103
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+   95 except_statements: except .
+
+    $default  reduce using rule 95 (except_statements)
+>>>>>>> main
 
 
 state 104
 
+<<<<<<< HEAD
    78 logical_expression: expression GREATEROREQUAL . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -1745,10 +3154,16 @@ state 104
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+   85 try_statement: try finally .
+
+    $default  reduce using rule 85 (try_statement)
+>>>>>>> main
 
 
 state 105
 
+<<<<<<< HEAD
    81 logical_expression: expression LESSTHAN . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -1762,10 +3177,28 @@ state 105
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+   86 try_statement: try except_statements .
+   87              | try except_statements . finally
+   88              | try except_statements . else_statement
+   89              | try except_statements . else_statement finally
+   94 except_statements: except_statements . except
+
+    KEYWORD_ELSE     shift, and go to state 117
+    KEYWORD_EXCEPT   shift, and go to state 101
+    KEYWORD_FINALLY  shift, and go to state 102
+
+    $default  reduce using rule 86 (try_statement)
+
+    except          go to state 170
+    finally         go to state 171
+    else_statement  go to state 172
+>>>>>>> main
 
 
 state 106
 
+<<<<<<< HEAD
    80 logical_expression: expression LESSOREQUAL . expression
 
     IDENTIFIER  shift, and go to state 4
@@ -1779,10 +3212,16 @@ state 106
     number             go to state 54
     function_call      go to state 55
     member_expression  go to state 56
+=======
+  119 member_expression: member_expression IDENTIFIER .
+
+    $default  reduce using rule 119 (member_expression)
+>>>>>>> main
 
 
 state 107
 
+<<<<<<< HEAD
    84 logical_expression: logical_expression KEYWORD_AND . logical_expression
 
     IDENTIFIER     shift, and go to state 4
@@ -1800,10 +3239,29 @@ state 107
     function_call       go to state 55
     member_expression   go to state 56
     logical_expression  go to state 149
+=======
+   33 assignment: member_expression ASSIGN . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 173
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 108
 
+<<<<<<< HEAD
    85 logical_expression: logical_expression KEYWORD_OR . logical_expression
 
     IDENTIFIER     shift, and go to state 4
@@ -1821,26 +3279,83 @@ state 108
     function_call       go to state 55
     member_expression   go to state 56
     logical_expression  go to state 150
+=======
+   34 assignment: member_expression ASSIGNADD . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 174
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 109
 
+<<<<<<< HEAD
    96 if_statement: KEYWORD_IF logical_expression COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 152
+=======
+   39 assignment: member_expression ASSIGNMINUS . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 175
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 110
 
+<<<<<<< HEAD
    32 import_statment: KEYWORD_IMPORT member_expression KEYWORD_AS . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 153
+=======
+   37 assignment: member_expression ASSIGNMULTIPLY . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 176
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 111
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES . args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
 
     IDENTIFIER  shift, and go to state 114
@@ -1849,17 +3364,55 @@ state 111
     $default    reduce using rule 69 (args)
 
     args  go to state 154
+=======
+   35 assignment: member_expression ASSIGNDIVIDE . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 177
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 112
 
+<<<<<<< HEAD
    62 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON . NEWLINE INDENT class_block DEDENT
 
     NEWLINE  shift, and go to state 155
+=======
+   38 assignment: member_expression ASSIGNMODULO . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 178
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 113
 
+<<<<<<< HEAD
   101 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN . function_call COLON block
   102              | KEYWORD_FOR IDENTIFIER KEYWORD_IN . LIST COLON block
   104              | KEYWORD_FOR IDENTIFIER KEYWORD_IN . member_expression COLON block
@@ -1871,30 +3424,87 @@ state 113
 
     function_call      go to state 157
     member_expression  go to state 158
+=======
+   40 assignment: member_expression ASSIGNFLOORDIVISION . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 179
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 114
 
+<<<<<<< HEAD
    72 args: IDENTIFIER . COMMA
    73     | IDENTIFIER .
 
     COMMA  shift, and go to state 130
 
     $default  reduce using rule 73 (args)
+=======
+   36 assignment: member_expression ASSIGNEXPONINTIATION . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 180
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 115
 
+<<<<<<< HEAD
    70 args: args . IDENTIFIER COMMA
    71     | args . IDENTIFIER
   103 for_statement: KEYWORD_FOR LEFT_PARENTHES args . RIGHT_PARENTHES KEYWORD_IN function_call COLON block
 
     IDENTIFIER       shift, and go to state 134
     RIGHT_PARENTHES  shift, and go to state 159
+=======
+   41 assignment: member_expression ASSIGNRIGHTSHIFT . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 181
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 116
 
+<<<<<<< HEAD
    67 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES . args RIGHT_PARENTHES COLON block
 
     IDENTIFIER  shift, and go to state 114
@@ -1903,20 +3513,45 @@ state 116
     $default    reduce using rule 69 (args)
 
     args  go to state 160
+=======
+   42 assignment: member_expression ASSIGNLEFTSHIFT . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 182
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 117
 
+<<<<<<< HEAD
    30 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT . IDENTIFIER
    31                | KEYWORD_FROM member_expression KEYWORD_IMPORT . MULTIPLY
    33                | KEYWORD_FROM member_expression KEYWORD_IMPORT . IDENTIFIER KEYWORD_AS IDENTIFIER
 
     IDENTIFIER  shift, and go to state 161
     MULTIPLY    shift, and go to state 162
+=======
+  141 else_statement: KEYWORD_ELSE . COLON block
+
+    COLON  shift, and go to state 183
+>>>>>>> main
 
 
 state 118
 
+<<<<<<< HEAD
    84 logical_expression: logical_expression . KEYWORD_AND logical_expression
    85                   | logical_expression . KEYWORD_OR logical_expression
   108 while_statement: KEYWORD_WHILE LEFT_PARENTHES logical_expression . RIGHT_PARENTHES COLON block
@@ -1924,22 +3559,78 @@ state 118
     KEYWORD_AND      shift, and go to state 107
     KEYWORD_OR       shift, and go to state 108
     RIGHT_PARENTHES  shift, and go to state 163
+=======
+  142 elif_statement: KEYWORD_ELSE_IF . logical_expression COLON block
+  143               | KEYWORD_ELSE_IF . LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+
+    IDENTIFIER      shift, and go to state 4
+    LIST            shift, and go to state 57
+    LITERALSTRING   shift, and go to state 58
+    KEYWORD_FALSE   shift, and go to state 59
+    KEYWORD_TRUE    shift, and go to state 60
+    KEYWORD_NONE    shift, and go to state 61
+    KEYWORD_NOT     shift, and go to state 62
+    LEFT_PARENTHES  shift, and go to state 184
+    INTEGER         shift, and go to state 64
+    FLOAT           shift, and go to state 65
+    '-'             shift, and go to state 66
+    '|'             shift, and go to state 67
+    '('             shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 185
+>>>>>>> main
 
 
 state 119
 
+<<<<<<< HEAD
   107 while_statement: KEYWORD_WHILE logical_expression COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 164
+=======
+  132 conditional_statement: if_statement elif_else .
+
+    $default  reduce using rule 132 (conditional_statement)
+>>>>>>> main
 
 
 state 120
 
+<<<<<<< HEAD
    49 del_statment: KEYWORD_DEL IDENTIFIER LIST .
+=======
+  134 elif_else: elif_stmts . else_statement
+  135          | elif_stmts .
+  138 elif_stmts: elif_stmts . elif_statement
 
-    $default  reduce using rule 49 (del_statment)
+    KEYWORD_ELSE     shift, and go to state 117
+    KEYWORD_ELSE_IF  shift, and go to state 118
+
+    $default  reduce using rule 135 (elif_else)
+
+    else_statement  go to state 186
+    elif_statement  go to state 187
+
+
+state 121
+
+  136 elif_else: else_statement .
+
+    $default  reduce using rule 136 (elif_else)
+
+
+state 122
+
+  137 elif_stmts: elif_statement .
+>>>>>>> main
+
+    $default  reduce using rule 137 (elif_stmts)
 
 
 state 121
@@ -1962,13 +3653,24 @@ state 122
 
 state 123
 
+<<<<<<< HEAD
    53 with_stmt: function_call KEYWORD_AS . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 167
+=======
+   55 expression: LITERALSTRING .
+  109 function_call: IDENTIFIER LEFT_PARENTHES LITERALSTRING . RIGHT_PARENTHES
+
+    RIGHT_PARENTHES  shift, and go to state 188
+
+    RIGHT_PARENTHES  [reduce using rule 55 (expression)]
+    $default         reduce using rule 55 (expression)
+>>>>>>> main
 
 
 state 124
 
+<<<<<<< HEAD
    34 assignment: member_expression ASSIGN expression .
    35 expression: expression . ADD expression
    36           | expression . MINUS expression
@@ -1981,8 +3683,48 @@ state 124
     MULTIPLY  shift, and go to state 98
     DIVIDE    shift, and go to state 99
     POWER     shift, and go to state 100
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  116 args: expression . COMMA
+  117     | expression .
 
-    $default  reduce using rule 34 (assignment)
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+    COMMA     shift, and go to state 189
+
+    $default  reduce using rule 117 (args)
+
+
+state 125
+
+   52 expression: number .
+  108 function_call: IDENTIFIER LEFT_PARENTHES number . RIGHT_PARENTHES
+
+    RIGHT_PARENTHES  shift, and go to state 190
+
+    RIGHT_PARENTHES  [reduce using rule 52 (expression)]
+    $default         reduce using rule 52 (expression)
+
+
+state 126
+
+   54 expression: function_call .
+  110 function_call: IDENTIFIER LEFT_PARENTHES function_call . RIGHT_PARENTHES
+
+    RIGHT_PARENTHES  shift, and go to state 191
+>>>>>>> main
+
+    RIGHT_PARENTHES  [reduce using rule 54 (expression)]
+    $default         reduce using rule 54 (expression)
 
 
 state 125
@@ -2017,6 +3759,7 @@ state 126
 
 state 127
 
+<<<<<<< HEAD
    84 logical_expression: logical_expression . KEYWORD_AND logical_expression
    85                   | logical_expression . KEYWORD_OR logical_expression
    99 elif_statement: KEYWORD_ELSE_IF logical_expression . COLON block
@@ -2024,41 +3767,271 @@ state 127
     KEYWORD_AND  shift, and go to state 107
     KEYWORD_OR   shift, and go to state 108
     COLON        shift, and go to state 170
+=======
+  107 function_call: IDENTIFIER LEFT_PARENTHES args . RIGHT_PARENTHES
+  114 args: args . expression COMMA
+  115     | args . expression
+
+    IDENTIFIER       shift, and go to state 4
+    LIST             shift, and go to state 57
+    LITERALSTRING    shift, and go to state 58
+    KEYWORD_NONE     shift, and go to state 61
+    RIGHT_PARENTHES  shift, and go to state 192
+    INTEGER          shift, and go to state 64
+    FLOAT            shift, and go to state 65
+    '-'              shift, and go to state 66
+    '|'              shift, and go to state 67
+    '('              shift, and go to state 68
+
+    expression         go to state 193
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 128
 
+<<<<<<< HEAD
    91 elif_else: elif_stmts else_statement .
 
     $default  reduce using rule 91 (elif_else)
+=======
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+  129                   | KEYWORD_NOT logical_expression .
+
+    KEYWORD_AND  shift, and go to state 145
+    KEYWORD_OR   shift, and go to state 146
+
+    KEYWORD_AND  [reduce using rule 129 (logical_expression)]
+    KEYWORD_OR   [reduce using rule 129 (logical_expression)]
+    $default     reduce using rule 129 (logical_expression)
+>>>>>>> main
 
 
 state 129
 
+<<<<<<< HEAD
    95 elif_stmts: elif_stmts elif_statement .
 
     $default  reduce using rule 95 (elif_stmts)
+=======
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+  140 if_statement: KEYWORD_IF LEFT_PARENTHES logical_expression . RIGHT_PARENTHES COLON block
+
+    KEYWORD_AND      shift, and go to state 145
+    KEYWORD_OR       shift, and go to state 146
+    RIGHT_PARENTHES  shift, and go to state 194
+>>>>>>> main
 
 
 state 130
 
+<<<<<<< HEAD
    72 args: IDENTIFIER COMMA .
 
     $default  reduce using rule 72 (args)
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+   51           | '-' expression .
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    ADD       [reduce using rule 51 (expression)]
+    MINUS     [reduce using rule 51 (expression)]
+    MULTIPLY  [reduce using rule 51 (expression)]
+    DIVIDE    [reduce using rule 51 (expression)]
+    POWER     [reduce using rule 51 (expression)]
+    MODULO    [reduce using rule 51 (expression)]
+    $default  reduce using rule 51 (expression)
+>>>>>>> main
 
 
 state 131
 
+<<<<<<< HEAD
    65 function_call: IDENTIFIER LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES .
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+   49           | '|' expression .
 
-    $default  reduce using rule 65 (function_call)
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    ADD       [reduce using rule 49 (expression)]
+    MINUS     [reduce using rule 49 (expression)]
+    MULTIPLY  [reduce using rule 49 (expression)]
+    DIVIDE    [reduce using rule 49 (expression)]
+    POWER     [reduce using rule 49 (expression)]
+    MODULO    [reduce using rule 49 (expression)]
+    $default  reduce using rule 49 (expression)
 
 
 state 132
 
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+   50           | '(' expression . ')'
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+    ')'       shift, and go to state 195
+
+
+state 133
+
+   43 expression: expression ADD . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 196
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+
+
+state 134
+
+   44 expression: expression MINUS . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 197
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+
+
+state 135
+
+   45 expression: expression MULTIPLY . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 198
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+
+
+state 136
+
+   46 expression: expression DIVIDE . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 199
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+
+
+state 137
+
+   47 expression: expression POWER . expression
+>>>>>>> main
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 200
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+
+
+state 132
+
+<<<<<<< HEAD
    64 function_call: IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES .
 
     $default  reduce using rule 64 (function_call)
+=======
+   48 expression: expression MODULO . expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 201
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 133
@@ -2094,124 +4067,162 @@ state 136
 
 state 137
 
-   41 expression: '(' expression ')' .
+  125 logical_expression: expression EQUAL . expression
 
-    $default  reduce using rule 41 (expression)
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 202
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
 
 
 state 138
 
-   35 expression: expression . ADD expression
-   35           | expression ADD expression .
-   36           | expression . MINUS expression
-   37           | expression . MULTIPLY expression
-   38           | expression . DIVIDE expression
-   39           | expression . POWER expression
+  126 logical_expression: expression NOTEQUAL . expression
 
+<<<<<<< HEAD
     ADD       shift, and go to state 96
     MINUS     shift, and go to state 97
     MULTIPLY  shift, and go to state 98
     DIVIDE    shift, and go to state 99
     POWER     shift, and go to state 100
+=======
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+>>>>>>> main
 
-    ADD       [reduce using rule 35 (expression)]
-    MINUS     [reduce using rule 35 (expression)]
-    MULTIPLY  [reduce using rule 35 (expression)]
-    DIVIDE    [reduce using rule 35 (expression)]
-    POWER     [reduce using rule 35 (expression)]
-    $default  reduce using rule 35 (expression)
+    expression         go to state 203
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
 
 
 state 139
 
-   35 expression: expression . ADD expression
-   36           | expression . MINUS expression
-   36           | expression MINUS expression .
-   37           | expression . MULTIPLY expression
-   38           | expression . DIVIDE expression
-   39           | expression . POWER expression
+  122 logical_expression: expression GREATERTHAN . expression
 
+<<<<<<< HEAD
     ADD       shift, and go to state 96
     MINUS     shift, and go to state 97
     MULTIPLY  shift, and go to state 98
     DIVIDE    shift, and go to state 99
     POWER     shift, and go to state 100
+=======
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+>>>>>>> main
 
-    ADD       [reduce using rule 36 (expression)]
-    MINUS     [reduce using rule 36 (expression)]
-    MULTIPLY  [reduce using rule 36 (expression)]
-    DIVIDE    [reduce using rule 36 (expression)]
-    POWER     [reduce using rule 36 (expression)]
-    $default  reduce using rule 36 (expression)
+    expression         go to state 204
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
 
 
 state 140
 
-   35 expression: expression . ADD expression
-   36           | expression . MINUS expression
-   37           | expression . MULTIPLY expression
-   37           | expression MULTIPLY expression .
-   38           | expression . DIVIDE expression
-   39           | expression . POWER expression
+  121 logical_expression: expression GREATEROREQUAL . expression
 
+<<<<<<< HEAD
     ADD       shift, and go to state 96
     MINUS     shift, and go to state 97
     MULTIPLY  shift, and go to state 98
     DIVIDE    shift, and go to state 99
     POWER     shift, and go to state 100
+=======
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+>>>>>>> main
 
-    ADD       [reduce using rule 37 (expression)]
-    MINUS     [reduce using rule 37 (expression)]
-    MULTIPLY  [reduce using rule 37 (expression)]
-    DIVIDE    [reduce using rule 37 (expression)]
-    POWER     [reduce using rule 37 (expression)]
-    $default  reduce using rule 37 (expression)
+    expression         go to state 205
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
 
 
 state 141
 
-   35 expression: expression . ADD expression
-   36           | expression . MINUS expression
-   37           | expression . MULTIPLY expression
-   38           | expression . DIVIDE expression
-   38           | expression DIVIDE expression .
-   39           | expression . POWER expression
+  124 logical_expression: expression LESSTHAN . expression
 
+<<<<<<< HEAD
     ADD       shift, and go to state 96
     MINUS     shift, and go to state 97
     MULTIPLY  shift, and go to state 98
     DIVIDE    shift, and go to state 99
     POWER     shift, and go to state 100
+=======
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+>>>>>>> main
 
-    ADD       [reduce using rule 38 (expression)]
-    MINUS     [reduce using rule 38 (expression)]
-    MULTIPLY  [reduce using rule 38 (expression)]
-    DIVIDE    [reduce using rule 38 (expression)]
-    POWER     [reduce using rule 38 (expression)]
-    $default  reduce using rule 38 (expression)
+    expression         go to state 206
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
 
 
 state 142
 
-   35 expression: expression . ADD expression
-   36           | expression . MINUS expression
-   37           | expression . MULTIPLY expression
-   38           | expression . DIVIDE expression
-   39           | expression . POWER expression
-   39           | expression POWER expression .
+  123 logical_expression: expression LESSOREQUAL . expression
 
+<<<<<<< HEAD
     ADD       shift, and go to state 96
     MINUS     shift, and go to state 97
     MULTIPLY  shift, and go to state 98
     DIVIDE    shift, and go to state 99
     POWER     shift, and go to state 100
+=======
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+>>>>>>> main
 
-    ADD       [reduce using rule 39 (expression)]
-    MINUS     [reduce using rule 39 (expression)]
-    MULTIPLY  [reduce using rule 39 (expression)]
-    DIVIDE    [reduce using rule 39 (expression)]
-    POWER     [reduce using rule 39 (expression)]
-    $default  reduce using rule 39 (expression)
+    expression         go to state 207
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
 
 
 state 143
@@ -2252,6 +4263,7 @@ state 144
 
 state 145
 
+<<<<<<< HEAD
    35 expression: expression . ADD expression
    36           | expression . MINUS expression
    37           | expression . MULTIPLY expression
@@ -2266,10 +4278,33 @@ state 145
     POWER     shift, and go to state 100
 
     $default  reduce using rule 79 (logical_expression)
+=======
+  127 logical_expression: logical_expression KEYWORD_AND . logical_expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_FALSE  shift, and go to state 59
+    KEYWORD_TRUE   shift, and go to state 60
+    KEYWORD_NONE   shift, and go to state 61
+    KEYWORD_NOT    shift, and go to state 62
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 208
+>>>>>>> main
 
 
 state 146
 
+<<<<<<< HEAD
    35 expression: expression . ADD expression
    36           | expression . MINUS expression
    37           | expression . MULTIPLY expression
@@ -2284,10 +4319,33 @@ state 146
     POWER     shift, and go to state 100
 
     $default  reduce using rule 78 (logical_expression)
+=======
+  128 logical_expression: logical_expression KEYWORD_OR . logical_expression
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_FALSE  shift, and go to state 59
+    KEYWORD_TRUE   shift, and go to state 60
+    KEYWORD_NONE   shift, and go to state 61
+    KEYWORD_NOT    shift, and go to state 62
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 209
+>>>>>>> main
 
 
 state 147
 
+<<<<<<< HEAD
    35 expression: expression . ADD expression
    36           | expression . MINUS expression
    37           | expression . MULTIPLY expression
@@ -2302,10 +4360,18 @@ state 147
     POWER     shift, and go to state 100
 
     $default  reduce using rule 81 (logical_expression)
+=======
+  139 if_statement: KEYWORD_IF logical_expression COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 210
+>>>>>>> main
 
 
 state 148
 
+<<<<<<< HEAD
    35 expression: expression . ADD expression
    36           | expression . MINUS expression
    37           | expression . MULTIPLY expression
@@ -2320,10 +4386,16 @@ state 148
     POWER     shift, and go to state 100
 
     $default  reduce using rule 80 (logical_expression)
+=======
+   78 import_statment: KEYWORD_IMPORT member_expression KEYWORD_AS . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 211
+>>>>>>> main
 
 
 state 149
 
+<<<<<<< HEAD
    84 logical_expression: logical_expression . KEYWORD_AND logical_expression
    84                   | logical_expression KEYWORD_AND logical_expression .
    85                   | logical_expression . KEYWORD_OR logical_expression
@@ -2334,10 +4406,16 @@ state 149
     KEYWORD_AND  [reduce using rule 84 (logical_expression)]
     KEYWORD_OR   [reduce using rule 84 (logical_expression)]
     $default     reduce using rule 84 (logical_expression)
+=======
+   68 raise_statement: KEYWORD_RAISE function_call KEYWORD_FROM . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 212
+>>>>>>> main
 
 
 state 150
 
+<<<<<<< HEAD
    84 logical_expression: logical_expression . KEYWORD_AND logical_expression
    85                   | logical_expression . KEYWORD_OR logical_expression
    85                   | logical_expression KEYWORD_OR logical_expression .
@@ -2348,62 +4426,187 @@ state 150
     KEYWORD_AND  [reduce using rule 85 (logical_expression)]
     KEYWORD_OR   [reduce using rule 85 (logical_expression)]
     $default     reduce using rule 85 (logical_expression)
+=======
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES . args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    IDENTIFIER     [reduce using rule 113 (args)]
+    LIST           [reduce using rule 113 (args)]
+    LITERALSTRING  [reduce using rule 113 (args)]
+    KEYWORD_NONE   [reduce using rule 113 (args)]
+    INTEGER        [reduce using rule 113 (args)]
+    FLOAT          [reduce using rule 113 (args)]
+    '-'            [reduce using rule 113 (args)]
+    '|'            [reduce using rule 113 (args)]
+    '('            [reduce using rule 113 (args)]
+    $default       reduce using rule 113 (args)
+
+    expression         go to state 124
+    number             go to state 70
+    function_call      go to state 71
+    args               go to state 213
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 151
 
+<<<<<<< HEAD
    68 block: NEWLINE . INDENT statements DEDENT
 
     INDENT  shift, and go to state 173
+=======
+  106 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON . NEWLINE INDENT class_block DEDENT
+
+    NEWLINE  shift, and go to state 214
+>>>>>>> main
 
 
 state 152
 
+<<<<<<< HEAD
    96 if_statement: KEYWORD_IF logical_expression COLON block .
 
     $default  reduce using rule 96 (if_statement)
+=======
+  144 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN . function_call COLON block
+  145              | KEYWORD_FOR IDENTIFIER KEYWORD_IN . LIST COLON block
+  147              | KEYWORD_FOR IDENTIFIER KEYWORD_IN . member_expression COLON block
+  148              | KEYWORD_FOR IDENTIFIER KEYWORD_IN . member_expression function_call COLON block
+  149              | KEYWORD_FOR IDENTIFIER KEYWORD_IN . member_expression function_call '.' IDENTIFIER COLON block
+
+    IDENTIFIER  shift, and go to state 4
+    LIST        shift, and go to state 215
+
+    function_call      go to state 216
+    member_expression  go to state 217
+>>>>>>> main
 
 
 state 153
 
+<<<<<<< HEAD
    32 import_statment: KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER .
 
     $default  reduce using rule 32 (import_statment)
+=======
+  114 args: args . expression COMMA
+  115     | args . expression
+  146 for_statement: KEYWORD_FOR LEFT_PARENTHES args . RIGHT_PARENTHES KEYWORD_IN function_call COLON block
+
+    IDENTIFIER       shift, and go to state 4
+    LIST             shift, and go to state 57
+    LITERALSTRING    shift, and go to state 58
+    KEYWORD_NONE     shift, and go to state 61
+    RIGHT_PARENTHES  shift, and go to state 218
+    INTEGER          shift, and go to state 64
+    FLOAT            shift, and go to state 65
+    '-'              shift, and go to state 66
+    '|'              shift, and go to state 67
+    '('              shift, and go to state 68
+
+    expression         go to state 193
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 154
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args . RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
    70 args: args . IDENTIFIER COMMA
    71     | args . IDENTIFIER
 
     IDENTIFIER       shift, and go to state 134
     RIGHT_PARENTHES  shift, and go to state 174
+=======
+  112 block: NEWLINE . INDENT statements DEDENT
+
+    INDENT  shift, and go to state 219
+>>>>>>> main
 
 
 state 155
 
+<<<<<<< HEAD
    62 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE . INDENT class_block DEDENT
 
     INDENT  shift, and go to state 175
+=======
+   90 try: KEYWORD_TRY COLON block .
+
+    $default  reduce using rule 90 (try)
+>>>>>>> main
 
 
 state 156
 
+<<<<<<< HEAD
   102 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST . COLON block
 
     COLON  shift, and go to state 176
+=======
+  111 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES . args RIGHT_PARENTHES COLON block
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    IDENTIFIER     [reduce using rule 113 (args)]
+    LIST           [reduce using rule 113 (args)]
+    LITERALSTRING  [reduce using rule 113 (args)]
+    KEYWORD_NONE   [reduce using rule 113 (args)]
+    INTEGER        [reduce using rule 113 (args)]
+    FLOAT          [reduce using rule 113 (args)]
+    '-'            [reduce using rule 113 (args)]
+    '|'            [reduce using rule 113 (args)]
+    '('            [reduce using rule 113 (args)]
+    $default       reduce using rule 113 (args)
+
+    expression         go to state 124
+    number             go to state 70
+    function_call      go to state 71
+    args               go to state 220
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 157
 
+<<<<<<< HEAD
   101 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call . COLON block
 
     COLON  shift, and go to state 177
+=======
+   76 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT . IDENTIFIER
+   77                | KEYWORD_FROM member_expression KEYWORD_IMPORT . '*'
+   79                | KEYWORD_FROM member_expression KEYWORD_IMPORT . IDENTIFIER KEYWORD_AS IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 221
+    '*'         shift, and go to state 222
+>>>>>>> main
 
 
 state 158
 
+<<<<<<< HEAD
    75 member_expression: member_expression . IDENTIFIER
    76                  | member_expression . function_call
   104 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression . COLON block
@@ -2414,86 +4617,170 @@ state 158
     COLON       shift, and go to state 178
 
     function_call  go to state 179
+=======
+   72 global_nonlocal_targets: IDENTIFIER COMMA . global_nonlocal_targets
+
+    IDENTIFIER  shift, and go to state 86
+
+    global_nonlocal_targets  go to state 223
+>>>>>>> main
 
 
 state 159
 
+<<<<<<< HEAD
   103 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES . KEYWORD_IN function_call COLON block
 
     KEYWORD_IN  shift, and go to state 180
+=======
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+  151 while_statement: KEYWORD_WHILE LEFT_PARENTHES logical_expression . RIGHT_PARENTHES COLON block
+
+    KEYWORD_AND      shift, and go to state 145
+    KEYWORD_OR       shift, and go to state 146
+    RIGHT_PARENTHES  shift, and go to state 224
+>>>>>>> main
 
 
 state 160
 
+<<<<<<< HEAD
    67 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args . RIGHT_PARENTHES COLON block
    70 args: args . IDENTIFIER COMMA
    71     | args . IDENTIFIER
 
     IDENTIFIER       shift, and go to state 134
     RIGHT_PARENTHES  shift, and go to state 181
+=======
+  150 while_statement: KEYWORD_WHILE logical_expression COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 225
+>>>>>>> main
 
 
 state 161
 
+<<<<<<< HEAD
    30 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER .
    33                | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER . KEYWORD_AS IDENTIFIER
 
     KEYWORD_AS  shift, and go to state 182
 
     $default  reduce using rule 30 (import_statment)
+=======
+   66 assert_statement: KEYWORD_ASSERT logical_expression COMMA . LITERALSTRING
+
+    LITERALSTRING  shift, and go to state 226
+>>>>>>> main
 
 
 state 162
 
+<<<<<<< HEAD
    31 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT MULTIPLY .
 
     $default  reduce using rule 31 (import_statment)
+=======
+   61 del_statment: KEYWORD_DEL IDENTIFIER LIST .
+
+    $default  reduce using rule 61 (del_statment)
+>>>>>>> main
 
 
 state 163
 
+<<<<<<< HEAD
   108 while_statement: KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES . COLON block
 
     COLON  shift, and go to state 183
+=======
+   96 with_statment: KEYWORD_WITH with_stmt COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 227
+>>>>>>> main
 
 
 state 164
 
+<<<<<<< HEAD
   107 while_statement: KEYWORD_WHILE logical_expression COLON block .
 
     $default  reduce using rule 107 (while_statement)
+=======
+   98 with_stmt: with_stmt COMMA . function_call KEYWORD_AS IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 76
+
+    function_call  go to state 228
+>>>>>>> main
 
 
 state 165
 
+<<<<<<< HEAD
    52 with_statment: KEYWORD_WITH with_stmt COLON block .
 
     $default  reduce using rule 52 (with_statment)
+=======
+   97 with_stmt: function_call KEYWORD_AS . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 229
+>>>>>>> main
 
 
 state 166
 
+<<<<<<< HEAD
    54 with_stmt: with_stmt COMMA function_call . KEYWORD_AS IDENTIFIER
 
     KEYWORD_AS  shift, and go to state 184
+=======
+   80 match_statement: KEYWORD_MATCH IDENTIFIER COLON . match_block
+
+    NEWLINE  shift, and go to state 230
+
+    match_block  go to state 231
+>>>>>>> main
 
 
 state 167
 
+<<<<<<< HEAD
    53 with_stmt: function_call KEYWORD_AS IDENTIFIER .
 
     $default  reduce using rule 53 (with_stmt)
+=======
+   91 except: KEYWORD_EXCEPT COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 232
+>>>>>>> main
 
 
 state 168
 
+<<<<<<< HEAD
    98 else_statement: KEYWORD_ELSE COLON block .
 
     $default  reduce using rule 98 (else_statement)
+=======
+   92 except: KEYWORD_EXCEPT member_expression . COLON block
+  119 member_expression: member_expression . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 106
+    COLON       shift, and go to state 233
+>>>>>>> main
 
 
 state 169
 
+<<<<<<< HEAD
    84 logical_expression: logical_expression . KEYWORD_AND logical_expression
    85                   | logical_expression . KEYWORD_OR logical_expression
   100 elif_statement: KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression . RIGHT_PARENTHES COLON block
@@ -2501,35 +4788,66 @@ state 169
     KEYWORD_AND      shift, and go to state 107
     KEYWORD_OR       shift, and go to state 108
     RIGHT_PARENTHES  shift, and go to state 185
+=======
+   93 finally: KEYWORD_FINALLY COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 234
+>>>>>>> main
 
 
 state 170
 
+<<<<<<< HEAD
    99 elif_statement: KEYWORD_ELSE_IF logical_expression COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 186
+=======
+   94 except_statements: except_statements except .
+
+    $default  reduce using rule 94 (except_statements)
+>>>>>>> main
 
 
 state 171
 
+<<<<<<< HEAD
    70 args: args IDENTIFIER COMMA .
 
     $default  reduce using rule 70 (args)
+=======
+   87 try_statement: try except_statements finally .
+
+    $default  reduce using rule 87 (try_statement)
+>>>>>>> main
 
 
 state 172
 
+<<<<<<< HEAD
    97 if_statement: KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 187
+=======
+   88 try_statement: try except_statements else_statement .
+   89              | try except_statements else_statement . finally
+
+    KEYWORD_FINALLY  shift, and go to state 102
+
+    $default  reduce using rule 88 (try_statement)
+
+    finally  go to state 235
+>>>>>>> main
 
 
 state 173
 
+<<<<<<< HEAD
    68 block: NEWLINE INDENT . statements DEDENT
 
     IDENTIFIER        shift, and go to state 4
@@ -2572,53 +4890,167 @@ state 173
     if_statement               go to state 40
     for_statement              go to state 41
     while_statement            go to state 42
+=======
+   33 assignment: member_expression ASSIGN expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 33 (assignment)
+>>>>>>> main
 
 
 state 174
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES . COLON NEWLINE INDENT class_block DEDENT
 
     COLON  shift, and go to state 189
+=======
+   34 assignment: member_expression ASSIGNADD expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 34 (assignment)
+>>>>>>> main
 
 
 state 175
 
+<<<<<<< HEAD
    62 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT . class_block DEDENT
 
     $default  reduce using rule 58 (class_block)
 
     class_block  go to state 190
+=======
+   39 assignment: member_expression ASSIGNMINUS expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 39 (assignment)
+>>>>>>> main
 
 
 state 176
 
+<<<<<<< HEAD
   102 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 191
+=======
+   37 assignment: member_expression ASSIGNMULTIPLY expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 37 (assignment)
+>>>>>>> main
 
 
 state 177
 
+<<<<<<< HEAD
   101 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 192
+=======
+   35 assignment: member_expression ASSIGNDIVIDE expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 35 (assignment)
+>>>>>>> main
 
 
 state 178
 
+<<<<<<< HEAD
   104 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 193
+=======
+   38 assignment: member_expression ASSIGNMODULO expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 38 (assignment)
+>>>>>>> main
 
 
 state 179
 
+<<<<<<< HEAD
    76 member_expression: member_expression function_call .
   105 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call . COLON block
   106              | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call . '.' IDENTIFIER COLON block
@@ -2628,70 +5060,199 @@ state 179
 
     COLON     [reduce using rule 76 (member_expression)]
     $default  reduce using rule 76 (member_expression)
+=======
+   40 assignment: member_expression ASSIGNFLOORDIVISION expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 40 (assignment)
+>>>>>>> main
 
 
 state 180
 
+<<<<<<< HEAD
   103 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN . function_call COLON block
 
     IDENTIFIER  shift, and go to state 69
 
     function_call  go to state 196
+=======
+   36 assignment: member_expression ASSIGNEXPONINTIATION expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 36 (assignment)
+>>>>>>> main
 
 
 state 181
 
+<<<<<<< HEAD
    67 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES . COLON block
 
     COLON  shift, and go to state 197
+=======
+   41 assignment: member_expression ASSIGNRIGHTSHIFT expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 41 (assignment)
+>>>>>>> main
 
 
 state 182
 
+<<<<<<< HEAD
    33 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 198
+=======
+   42 assignment: member_expression ASSIGNLEFTSHIFT expression .
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 42 (assignment)
+>>>>>>> main
 
 
 state 183
 
+<<<<<<< HEAD
   108 while_statement: KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 199
+=======
+  141 else_statement: KEYWORD_ELSE COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 236
+>>>>>>> main
 
 
 state 184
 
+<<<<<<< HEAD
    54 with_stmt: with_stmt COMMA function_call KEYWORD_AS . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 200
+=======
+  143 elif_statement: KEYWORD_ELSE_IF LEFT_PARENTHES . logical_expression RIGHT_PARENTHES COLON block
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_FALSE  shift, and go to state 59
+    KEYWORD_TRUE   shift, and go to state 60
+    KEYWORD_NONE   shift, and go to state 61
+    KEYWORD_NOT    shift, and go to state 62
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression          go to state 69
+    number              go to state 70
+    function_call       go to state 71
+    member_expression   go to state 72
+    logical_expression  go to state 237
+>>>>>>> main
 
 
 state 185
 
+<<<<<<< HEAD
   100 elif_statement: KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES . COLON block
 
     COLON  shift, and go to state 201
+=======
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+  142 elif_statement: KEYWORD_ELSE_IF logical_expression . COLON block
+
+    KEYWORD_AND  shift, and go to state 145
+    KEYWORD_OR   shift, and go to state 146
+    COLON        shift, and go to state 238
+>>>>>>> main
 
 
 state 186
 
+<<<<<<< HEAD
    99 elif_statement: KEYWORD_ELSE_IF logical_expression COLON block .
 
     $default  reduce using rule 99 (elif_statement)
+=======
+  134 elif_else: elif_stmts else_statement .
+
+    $default  reduce using rule 134 (elif_else)
+>>>>>>> main
 
 
 state 187
 
+<<<<<<< HEAD
    97 if_statement: KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block .
 
     $default  reduce using rule 97 (if_statement)
+=======
+  138 elif_stmts: elif_stmts elif_statement .
+
+    $default  reduce using rule 138 (elif_stmts)
+>>>>>>> main
 
 
 state 188
 
+<<<<<<< HEAD
     4 statements: statements . statement
     6           | statements . NEWLINE
    68 block: NEWLINE INDENT statements . DEDENT
@@ -2736,17 +5297,29 @@ state 188
     if_statement               go to state 40
     for_statement              go to state 41
     while_statement            go to state 42
+=======
+  109 function_call: IDENTIFIER LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES .
+
+    $default  reduce using rule 109 (function_call)
+>>>>>>> main
 
 
 state 189
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON . NEWLINE INDENT class_block DEDENT
 
     NEWLINE  shift, and go to state 203
+=======
+  116 args: expression COMMA .
+
+    $default  reduce using rule 116 (args)
+>>>>>>> main
 
 
 state 190
 
+<<<<<<< HEAD
    59 class_block: class_block . assignment
    60            | class_block . function
    61            | class_block . NEWLINE
@@ -2760,66 +5333,267 @@ state 190
     assignment         go to state 206
     function           go to state 207
     member_expression  go to state 38
+=======
+  108 function_call: IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES .
+
+    $default  reduce using rule 108 (function_call)
+>>>>>>> main
 
 
 state 191
 
+<<<<<<< HEAD
   102 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST COLON block .
 
     $default  reduce using rule 102 (for_statement)
+=======
+  110 function_call: IDENTIFIER LEFT_PARENTHES function_call RIGHT_PARENTHES .
+
+    $default  reduce using rule 110 (function_call)
+>>>>>>> main
 
 
 state 192
 
+<<<<<<< HEAD
   101 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block .
 
     $default  reduce using rule 101 (for_statement)
+=======
+  107 function_call: IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES .
+
+    $default  reduce using rule 107 (function_call)
+>>>>>>> main
 
 
 state 193
 
+<<<<<<< HEAD
   104 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON block .
 
     $default  reduce using rule 104 (for_statement)
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  114 args: args expression . COMMA
+  115     | args expression .
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+    COMMA     shift, and go to state 239
+
+    $default  reduce using rule 115 (args)
+>>>>>>> main
 
 
 state 194
 
+<<<<<<< HEAD
   105 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 208
+=======
+  140 if_statement: KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES . COLON block
+
+    COLON  shift, and go to state 240
+>>>>>>> main
 
 
 state 195
 
+<<<<<<< HEAD
   106 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' . IDENTIFIER COLON block
 
     IDENTIFIER  shift, and go to state 209
+=======
+   50 expression: '(' expression ')' .
+
+    $default  reduce using rule 50 (expression)
+>>>>>>> main
 
 
 state 196
 
+<<<<<<< HEAD
   103 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call . COLON block
 
     COLON  shift, and go to state 210
+=======
+   43 expression: expression . ADD expression
+   43           | expression ADD expression .
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    ADD       [reduce using rule 43 (expression)]
+    MINUS     [reduce using rule 43 (expression)]
+    MULTIPLY  [reduce using rule 43 (expression)]
+    DIVIDE    [reduce using rule 43 (expression)]
+    POWER     [reduce using rule 43 (expression)]
+    MODULO    [reduce using rule 43 (expression)]
+    $default  reduce using rule 43 (expression)
+>>>>>>> main
 
 
 state 197
 
+<<<<<<< HEAD
    67 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 211
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   44           | expression MINUS expression .
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    ADD       [reduce using rule 44 (expression)]
+    MINUS     [reduce using rule 44 (expression)]
+    MULTIPLY  [reduce using rule 44 (expression)]
+    DIVIDE    [reduce using rule 44 (expression)]
+    POWER     [reduce using rule 44 (expression)]
+    MODULO    [reduce using rule 44 (expression)]
+    $default  reduce using rule 44 (expression)
+>>>>>>> main
 
 
 state 198
 
+<<<<<<< HEAD
    33 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER .
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   45           | expression MULTIPLY expression .
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
 
-    $default  reduce using rule 33 (import_statment)
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    ADD       [reduce using rule 45 (expression)]
+    MINUS     [reduce using rule 45 (expression)]
+    MULTIPLY  [reduce using rule 45 (expression)]
+    DIVIDE    [reduce using rule 45 (expression)]
+    POWER     [reduce using rule 45 (expression)]
+    MODULO    [reduce using rule 45 (expression)]
+    $default  reduce using rule 45 (expression)
+
+
+state 199
+
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   46           | expression DIVIDE expression .
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    ADD       [reduce using rule 46 (expression)]
+    MINUS     [reduce using rule 46 (expression)]
+    MULTIPLY  [reduce using rule 46 (expression)]
+    DIVIDE    [reduce using rule 46 (expression)]
+    POWER     [reduce using rule 46 (expression)]
+    MODULO    [reduce using rule 46 (expression)]
+    $default  reduce using rule 46 (expression)
+
+
+state 200
+
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   47           | expression POWER expression .
+   48           | expression . MODULO expression
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    ADD       [reduce using rule 47 (expression)]
+    MINUS     [reduce using rule 47 (expression)]
+    MULTIPLY  [reduce using rule 47 (expression)]
+    DIVIDE    [reduce using rule 47 (expression)]
+    POWER     [reduce using rule 47 (expression)]
+    MODULO    [reduce using rule 47 (expression)]
+    $default  reduce using rule 47 (expression)
+
+
+state 201
+
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+   48           | expression MODULO expression .
+>>>>>>> main
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    ADD       [reduce using rule 48 (expression)]
+    MINUS     [reduce using rule 48 (expression)]
+    MULTIPLY  [reduce using rule 48 (expression)]
+    DIVIDE    [reduce using rule 48 (expression)]
+    POWER     [reduce using rule 48 (expression)]
+    MODULO    [reduce using rule 48 (expression)]
+    $default  reduce using rule 48 (expression)
 
 
 state 199
@@ -2847,30 +5621,172 @@ state 201
 
 state 202
 
+<<<<<<< HEAD
    68 block: NEWLINE INDENT statements DEDENT .
 
     $default  reduce using rule 68 (block)
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  125 logical_expression: expression EQUAL expression .
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 125 (logical_expression)
+>>>>>>> main
 
 
 state 203
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE . INDENT class_block DEDENT
 
     INDENT  shift, and go to state 213
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  126 logical_expression: expression NOTEQUAL expression .
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 126 (logical_expression)
+>>>>>>> main
 
 
 state 204
 
+<<<<<<< HEAD
    62 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT .
 
     $default  reduce using rule 62 (class_without_inheritance)
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  122 logical_expression: expression GREATERTHAN expression .
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 122 (logical_expression)
+>>>>>>> main
 
 
 state 205
 
+<<<<<<< HEAD
    61 class_block: class_block NEWLINE .
+=======
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  121 logical_expression: expression GREATEROREQUAL expression .
 
-    $default  reduce using rule 61 (class_block)
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 121 (logical_expression)
+
+
+state 206
+
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  124 logical_expression: expression LESSTHAN expression .
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 124 (logical_expression)
+
+
+state 207
+
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+  123 logical_expression: expression LESSOREQUAL expression .
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+
+    $default  reduce using rule 123 (logical_expression)
+
+
+state 208
+
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  127                   | logical_expression KEYWORD_AND logical_expression .
+  128                   | logical_expression . KEYWORD_OR logical_expression
+
+    KEYWORD_AND  shift, and go to state 145
+    KEYWORD_OR   shift, and go to state 146
+
+    KEYWORD_AND  [reduce using rule 127 (logical_expression)]
+    KEYWORD_OR   [reduce using rule 127 (logical_expression)]
+    $default     reduce using rule 127 (logical_expression)
+
+
+state 209
+
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+  128                   | logical_expression KEYWORD_OR logical_expression .
+>>>>>>> main
+
+    KEYWORD_AND  shift, and go to state 145
+    KEYWORD_OR   shift, and go to state 146
+
+    KEYWORD_AND  [reduce using rule 128 (logical_expression)]
+    KEYWORD_OR   [reduce using rule 128 (logical_expression)]
+    $default     reduce using rule 128 (logical_expression)
 
 
 state 206
@@ -2903,54 +5819,107 @@ state 209
 
 state 210
 
+<<<<<<< HEAD
   103 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 215
+=======
+  139 if_statement: KEYWORD_IF logical_expression COLON block .
+
+    $default  reduce using rule 139 (if_statement)
+>>>>>>> main
 
 
 state 211
 
+<<<<<<< HEAD
    67 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block .
 
     $default  reduce using rule 67 (function)
+=======
+   78 import_statment: KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER .
+
+    $default  reduce using rule 78 (import_statment)
+>>>>>>> main
 
 
 state 212
 
+<<<<<<< HEAD
   100 elif_statement: KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block .
 
     $default  reduce using rule 100 (elif_statement)
+=======
+   68 raise_statement: KEYWORD_RAISE function_call KEYWORD_FROM IDENTIFIER .
+
+    $default  reduce using rule 68 (raise_statement)
+>>>>>>> main
 
 
 state 213
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT . class_block DEDENT
 
     $default  reduce using rule 58 (class_block)
 
     class_block  go to state 216
+=======
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args . RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
+  114 args: args . expression COMMA
+  115     | args . expression
+
+    IDENTIFIER       shift, and go to state 4
+    LIST             shift, and go to state 57
+    LITERALSTRING    shift, and go to state 58
+    KEYWORD_NONE     shift, and go to state 61
+    RIGHT_PARENTHES  shift, and go to state 241
+    INTEGER          shift, and go to state 64
+    FLOAT            shift, and go to state 65
+    '-'              shift, and go to state 66
+    '|'              shift, and go to state 67
+    '('              shift, and go to state 68
+
+    expression         go to state 193
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+>>>>>>> main
 
 
 state 214
 
+<<<<<<< HEAD
   106 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON . block
 
     NEWLINE  shift, and go to state 151
 
     block  go to state 217
+=======
+  106 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE . INDENT class_block DEDENT
+
+    INDENT  shift, and go to state 242
+>>>>>>> main
 
 
 state 215
 
+<<<<<<< HEAD
   103 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block .
 
     $default  reduce using rule 103 (for_statement)
+=======
+  145 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST . COLON block
+
+    COLON  shift, and go to state 243
+>>>>>>> main
 
 
 state 216
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block . DEDENT
    59 class_block: class_block . assignment
    60            | class_block . function
@@ -2964,17 +5933,807 @@ state 216
     assignment         go to state 206
     function           go to state 207
     member_expression  go to state 38
+=======
+  144 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call . COLON block
+
+    COLON  shift, and go to state 244
+>>>>>>> main
 
 
 state 217
 
+<<<<<<< HEAD
   106 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block .
 
     $default  reduce using rule 106 (for_statement)
+=======
+  119 member_expression: member_expression . IDENTIFIER
+  147 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression . COLON block
+  148              | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression . function_call COLON block
+  149              | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression . function_call '.' IDENTIFIER COLON block
+
+    IDENTIFIER  shift, and go to state 245
+    COLON       shift, and go to state 246
+
+    function_call  go to state 247
+>>>>>>> main
 
 
 state 218
 
+<<<<<<< HEAD
    57 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT .
 
     $default  reduce using rule 57 (class_with_inheritance)
+=======
+  146 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES . KEYWORD_IN function_call COLON block
+
+    KEYWORD_IN  shift, and go to state 248
+
+
+state 219
+
+  112 block: NEWLINE INDENT . statements DEDENT
+
+    IDENTIFIER        shift, and go to state 4
+    KEYWORD_IF        shift, and go to state 5
+    KEYWORD_IMPORT    shift, and go to state 6
+    KEYWORD_PASS      shift, and go to state 7
+    KEYWORD_BREAK     shift, and go to state 8
+    KEYWORD_RAISE     shift, and go to state 9
+    KEYWORD_CLASS     shift, and go to state 10
+    KEYWORD_RETURN    shift, and go to state 11
+    KEYWORD_CONTINUE  shift, and go to state 12
+    KEYWORD_FOR       shift, and go to state 13
+    KEYWORD_TRY       shift, and go to state 14
+    KEYWORD_DEF       shift, and go to state 15
+    KEYWORD_FROM      shift, and go to state 16
+    KEYWORD_NONLOCAL  shift, and go to state 17
+    KEYWORD_WHILE     shift, and go to state 18
+    KEYWORD_ASSERT    shift, and go to state 19
+    KEYWORD_DEL       shift, and go to state 20
+    KEYWORD_GLOBAL    shift, and go to state 21
+    KEYWORD_WITH      shift, and go to state 22
+    KEYWORD_YIELD     shift, and go to state 23
+    COMMENT           shift, and go to state 24
+    MULTILINECOMMENT  shift, and go to state 25
+    NEWLINE           shift, and go to state 26
+    KEYWORD_MATCH     shift, and go to state 27
+
+    statements                 go to state 249
+    statement                  go to state 29
+    simple_statement           go to state 30
+    compound_statement         go to state 31
+    assignment                 go to state 32
+    del_statment               go to state 33
+    return_statement           go to state 34
+    yield_statement            go to state 35
+    assert_statement           go to state 36
+    raise_statement            go to state 37
+    global_statement           go to state 38
+    nonlocal_statement         go to state 39
+    import_statments           go to state 40
+    import_statment            go to state 41
+    match_statement            go to state 42
+    try_statement              go to state 43
+    try                        go to state 44
+    with_statment              go to state 45
+    class                      go to state 46
+    class_with_inheritance     go to state 47
+    class_without_inheritance  go to state 48
+    function_call              go to state 49
+    function                   go to state 50
+    member_expression          go to state 51
+    conditional_statement      go to state 52
+    if_statement               go to state 53
+    for_statement              go to state 54
+    while_statement            go to state 55
+
+
+state 220
+
+  111 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args . RIGHT_PARENTHES COLON block
+  114 args: args . expression COMMA
+  115     | args . expression
+
+    IDENTIFIER       shift, and go to state 4
+    LIST             shift, and go to state 57
+    LITERALSTRING    shift, and go to state 58
+    KEYWORD_NONE     shift, and go to state 61
+    RIGHT_PARENTHES  shift, and go to state 250
+    INTEGER          shift, and go to state 64
+    FLOAT            shift, and go to state 65
+    '-'              shift, and go to state 66
+    '|'              shift, and go to state 67
+    '('              shift, and go to state 68
+
+    expression         go to state 193
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+
+
+state 221
+
+   76 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER .
+   79                | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER . KEYWORD_AS IDENTIFIER
+
+    KEYWORD_AS  shift, and go to state 251
+
+    $default  reduce using rule 76 (import_statment)
+
+
+state 222
+
+   77 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT '*' .
+
+    $default  reduce using rule 77 (import_statment)
+
+
+state 223
+
+   72 global_nonlocal_targets: IDENTIFIER COMMA global_nonlocal_targets .
+
+    $default  reduce using rule 72 (global_nonlocal_targets)
+
+
+state 224
+
+  151 while_statement: KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES . COLON block
+
+    COLON  shift, and go to state 252
+
+
+state 225
+
+  150 while_statement: KEYWORD_WHILE logical_expression COLON block .
+
+    $default  reduce using rule 150 (while_statement)
+
+
+state 226
+
+   66 assert_statement: KEYWORD_ASSERT logical_expression COMMA LITERALSTRING .
+
+    $default  reduce using rule 66 (assert_statement)
+
+
+state 227
+
+   96 with_statment: KEYWORD_WITH with_stmt COLON block .
+
+    $default  reduce using rule 96 (with_statment)
+
+
+state 228
+
+   98 with_stmt: with_stmt COMMA function_call . KEYWORD_AS IDENTIFIER
+
+    KEYWORD_AS  shift, and go to state 253
+
+
+state 229
+
+   97 with_stmt: function_call KEYWORD_AS IDENTIFIER .
+
+    $default  reduce using rule 97 (with_stmt)
+
+
+state 230
+
+   81 match_block: NEWLINE . INDENT cases DEDENT
+
+    INDENT  shift, and go to state 254
+
+
+state 231
+
+   80 match_statement: KEYWORD_MATCH IDENTIFIER COLON match_block .
+
+    $default  reduce using rule 80 (match_statement)
+
+
+state 232
+
+   91 except: KEYWORD_EXCEPT COLON block .
+
+    $default  reduce using rule 91 (except)
+
+
+state 233
+
+   92 except: KEYWORD_EXCEPT member_expression COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 255
+
+
+state 234
+
+   93 finally: KEYWORD_FINALLY COLON block .
+
+    $default  reduce using rule 93 (finally)
+
+
+state 235
+
+   89 try_statement: try except_statements else_statement finally .
+
+    $default  reduce using rule 89 (try_statement)
+
+
+state 236
+
+  141 else_statement: KEYWORD_ELSE COLON block .
+
+    $default  reduce using rule 141 (else_statement)
+
+
+state 237
+
+  127 logical_expression: logical_expression . KEYWORD_AND logical_expression
+  128                   | logical_expression . KEYWORD_OR logical_expression
+  143 elif_statement: KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression . RIGHT_PARENTHES COLON block
+
+    KEYWORD_AND      shift, and go to state 145
+    KEYWORD_OR       shift, and go to state 146
+    RIGHT_PARENTHES  shift, and go to state 256
+
+
+state 238
+
+  142 elif_statement: KEYWORD_ELSE_IF logical_expression COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 257
+
+
+state 239
+
+  114 args: args expression COMMA .
+
+    $default  reduce using rule 114 (args)
+
+
+state 240
+
+  140 if_statement: KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 258
+
+
+state 241
+
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES . COLON NEWLINE INDENT class_block DEDENT
+
+    COLON  shift, and go to state 259
+
+
+state 242
+
+  106 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT . class_block DEDENT
+
+    $default  reduce using rule 102 (class_block)
+
+    class_block  go to state 260
+
+
+state 243
+
+  145 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 261
+
+
+state 244
+
+  144 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 262
+
+
+state 245
+
+  107 function_call: IDENTIFIER . LEFT_PARENTHES args RIGHT_PARENTHES
+  108              | IDENTIFIER . LEFT_PARENTHES number RIGHT_PARENTHES
+  109              | IDENTIFIER . LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES
+  110              | IDENTIFIER . LEFT_PARENTHES function_call RIGHT_PARENTHES
+  119 member_expression: member_expression IDENTIFIER .
+
+    LEFT_PARENTHES  shift, and go to state 56
+
+    $default  reduce using rule 119 (member_expression)
+
+
+state 246
+
+  147 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 263
+
+
+state 247
+
+  148 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call . COLON block
+  149              | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call . '.' IDENTIFIER COLON block
+
+    COLON  shift, and go to state 264
+    '.'    shift, and go to state 265
+
+
+state 248
+
+  146 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN . function_call COLON block
+
+    IDENTIFIER  shift, and go to state 76
+
+    function_call  go to state 266
+
+
+state 249
+
+    4 statements: statements . statement
+    6           | statements . NEWLINE
+  112 block: NEWLINE INDENT statements . DEDENT
+
+    IDENTIFIER        shift, and go to state 4
+    KEYWORD_IF        shift, and go to state 5
+    KEYWORD_IMPORT    shift, and go to state 6
+    KEYWORD_PASS      shift, and go to state 7
+    KEYWORD_BREAK     shift, and go to state 8
+    KEYWORD_RAISE     shift, and go to state 9
+    KEYWORD_CLASS     shift, and go to state 10
+    KEYWORD_RETURN    shift, and go to state 11
+    KEYWORD_CONTINUE  shift, and go to state 12
+    KEYWORD_FOR       shift, and go to state 13
+    KEYWORD_TRY       shift, and go to state 14
+    KEYWORD_DEF       shift, and go to state 15
+    KEYWORD_FROM      shift, and go to state 16
+    KEYWORD_NONLOCAL  shift, and go to state 17
+    KEYWORD_WHILE     shift, and go to state 18
+    KEYWORD_ASSERT    shift, and go to state 19
+    KEYWORD_DEL       shift, and go to state 20
+    KEYWORD_GLOBAL    shift, and go to state 21
+    KEYWORD_WITH      shift, and go to state 22
+    KEYWORD_YIELD     shift, and go to state 23
+    COMMENT           shift, and go to state 24
+    MULTILINECOMMENT  shift, and go to state 25
+    DEDENT            shift, and go to state 267
+    NEWLINE           shift, and go to state 97
+    KEYWORD_MATCH     shift, and go to state 27
+
+    statement                  go to state 98
+    simple_statement           go to state 30
+    compound_statement         go to state 31
+    assignment                 go to state 32
+    del_statment               go to state 33
+    return_statement           go to state 34
+    yield_statement            go to state 35
+    assert_statement           go to state 36
+    raise_statement            go to state 37
+    global_statement           go to state 38
+    nonlocal_statement         go to state 39
+    import_statments           go to state 40
+    import_statment            go to state 41
+    match_statement            go to state 42
+    try_statement              go to state 43
+    try                        go to state 44
+    with_statment              go to state 45
+    class                      go to state 46
+    class_with_inheritance     go to state 47
+    class_without_inheritance  go to state 48
+    function_call              go to state 49
+    function                   go to state 50
+    member_expression          go to state 51
+    conditional_statement      go to state 52
+    if_statement               go to state 53
+    for_statement              go to state 54
+    while_statement            go to state 55
+
+
+state 250
+
+  111 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES . COLON block
+
+    COLON  shift, and go to state 268
+
+
+state 251
+
+   79 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 269
+
+
+state 252
+
+  151 while_statement: KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 270
+
+
+state 253
+
+   98 with_stmt: with_stmt COMMA function_call KEYWORD_AS . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 271
+
+
+state 254
+
+   81 match_block: NEWLINE INDENT . cases DEDENT
+
+    KEYWORD_CASE  shift, and go to state 272
+
+    cases  go to state 273
+    case   go to state 274
+
+
+state 255
+
+   92 except: KEYWORD_EXCEPT member_expression COLON block .
+
+    $default  reduce using rule 92 (except)
+
+
+state 256
+
+  143 elif_statement: KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES . COLON block
+
+    COLON  shift, and go to state 275
+
+
+state 257
+
+  142 elif_statement: KEYWORD_ELSE_IF logical_expression COLON block .
+
+    $default  reduce using rule 142 (elif_statement)
+
+
+state 258
+
+  140 if_statement: KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block .
+
+    $default  reduce using rule 140 (if_statement)
+
+
+state 259
+
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON . NEWLINE INDENT class_block DEDENT
+
+    NEWLINE  shift, and go to state 276
+
+
+state 260
+
+  103 class_block: class_block . assignment
+  104            | class_block . function
+  105            | class_block . NEWLINE
+  106 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block . DEDENT
+
+    IDENTIFIER   shift, and go to state 74
+    KEYWORD_DEF  shift, and go to state 15
+    DEDENT       shift, and go to state 277
+    NEWLINE      shift, and go to state 278
+
+    assignment         go to state 279
+    function           go to state 280
+    member_expression  go to state 51
+
+
+state 261
+
+  145 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST COLON block .
+
+    $default  reduce using rule 145 (for_statement)
+
+
+state 262
+
+  144 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block .
+
+    $default  reduce using rule 144 (for_statement)
+
+
+state 263
+
+  147 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON block .
+
+    $default  reduce using rule 147 (for_statement)
+
+
+state 264
+
+  148 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 281
+
+
+state 265
+
+  149 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' . IDENTIFIER COLON block
+
+    IDENTIFIER  shift, and go to state 282
+
+
+state 266
+
+  146 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call . COLON block
+
+    COLON  shift, and go to state 283
+
+
+state 267
+
+  112 block: NEWLINE INDENT statements DEDENT .
+
+    $default  reduce using rule 112 (block)
+
+
+state 268
+
+  111 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 284
+
+
+state 269
+
+   79 import_statment: KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER .
+
+    $default  reduce using rule 79 (import_statment)
+
+
+state 270
+
+  151 while_statement: KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block .
+
+    $default  reduce using rule 151 (while_statement)
+
+
+state 271
+
+   98 with_stmt: with_stmt COMMA function_call KEYWORD_AS IDENTIFIER .
+
+    $default  reduce using rule 98 (with_stmt)
+
+
+state 272
+
+   84 case: KEYWORD_CASE . expression COLON block
+
+    IDENTIFIER     shift, and go to state 4
+    LIST           shift, and go to state 57
+    LITERALSTRING  shift, and go to state 58
+    KEYWORD_NONE   shift, and go to state 61
+    INTEGER        shift, and go to state 64
+    FLOAT          shift, and go to state 65
+    '-'            shift, and go to state 66
+    '|'            shift, and go to state 67
+    '('            shift, and go to state 68
+
+    expression         go to state 285
+    number             go to state 70
+    function_call      go to state 71
+    member_expression  go to state 72
+
+
+state 273
+
+   81 match_block: NEWLINE INDENT cases . DEDENT
+   82 cases: cases . case
+
+    DEDENT        shift, and go to state 286
+    KEYWORD_CASE  shift, and go to state 272
+
+    case  go to state 287
+
+
+state 274
+
+   83 cases: case .
+
+    $default  reduce using rule 83 (cases)
+
+
+state 275
+
+  143 elif_statement: KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 288
+
+
+state 276
+
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE . INDENT class_block DEDENT
+
+    INDENT  shift, and go to state 289
+
+
+state 277
+
+  106 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT .
+
+    $default  reduce using rule 106 (class_without_inheritance)
+
+
+state 278
+
+  105 class_block: class_block NEWLINE .
+
+    $default  reduce using rule 105 (class_block)
+
+
+state 279
+
+  103 class_block: class_block assignment .
+
+    $default  reduce using rule 103 (class_block)
+
+
+state 280
+
+  104 class_block: class_block function .
+
+    $default  reduce using rule 104 (class_block)
+
+
+state 281
+
+  148 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call COLON block .
+
+    $default  reduce using rule 148 (for_statement)
+
+
+state 282
+
+  149 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER . COLON block
+
+    COLON  shift, and go to state 290
+
+
+state 283
+
+  146 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 291
+
+
+state 284
+
+  111 function: KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block .
+
+    $default  reduce using rule 111 (function)
+
+
+state 285
+
+   43 expression: expression . ADD expression
+   44           | expression . MINUS expression
+   45           | expression . MULTIPLY expression
+   46           | expression . DIVIDE expression
+   47           | expression . POWER expression
+   48           | expression . MODULO expression
+   84 case: KEYWORD_CASE expression . COLON block
+
+    ADD       shift, and go to state 133
+    MINUS     shift, and go to state 134
+    MULTIPLY  shift, and go to state 135
+    DIVIDE    shift, and go to state 136
+    POWER     shift, and go to state 137
+    MODULO    shift, and go to state 138
+    COLON     shift, and go to state 292
+
+
+state 286
+
+   81 match_block: NEWLINE INDENT cases DEDENT .
+
+    $default  reduce using rule 81 (match_block)
+
+
+state 287
+
+   82 cases: cases case .
+
+    $default  reduce using rule 82 (cases)
+
+
+state 288
+
+  143 elif_statement: KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block .
+
+    $default  reduce using rule 143 (elif_statement)
+
+
+state 289
+
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT . class_block DEDENT
+
+    $default  reduce using rule 102 (class_block)
+
+    class_block  go to state 293
+
+
+state 290
+
+  149 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 294
+
+
+state 291
+
+  146 for_statement: KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block .
+
+    $default  reduce using rule 146 (for_statement)
+
+
+state 292
+
+   84 case: KEYWORD_CASE expression COLON . block
+
+    NEWLINE  shift, and go to state 154
+
+    block  go to state 295
+
+
+state 293
+
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block . DEDENT
+  103 class_block: class_block . assignment
+  104            | class_block . function
+  105            | class_block . NEWLINE
+
+    IDENTIFIER   shift, and go to state 74
+    KEYWORD_DEF  shift, and go to state 15
+    DEDENT       shift, and go to state 296
+    NEWLINE      shift, and go to state 278
+
+    assignment         go to state 279
+    function           go to state 280
+    member_expression  go to state 51
+
+
+state 294
+
+  149 for_statement: KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block .
+
+    $default  reduce using rule 149 (for_statement)
+
+
+state 295
+
+   84 case: KEYWORD_CASE expression COLON block .
+
+    $default  reduce using rule 84 (case)
+
+
+state 296
+
+  101 class_with_inheritance: KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT .
+
+    $default  reduce using rule 101 (class_with_inheritance)
+>>>>>>> main
