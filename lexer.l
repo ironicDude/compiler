@@ -127,7 +127,7 @@ int peek() {
 /* Count the number of spaces at the beginning of a string */
 int count_spaces(char *str) {
     int count = 0;
-    while (*str == ' ' || *str == '\t') {    
+    while (*str == ' ' || *str == '\t') {
         count++;
         str++;
     }
@@ -159,7 +159,7 @@ int handle_indent(char *str) {
 %}
 
 /* start state for parsing the indentation */
-%x indent 
+%x indent
 %x comment
 %x string
 /* normal start state for everything else */
@@ -183,23 +183,36 @@ int handle_indent(char *str) {
             /*printf("INDENT: %d\n", token);*/
             return INDENT;
         }
-        BEGIN indent;
+        BEGIN (indent);
     }
 }
 
-<indent>"\n" { 
-    // printf("NEWLINE\n"); 
-    BEGIN indent;
+<indent>"\n" {
+    // printf("NEWLINE\n");
+    BEGIN (indent);
     return NEWLINE;
 }
 
 <indent>[\"|\']{3} { 
-    BEGIN comment;
+    BEGIN (comment);
 }
 
 <indent>. {
     unput(*yytext);
-    BEGIN normal;
+    int current = count_spaces(yytext);
+    int token = handle_indent(yytext); 
+    if (token != 0) { 
+        if(current < token && current != 0){
+            /* printf("DEDENT: %d \n", current); */
+            return DEDENT;
+        }
+        else if(current > token) {
+            /*printf("INDENT: %d\n", token);*/
+            return INDENT;
+        }
+        BEGIN (indent);
+    }
+    BEGIN (normal);
 }
 
 <comment>[^\\\\|\"|\']+         { /*printf("inside triple comment1: %s \n", yytext);*/ }
@@ -207,14 +220,13 @@ int handle_indent(char *str) {
 <comment>[\"|\'][\"|\']?        { /*printf("inside triple comment3: %s \n", yytext);*/ }
 <comment>[\"|\']{3}             { /*printf("end of triple comment: %s \n", yytext);*/ BEGIN (indent); return MULTILINECOMMENT; }
 
-"\n" {
-    // printf("NEWLINE\n"); 
-    BEGIN indent;
+<normal>"\n" {
+    BEGIN (indent);
     return NEWLINE;
 }
 
 <normal>[\"|\']{3} {
-    BEGIN string;
+    BEGIN (string);
 }
 
 <string>[^\\\\|\"|\']+         { /*printf("inside triple string: %s \n", yytext);*/ }
@@ -302,7 +314,7 @@ int handle_indent(char *str) {
 {FLOAT}                 {/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}
 {INCREMENT}             {/*printf("INCREMENT: %s\n", yytext);*/return INCREMENT;}
 {DECREMENT}             {/*printf("DECREMENT: %s\n", yytext);*/ return DECREMENT;}
-. 			            {/* Ignore everything else. */}
+. 			            {/* Ignore everything else. */ BEGIN indent;}
 <<EOF>>                 {
                             while (peek() != -1) 
                                 //printf("DEDENT: %d\n", pop());

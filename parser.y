@@ -37,85 +37,13 @@ extern int yylex();
 
 %%
 
-/* Parser Grammar */
-prog        : /*empty */    { /* for empty put % empty */}
-            | NEWLINE
+prog        :                 { /* for empty put % empty */}
+            | NEWLINE         { }
             | prog statements {
-                              printf("------------ PROGRAM ACCEPTED ------------\n");
-                              YYACCEPT;
-                        }
+                                    printf("------------ PROGRAM ACCEPTED ------------\n");
+                                    YYACCEPT;
+                              }
             ;
-            /* | method prog {
-                              printf("prog accepted:\n");
-                              YYACCEPT;
-                        }
-            | class prog {
-                        printf("prog accepted:\n");
-                        YYACCEPT;
-                  }
-            ;
-
-class       : class_with_inheritance      { }
-            | class_without_inheritance   { }
-            ;
-
-class_with_inheritance
-            : KEYWORD_CLASS IDENTIFIER '(' parent_classes ')' COLON class_body { }
-            ;
-
-class_without_inheritance
-            : KEYWORD_CLASS IDENTIFIER COLON class_body { 
-                        printf("Method successfully parsed:\n"); 
-                        YYACCEPT;
-                  }
-            ;
-
-parent_classes  
-            :                 { }
-            | parent_classes_ { }
-            ;
-
-parent_classes_ 
-            : IDENTIFIER                        { }
-            | parent_classes_ ',' IDENTIFIER    { }
-            ;
-
-class_body  : INDENT class_suite DEDENT { }
-            ;
-
-class_suite : NEWLINE member NEWLINE      { }
-            | class_suite member NEWLINE  { }
-            ;
-
-member      : attribute { }
-            | method    { }
-            ;
-
-attribute   :  IDENTIFIER ASSIGN expression { }
-            ;
-
-method      : KEYWORD_DEF WHITESPACE IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COMMA block {
-                        printf("Method successfully parsed:\n"); 
-                        YYACCEPT;
-                  }
-            ;
-
-args        : /* empty params */    /*{ }
-            | args_                 { }
-            ;
-
-args_       : arg             { }
-            | args_ ',' arg   { }
-            ;
-
-arg         : IDENTIFIER      { }
-            | DIGIT           { }
-            | FLOAT           { }
-            ;
-
-block       : NEWLINE INDENT statements DEDENT  { }
-            ; 
-            */
 
 statements  : statements statement
             | statement
@@ -155,7 +83,7 @@ import_statments  : import_statment NEWLINE
 
 import_statment   : KEYWORD_IMPORT member_expression 
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT '*'
+                  | KEYWORD_FROM member_expression KEYWORD_IMPORT MULTIPLY
                   | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
@@ -167,7 +95,7 @@ expression  : expression ADD expression         { }
             | expression MINUS expression       { }
             | expression MULTIPLY expression    { }
             | expression DIVIDE expression      { }
-            | expression POWER expression      { }
+            | expression POWER expression       { }
             | '|' expression  %prec UMINUS      { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                                       rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
@@ -175,24 +103,22 @@ expression  : expression ADD expression         { }
             | '(' expression ')'                { }
             | '-' expression %prec UMINUS       { }
             | number                            { }
-            | IDENTIFIER
-            | function_call
+            | member_expression                 { }
+            | function_call                     { }
             ;
 
 number: INTEGER 
       | FLOAT
       ;
 
-del_statment      : KEYWORD_DEL IDENTIFIER
-                  | KEYWORD_DEL IDENTIFIER LIST
+del_statment      : KEYWORD_DEL IDENTIFIER      { }
+                  | KEYWORD_DEL IDENTIFIER LIST { }
                   ;
 
-return_statement  : KEYWORD_RETURN member_expression { }
-                  | KEYWORD_RETURN expression
+return_statement  : KEYWORD_RETURN expression   { }
                   ;
 
-yield_statement  : KEYWORD_YIELD member_expression { }
-                  | KEYWORD_YIELD expression
+yield_statement   : KEYWORD_YIELD expression    { }
                   ;
 
 with_statment     : KEYWORD_WITH with_stmt COLON block
@@ -239,6 +165,7 @@ args  :
 
 member_expression : IDENTIFIER 
                   | member_expression %prec '.' IDENTIFIER 
+                  | member_expression %prec '.' function_call
                   ;
 
 logical_expression: expression
