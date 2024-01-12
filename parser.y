@@ -37,13 +37,13 @@ extern int yylex();
 
 %%
 
-prog        :                 { /* for empty put % empty */}
-            | NEWLINE         { }
-            | prog statements {
-                                    printf("------------ PROGRAM ACCEPTED ------------\n");
-                                    YYACCEPT;
-                              }
-            ;
+prog  :                 { }
+      | NEWLINE         { }
+      | prog statements {
+                              printf("------------ PROGRAM ACCEPTED ------------\n");
+                              YYACCEPT;
+                        }
+      ;
 
 statements  : statements statement
             | statement
@@ -137,50 +137,60 @@ return_statement  :KEYWORD_RETURN expression
                   | KEYWORD_RETURN logical_expression
                   ;
 
-yield_statement  :  KEYWORD_YIELD expression
+yield_statement   :  KEYWORD_YIELD expression
                   ;
 
-assert_statement: KEYWORD_ASSERT logical_expression
-                  | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING;
+assert_statement  : KEYWORD_ASSERT logical_expression
+                  | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING
+                  ;
 
-raise_statement: KEYWORD_RAISE function_call
+raise_statement   : KEYWORD_RAISE function_call
                   | KEYWORD_RAISE function_call KEYWORD_FROM IDENTIFIER
                   ;
 
-global_statement: KEYWORD_GLOBAL global_nonlocal_targets
-                  ;
-nonlocal_statement: KEYWORD_NONLOCAL global_nonlocal_targets
+global_statement  : KEYWORD_GLOBAL global_nonlocal_targets
                   ;
 
-global_nonlocal_targets: IDENTIFIER
-                  | IDENTIFIER COMMA global_nonlocal_targets
+nonlocal_statement      : KEYWORD_NONLOCAL global_nonlocal_targets
+                        ;
+
+global_nonlocal_targets : IDENTIFIER
+                        | IDENTIFIER COMMA global_nonlocal_targets
+                        ;
+
+match_statement   : KEYWORD_MATCH IDENTIFIER COLON match_block
                   ;
 
-match_statement: KEYWORD_MATCH IDENTIFIER COLON match_block;
-
-match_block: NEWLINE INDENT cases DEDENT;
-
-cases: cases case
-      | case
-      ;
-case: KEYWORD_CASE expression COLON block;
-
-try_statement: try finally
-            | try except_statements
-            | try except_statements finally
-            | try except_statements else_statement
-            | try except_statements else_statement finally
+match_block : NEWLINE INDENT cases DEDENT
             ;
 
-try: KEYWORD_TRY COLON block
+cases : cases case
+      | case
+      ;
+
+case  : KEYWORD_CASE expression COLON block
+      ;
+
+try_statement     : try finally
+                  | try except_statements
+                  | try except_statements finally
+                  | try except_statements else_statement
+                  | try except_statements else_statement finally
+                  ;
+
+try   : KEYWORD_TRY COLON block
+      ;
+
 except: KEYWORD_EXCEPT COLON block
       | KEYWORD_EXCEPT member_expression COLON block
       ;
-finally: KEYWORD_FINALLY COLON block
 
-except_statements: except_statements except
-      | except
-      ;
+finally     : KEYWORD_FINALLY COLON block
+            ;
+
+except_statements : except_statements except
+                  | except
+                  ;
 
 with_statment     : KEYWORD_WITH with_stmt COLON block
                   ;
@@ -196,7 +206,7 @@ class : class_with_inheritance
 class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
                         ;
 
-class_block: 
+class_block : 
             | class_block assignment
             | class_block function
             | class_block NEWLINE
