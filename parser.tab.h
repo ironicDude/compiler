@@ -120,13 +120,13 @@
      COLON = 336,
      COMMA = 337,
      SEMICOLON = 338,
-     INCREMENT = 339,
-     DECREMENT = 340,
-     INTEGER = 341,
-     FLOAT = 342,
-     DEDENT = 343,
-     INDENT = 344,
-     NEWLINE = 345,
+     INTEGER = 339,
+     FLOAT = 340,
+     DEDENT = 341,
+     INDENT = 342,
+     NEWLINE = 343,
+     KEYWORD_MATCH = 344,
+     KEYWORD_CASE = 345,
      UMINUS = 346
    };
 #endif

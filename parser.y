@@ -27,7 +27,7 @@ extern int yylex();
 %token NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
 %token LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
 %token LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
-%token INCREMENT DECREMENT INTEGER FLOAT DEDENT INDENT NEWLINE
+%token INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
 
 %error-verbose
 %nonassoc EQUAL
@@ -53,67 +53,6 @@ prog        : /*empty */    { /* for empty put % empty */}
                         printf("prog accepted:\n");
                         YYACCEPT;
                   }
-            ;
-
-class       : class_with_inheritance      { }
-            | class_without_inheritance   { }
-            ;
-
-class_with_inheritance
-            : KEYWORD_CLASS IDENTIFIER '(' parent_classes ')' COLON class_body { }
-            ;
-
-class_without_inheritance
-            : KEYWORD_CLASS IDENTIFIER COLON class_body { 
-                        printf("Method successfully parsed:\n"); 
-                        YYACCEPT;
-                  }
-            ;
-
-parent_classes  
-            :                 { }
-            | parent_classes_ { }
-            ;
-
-parent_classes_ 
-            : IDENTIFIER                        { }
-            | parent_classes_ ',' IDENTIFIER    { }
-            ;
-
-class_body  : INDENT class_suite DEDENT { }
-            ;
-
-class_suite : NEWLINE member NEWLINE      { }
-            | class_suite member NEWLINE  { }
-            ;
-
-member      : attribute { }
-            | method    { }
-            ;
-
-attribute   :  IDENTIFIER ASSIGN expression { }
-            ;
-
-method      : KEYWORD_DEF WHITESPACE IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COMMA block {
-                        printf("Method successfully parsed:\n"); 
-                        YYACCEPT;
-                  }
-            ;
-
-args        : /* empty params */    /*{ }
-            | args_                 { }
-            ;
-
-args_       : arg             { }
-            | args_ ',' arg   { }
-            ;
-
-arg         : IDENTIFIER      { }
-            | DIGIT           { }
-            | FLOAT           { }
-            ;
-
-block       : NEWLINE INDENT statements DEDENT  { }
             ; 
             */
 
@@ -132,6 +71,10 @@ statement   : compound_statement
 simple_statement  : assignment
                   | return_statement
                   | yield_statement
+                  | assert_statement
+                  | raise_statement
+                  | global_statement
+                  | nonlocal_statement
                   | del_statment
                   | import_statments
                   | function_call
@@ -146,7 +89,70 @@ compound_statement: function
                   | class
                   | for_statement
                   | while_statement
-                  /* | try_statement */
+                  | match_statement
+                  | try_statement
+                  ;
+assignment  : member_expression ASSIGN expression
+            | member_expression ASSIGNADD expression
+            | member_expression ASSIGNDIVIDE expression
+            | member_expression ASSIGNEXPONINTIATION expression
+            | member_expression ASSIGNMULTIPLY expression
+            | member_expression ASSIGNMODULO expression
+            | member_expression ASSIGNMINUS expression
+            | member_expression ASSIGNFLOORDIVISION expression
+            | member_expression ASSIGNRIGHTSHIFT expression
+            | member_expression ASSIGNLEFTSHIFT expression
+            ;
+
+expression  : expression ADD expression         { } 
+            | expression MINUS expression       { }
+            | expression MULTIPLY expression    { }
+            | expression DIVIDE expression      { }
+            | expression POWER expression      { }
+            | expression MODULO expression
+            | '|' expression  %prec UMINUS      { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
+                                                      which has low precedence, but we want unary minus to have higher precedence than multiplication 
+                                                      rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
+                                                }
+            | '(' expression ')'                { }
+            | '-' expression %prec UMINUS       { }
+            | number                            { }
+            | member_expression
+            | function_call
+            | LITERALSTRING
+            | LIST
+            | KEYWORD_NONE
+            ;
+
+number: INTEGER 
+      | FLOAT
+      ;
+
+del_statment      : KEYWORD_DEL IDENTIFIER
+                  | KEYWORD_DEL IDENTIFIER LIST
+                  ;
+
+return_statement  :KEYWORD_RETURN expression
+                  | KEYWORD_RETURN logical_expression
+                  ;
+
+yield_statement  :  KEYWORD_YIELD expression
+                  ;
+
+assert_statement: KEYWORD_ASSERT logical_expression
+                  | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING;
+
+raise_statement: KEYWORD_RAISE function_call
+                  | KEYWORD_RAISE function_call KEYWORD_FROM IDENTIFIER
+                  ;
+
+global_statement: KEYWORD_GLOBAL global_nonlocal_targets
+                  ;
+nonlocal_statement: KEYWORD_NONLOCAL global_nonlocal_targets
+                  ;
+
+global_nonlocal_targets: IDENTIFIER
+                  | IDENTIFIER COMMA global_nonlocal_targets
                   ;
 
 import_statments  : import_statment NEWLINE
@@ -160,40 +166,32 @@ import_statment   : KEYWORD_IMPORT member_expression
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
 
-assignment  : member_expression ASSIGN expression
-            ;
 
-expression  : expression ADD expression         { } 
-            | expression MINUS expression       { }
-            | expression MULTIPLY expression    { }
-            | expression DIVIDE expression      { }
-            | expression POWER expression      { }
-            | '|' expression  %prec UMINUS      { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
-                                                      which has low precedence, but we want unary minus to have higher precedence than multiplication 
-                                                      rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
-                                                }
-            | '(' expression ')'                { }
-            | '-' expression %prec UMINUS       { }
-            | number                            { }
-            | IDENTIFIER
-            | function_call
-            ;
+match_statement: KEYWORD_MATCH IDENTIFIER COLON match_block;
 
-number: INTEGER 
-      | FLOAT
+match_block: NEWLINE INDENT cases DEDENT;
+
+cases: cases case
+      | case
       ;
+case: KEYWORD_CASE expression COLON block;
 
-del_statment      : KEYWORD_DEL IDENTIFIER
-                  | KEYWORD_DEL IDENTIFIER LIST
-                  ;
+try_statement: try finally
+            | try except_statements
+            | try except_statements finally
+            | try except_statements else_statement
+            | try except_statements else_statement finally
+            ;
 
-return_statement  : KEYWORD_RETURN member_expression { }
-                  | KEYWORD_RETURN expression
-                  ;
+try: KEYWORD_TRY COLON block
+except: KEYWORD_EXCEPT COLON block
+      | KEYWORD_EXCEPT member_expression COLON block
+      ;
+finally: KEYWORD_FINALLY COLON block
 
-yield_statement  : KEYWORD_YIELD member_expression { }
-                  | KEYWORD_YIELD expression
-                  ;
+except_statements: except_statements except
+      | except
+      ;
 
 with_statment     : KEYWORD_WITH with_stmt COLON block
                   ;
@@ -231,10 +229,10 @@ block : NEWLINE INDENT statements DEDENT
       ;
 
 args  :
-      | args IDENTIFIER COMMA
-      | args IDENTIFIER 
-      | IDENTIFIER COMMA
-      | IDENTIFIER 
+      | args expression COMMA
+      | args expression 
+      | expression COMMA
+      | expression
       ;
 
 member_expression : IDENTIFIER 
