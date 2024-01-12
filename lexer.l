@@ -87,8 +87,6 @@ RIGHT_BRACKETS          "]"
 COLON                   ":"
 COMMA                   ","
 SEMICOLON               ";"
-INCREMENT               "++"
-DECREMENT               "--"
 INTEGER                 [0-9]+
 FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 /* Define a stack to store indentation levels */
@@ -304,8 +302,6 @@ int handle_indent(char *str) {
 {IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/return IDENTIFIER;}
 {INTEGER}               {/*printf("INTEGER: %s\n", yytext);*/return INTEGER;}
 {FLOAT}                 {/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}
-{INCREMENT}             {/*printf("INCREMENT: %s\n", yytext);*/return INCREMENT;}
-{DECREMENT}             {/*printf("DECREMENT: %s\n", yytext);*/ return DECREMENT;}
 . 			            {/* Ignore everything else. */}
 <<EOF>>                 {
                             while (peek() != -1) 
