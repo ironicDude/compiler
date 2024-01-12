@@ -156,18 +156,6 @@ global_nonlocal_targets: IDENTIFIER
                   | IDENTIFIER COMMA global_nonlocal_targets
                   ;
 
-import_statments  : import_statment NEWLINE
-                  | import_statments import_statment
-                  ;
-
-import_statment   : KEYWORD_IMPORT member_expression 
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT MULTIPLY
-                  | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
-                  ;
-
-
 match_statement: KEYWORD_MATCH IDENTIFIER COLON match_block;
 
 match_block: NEWLINE INDENT cases DEDENT;
