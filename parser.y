@@ -27,7 +27,7 @@ extern int yylex();
 %token NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
 %token LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
 %token LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
-%token INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
+%token INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE TUPLE
 
 %error-verbose
 %nonassoc EQUAL
@@ -92,6 +92,18 @@ compound_statement: function
                   | match_statement
                   | try_statement
                   ;
+
+import_statments  : import_statment NEWLINE
+                  | import_statments import_statment
+                  ;
+
+import_statment   : KEYWORD_IMPORT member_expression 
+                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
+                  | KEYWORD_FROM member_expression KEYWORD_IMPORT '*'
+                  | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
+                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
+                  ;
+
 assignment  : member_expression ASSIGN expression
             | member_expression ASSIGNADD expression
             | member_expression ASSIGNDIVIDE expression
@@ -114,14 +126,17 @@ expression  : expression ADD expression         { }
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                                       rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
                                                 }
-            | '(' expression ')'                { }
-            | '-' expression %prec UMINUS       { }
+            | LEFT_PARENTHES expression RIGHT_PARENTHES                { }
+            | MINUS expression %prec UMINUS       { }
             | number                            { }
             | member_expression
             | function_call
             | LITERALSTRING
             | LIST
+            | TUPLE
             | KEYWORD_NONE
+            | KEYWORD_TRUE
+            | KEYWORD_FALSE
             ;
 
 number: INTEGER 
@@ -136,8 +151,7 @@ return_statement  :KEYWORD_RETURN expression
                   | KEYWORD_RETURN logical_expression
                   ;
 
-yield_statement  :  KEYWORD_YIELD expression
-                  ;
+yield_statement  :  KEYWORD_YIELD expression ;
 
 assert_statement: KEYWORD_ASSERT logical_expression
                   | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING;
@@ -154,18 +168,6 @@ nonlocal_statement: KEYWORD_NONLOCAL global_nonlocal_targets
 global_nonlocal_targets: IDENTIFIER
                   | IDENTIFIER COMMA global_nonlocal_targets
                   ;
-
-import_statments  : import_statment NEWLINE
-                  | import_statments import_statment
-                  ;
-
-import_statment   : KEYWORD_IMPORT member_expression 
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT '*'
-                  | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
-                  ;
-
 
 match_statement: KEYWORD_MATCH IDENTIFIER COLON match_block;
 
@@ -186,6 +188,7 @@ try_statement: try finally
 try: KEYWORD_TRY COLON block
 except: KEYWORD_EXCEPT COLON block
       | KEYWORD_EXCEPT member_expression COLON block
+      | KEYWORD_EXCEPT member_expression KEYWORD_AS IDENTIFIER COLON block
       ;
 finally: KEYWORD_FINALLY COLON block
 
@@ -204,17 +207,17 @@ class : class_with_inheritance
       | class_without_inheritance
       ;
 
-class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
+class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block
                         ;
+class_block: NEWLINE INDENT class_body DEDENT;
 
-class_block: 
-            | class_block assignment
-            | class_block function
-            | class_block NEWLINE
+class_body: 
+            | class_body assignment
+            | class_body function
+            | class_body NEWLINE
             ;
 
-class_without_inheritance     : KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT
-                              ;
+class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON class_block
 
 function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES
                   | IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES
@@ -237,6 +240,7 @@ args  :
 
 member_expression : IDENTIFIER 
                   | member_expression %prec '.' IDENTIFIER 
+                  | member_expression %prec '.' function_call
                   ;
 
 logical_expression: expression
@@ -246,11 +250,10 @@ logical_expression: expression
                   | expression LESSTHAN expression
                   | expression EQUAL expression
                   | expression NOTEQUAL expression
+                  | expression KEYWORD_IS expression
                   | logical_expression KEYWORD_AND logical_expression
                   | logical_expression KEYWORD_OR logical_expression
                   | KEYWORD_NOT logical_expression
-                  | KEYWORD_TRUE
-                  | KEYWORD_FALSE
                   ;
 
 conditional_statement   : if_statement elif_else

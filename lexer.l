@@ -11,6 +11,7 @@ LETTER                  [_a-zA-Z]
 ALPHANUM                {LETTER}|[0-9]
 IDENTIFIER              {LETTER}{ALPHANUM}*
 LIST                    (\[\s*([^,\[\]]+)\s*(,\s*([^,\[\]]+)\s*)*\])
+TUPLE                   (\(\s*([^,\(\)]+)\s*(,\s*([^,\(\)]+)\s*)*\))
 LITERALSTRING           \"([^\"\\\\]|\\\\.)*\" 
 LITERALCHAR             \"([^\"]|\\\\.)\" 
 KEYWORD_FALSE           False
@@ -188,7 +189,7 @@ int handle_indent(char *str) {
 }
 
 <indent>"\n" { 
-    // printf("NEWLINE\n"); 
+    // printf("\n");
     BEGIN indent;
     return NEWLINE;
 }
@@ -208,7 +209,7 @@ int handle_indent(char *str) {
 <comment>[\"|\']{3}             { /*printf("end of triple comment: %s \n", yytext);*/ BEGIN (indent); return MULTILINECOMMENT; }
 
 "\n" {
-    // printf("NEWLINE\n"); 
+    // printf("hkljhkljkljhkhkljhkhkhlk\n"); 
     BEGIN indent;
     return NEWLINE;
 }
@@ -299,6 +300,7 @@ int handle_indent(char *str) {
 {LITERALSTRING}         {/*printf("STRING_LITERAL: %s\n", yytext);*/return LITERALSTRING;}
 {LITERALCHAR}           {/*printf("CHAR_LITERAL: %s\n", yytext);*/return LITERALCHAR;}
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}
+{TUPLE}                  {/*printf("tuple: %s \n",yytext);*/return TUPLE;}
 {IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/return IDENTIFIER;}
 {INTEGER}               {/*printf("INTEGER: %s\n", yytext);*/return INTEGER;}
 {FLOAT}                 {/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}

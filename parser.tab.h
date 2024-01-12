@@ -127,7 +127,8 @@
      NEWLINE = 343,
      KEYWORD_MATCH = 344,
      KEYWORD_CASE = 345,
-     UMINUS = 346
+     TUPLE = 346,
+     UMINUS = 347
    };
 #endif
 
