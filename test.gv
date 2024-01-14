@@ -1,1 +1,13 @@
-functiomnnnnn
+digraph G {
+	sami [label="Declare Fun : sami"]
+	sami -> empty;
+	empty [label="Arguments"]
+	sami -> functionBlock;
+	functionBlock [label="Block"]
+	functionBlock -> assign1;
+	assign1 [label="assignment"]
+	assign1 -> iden0;
+	iden0 [shape=box,label="Identifier: s"]
+	assign1 -> INTEGER;
+	INTEGER [shape=box,label="Integer: 100"]
+}

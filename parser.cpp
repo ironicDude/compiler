@@ -527,11 +527,11 @@ static const yytype_uint16 yyrline[] =
      170,   171,   174,   177,   180,   181,   184,   187,   188,   189,
      190,   191,   194,   197,   198,   201,   204,   205,   208,   211,
      212,   215,   216,   219,   222,   224,   225,   226,   227,   230,
-     233,   234,   235,   236,   239,   251,   255,   256,   257,   258,
-     259,   262,   263,   264,   267,   268,   269,   270,   271,   272,
-     273,   274,   275,   276,   277,   278,   281,   284,   285,   286,
-     287,   290,   291,   294,   295,   298,   301,   302,   305,   306,
-     307,   308,   309,   310,   313,   314
+     233,   234,   235,   236,   239,   250,   256,   257,   258,   259,
+     260,   263,   264,   265,   268,   269,   270,   271,   272,   273,
+     274,   275,   276,   277,   278,   279,   282,   285,   286,   287,
+     288,   291,   292,   295,   296,   299,   302,   303,   306,   307,
+     308,   309,   310,   311,   314,   315
 };
 #endif
 
@@ -1577,7 +1577,7 @@ yyreduce:
     {
         case 2:
 #line 52 "parser.y" /* yacc.c:1646  */
-    { (yyval.astNode) = NULL; }
+    { (yyval.astNode) = new StatementsNode("empty"); }
 #line 1582 "parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -1774,24 +1774,24 @@ yyreduce:
                   (yyval.astNode) = new FunctionNode(idFunc->value);
                   (yyval.astNode)->add((yyvsp[-3].astNode));
                   (yyval.astNode)->add((yyvsp[0].astNode));
-                  printf((yyval.astNode));
                   root = (yyval.astNode);
                   YYACCEPT;
             }
-#line 1782 "parser.cpp" /* yacc.c:1646  */
+#line 1781 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 251 "parser.y" /* yacc.c:1646  */
-    {
-            (yyval.astNode) = (yyvsp[-1].astNode);
-      }
+#line 250 "parser.y" /* yacc.c:1646  */
+    { 
+                                                (yyval.astNode) = new BlockNode("functionBlock");
+                                                (yyval.astNode)->add((yyvsp[-1].astNode));
+                                          }
 #line 1790 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 255 "parser.y" /* yacc.c:1646  */
-    { (yyval.astNode) = NULL; }
+#line 256 "parser.y" /* yacc.c:1646  */
+    { (yyval.astNode) = new Args("empty"); }
 #line 1796 "parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -2024,7 +2024,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 317 "parser.y" /* yacc.c:1906  */
+#line 318 "parser.y" /* yacc.c:1906  */
 
 
 int main(int argc, char **argv) {
@@ -2037,6 +2037,10 @@ int main(int argc, char **argv) {
       else
             yyin=stdin;
       yyparse();
+      if (root != NULL) {
+            AST ast(root);
+            ast.Print();
+      }
       return 0;
 }
 
