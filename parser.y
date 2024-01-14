@@ -1,34 +1,45 @@
-%{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-int yydebug=1;
-FILE *yyin;
-void yyerror(const char *);
+%code requires {
+      #include "python_ast_node.hpp"
+      #include <iostream>
+      #include <string>
+}
+%union{
+	AstNode* astNode;
+}
+%{    
 extern int yylex();
+      extern int yyparse();
+      extern FILE *yyin;
+      void yyerror(const char *);
+      AstNode* root = NULL;
+      int n_nodes = 0;
 %}
-
 /* Tokens */
-%token WHITESPACE LETTER ALPHANUM IDENTIFIER LIST
-%token LITERALSTRING LITERALCHAR KEYWORD_FALSE KEYWORD_TRUE MULTILINESTRING
-%token KEYWORD_AWAIT KEYWORD_IF KEYWORD_ELSE KEYWORD_ELSE_IF 
-%token KEYWORD_IMPORT KEYWORD_PASS KEYWORD_NONE KEYWORD_BREAK
-%token KEYWORD_EXCEPT KEYWORD_IN KEYWORD_RAISE KEYWORD_CLASS
-%token KEYWORD_FINALLY KEYWORD_IS KEYWORD_RETURN KEYWORD_AND
-%token KEYWORD_CONTINUE KEYWORD_FOR KEYWORD_LAMBDA KEYWORD_TRY
-%token KEYWORD_AS KEYWORD_DEF KEYWORD_FROM KEYWORD_NONLOCAL
-%token KEYWORD_WHILE KEYWORD_ASSERT KEYWORD_DEL KEYWORD_GLOBAL
-%token KEYWORD_NOT KEYWORD_WITH KEYWORD_ASYNC KEYWORD_OR
-%token KEYWORD_YIELD OPERATORS COMMENT ADD MINUS MULTIPLY MULTILINECOMMENT 
-%token DIVIDE POWER MODULO ASSIGN ASSIGNADD ASSIGNMINUS 
-%token ASSIGNMULTIPLY ASSIGNDIVIDE ASSIGNMODULO ASSIGNFLOORDIVISION
-%token ASSIGNEXPONINTIATION ASSIGNBITWISEAND ASSIGNBITWISEOR
-%token ASSIGNBITWISEXOR ASSIGNRIGHTSHIFT ASSIGNLEFTSHIFT EQUAL NOT
-%token NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
-%token LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
-%token LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
-%token INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE TUPLE
-
+%token <astNode> WHITESPACE LETTER ALPHANUM IDENTIFIER LIST
+%token <astNode> LITERALSTRING LITERALCHAR KEYWORD_FALSE KEYWORD_TRUE MULTILINESTRING
+%token <astNode> KEYWORD_AWAIT KEYWORD_IF KEYWORD_ELSE KEYWORD_ELSE_IF 
+%token <astNode> KEYWORD_IMPORT KEYWORD_PASS KEYWORD_NONE KEYWORD_BREAK
+%token <astNode> KEYWORD_EXCEPT KEYWORD_IN KEYWORD_RAISE KEYWORD_CLASS
+%token <astNode> KEYWORD_FINALLY KEYWORD_IS KEYWORD_RETURN KEYWORD_AND
+%token <astNode> KEYWORD_CONTINUE KEYWORD_FOR KEYWORD_LAMBDA KEYWORD_TRY
+%token <astNode> KEYWORD_AS KEYWORD_DEF KEYWORD_FROM KEYWORD_NONLOCAL
+%token <astNode> KEYWORD_WHILE KEYWORD_ASSERT KEYWORD_DEL KEYWORD_GLOBAL
+%token <astNode> KEYWORD_NOT KEYWORD_WITH KEYWORD_ASYNC KEYWORD_OR
+%token <astNode> KEYWORD_YIELD OPERATORS COMMENT ADD MINUS MULTIPLY MULTILINECOMMENT 
+%token <astNode> DIVIDE POWER MODULO ASSIGN ASSIGNADD ASSIGNMINUS 
+%token <astNode> ASSIGNMULTIPLY ASSIGNDIVIDE ASSIGNMODULO ASSIGNFLOORDIVISION
+%token <astNode> ASSIGNEXPONINTIATION ASSIGNBITWISEAND ASSIGNBITWISEOR
+%token <astNode> ASSIGNBITWISEXOR ASSIGNRIGHTSHIFT ASSIGNLEFTSHIFT EQUAL NOT
+%token <astNode> NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
+%token <astNode> LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
+%token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
+%token <astNode> INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE TUPLE
+%type  <astNode> prog statements statement simple_statement compound_statement import_statments import_statment
+%type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
+%type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
+%type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class class_with_inheritance 
+%type  <astNode> class_block class_body class_without_inheritance function_call function block args member_expression logical_expression
+%type  <astNode> conditional_statement elif_else elif_stmts if_statement else_statement elif_statement for_statement while_statement
 %error-verbose
 %nonassoc EQUAL
 %left '+' '-'
@@ -211,8 +222,7 @@ class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PAR
                         ;
 class_block: NEWLINE INDENT class_body DEDENT;
 
-class_body: 
-            | class_body assignment
+class_body: | class_body assignment
             | class_body function
             | class_body NEWLINE
             ;
@@ -240,7 +250,6 @@ args  :
 
 member_expression : IDENTIFIER 
                   | member_expression %prec '.' IDENTIFIER 
-                  | member_expression %prec '.' function_call
                   ;
 
 logical_expression: expression
@@ -294,19 +303,34 @@ while_statement   : KEYWORD_WHILE logical_expression COLON block
 
 %%
 
-int main(int argc, char **argv) {
-      /*success("This is a valid python expression");*/
-      if (argc > 1){
-            for(int i=0;i<argc;i++)
-                  printf("value of argv[%d] = %s\n\n",i,argv[i]);
+int main(int argc, char **argv)
+{
+ /*success("This is a valid python expression");
+ expression : NUMBER  { }
+            ;
+                : expression '+' expression     { }
+    | expression '-' expression     { }
+    | expression '*' expression     { }
+    | expression '/' expression     { }*/
+     if (argc > 1){
+        for(int i=0;i<argc;i++)
+            // printf("value of argv[%d] = %s\n\n",i,argv[i]);
             yyin=fopen(argv[1],"r");
       }
       else
-            yyin=stdin;
+        yyin=stdin;
+      
       yyparse();
+
+      // AST is constructed, you can print it now
+      if (root != NULL) {
+            AST ast(root);
+            ast.Print();
+      }
       return 0;
 }
 
-void yyerror(const char *msg) {
-      printf(" %s \n", msg);
+
+void yyerror(const char* s) {
+    std::cerr << "Parser error: " << s << std::endl;
 }

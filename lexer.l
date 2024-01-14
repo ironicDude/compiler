@@ -1,9 +1,13 @@
+%option noyywrap
 %{
+#pragma warning (disable: 4005)
+#include "parser.hpp"
+#include "python_ast_node.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "parser.tab.h"
+#include <string.h>
 %}
-%option noyywrap
 
 /* Regular expressions to match tokens */
 /*WHITESPACE              [ \t]*/
