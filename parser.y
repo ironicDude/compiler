@@ -49,12 +49,13 @@
 
 %%
 
-prog  :                 { }
+prog  :                 { $$ = NULL; }
       | NEWLINE         { }
       | prog statements {
                               printf("------------ PROGRAM ACCEPTED ------------\n");
                               $$ = new StatementsNode("prog");
                               $$->add($1);
+                              $$->add($2);
                               root = $$;
                               YYACCEPT;
                         }
@@ -72,7 +73,7 @@ statement   : compound_statement    { $$ = $1; }
             | MULTILINECOMMENT
             ;
 
-simple_statement  : assignment
+simple_statement  : assignment            { $$ = $1; }
                   | return_statement
                   | yield_statement
                   | assert_statement
@@ -83,10 +84,7 @@ simple_statement  : assignment
                   | import_statments
                   | function_call
                   | with_statment
-                  | KEYWORD_PASS          {
-                        $$ = new StatementsNode("pass");
-                        $$->add($1);
-                  }
+                  | KEYWORD_PASS
                   | KEYWORD_BREAK
                   | KEYWORD_CONTINUE
                   ;
@@ -111,16 +109,13 @@ import_statment   : KEYWORD_IMPORT member_expression
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
 
-assignment  : member_expression ASSIGN expression
-            | member_expression ASSIGNADD expression
-            | member_expression ASSIGNDIVIDE expression
-            | member_expression ASSIGNEXPONINTIATION expression
-            | member_expression ASSIGNMULTIPLY expression
-            | member_expression ASSIGNMODULO expression
-            | member_expression ASSIGNMINUS expression
-            | member_expression ASSIGNFLOORDIVISION expression
-            | member_expression ASSIGNRIGHTSHIFT expression
-            | member_expression ASSIGNLEFTSHIFT expression
+assignment  : IDENTIFIER ASSIGN number {  $$ = new assignmentStatement("assign1");
+                                          std::string nname = "iden" + std::to_string(n_nodes);
+                                          ++n_nodes;
+                                          $1->name=nname;
+                                          $$->add($1);
+                                          $$->add($3);
+                                    }
             ;
 
 expression  : expression ADD expression         { } 
@@ -138,20 +133,20 @@ expression  : expression ADD expression         { }
             | number                            { }
             | member_expression                 { }
             | function_call                     { }
-            | LITERALSTRING
-            | LIST
-            | KEYWORD_NONE
+            | LITERALSTRING                     { }
+            | LIST                              { }
+            | KEYWORD_NONE                      { }
             ;
 
-number: INTEGER 
-      | FLOAT
+number: INTEGER { $$ = $1; }
+      | FLOAT   { $$ = $1; }
       ;
 
 del_statment      : KEYWORD_DEL IDENTIFIER      { }
                   | KEYWORD_DEL IDENTIFIER LIST { }
                   ;
 
-return_statement  :KEYWORD_RETURN expression
+return_statement  : KEYWORD_RETURN expression
                   | KEYWORD_RETURN logical_expression
                   ;
 
@@ -226,7 +221,8 @@ class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PAR
 
 class_block: NEWLINE INDENT class_body DEDENT;
 
-class_body: | class_body assignment
+class_body  : 
+            | class_body assignment
             | class_body function
             | class_body NEWLINE
             ;

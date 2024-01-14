@@ -1929,16 +1929,18 @@ YY_RULE_SETUP
 case 99:
 YY_RULE_SETUP
 #line 298 "lexer.l"
-{/*printf("INTEGER: %s\n", yytext);*/return INTEGER;}
+{yylval.astNode = new NumberNode("INTEGER", "Integer", atoi(yytext));
+                        return INTEGER;}
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 299 "lexer.l"
-{/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}
+#line 300 "lexer.l"
+{yylval.astNode = new NumberNode("FLOAT", "Float", atoi(yytext));
+                        return FLOAT;}
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 300 "lexer.l"
+#line 302 "lexer.l"
 {/* Ignore everything else. */ BEGIN (DEDENTATION);}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -1946,7 +1948,7 @@ case YY_STATE_EOF(DEDENTATION):
 case YY_STATE_EOF(comment):
 case YY_STATE_EOF(string):
 case YY_STATE_EOF(normal):
-#line 301 "lexer.l"
+#line 303 "lexer.l"
 {
             while (top > 0) {
                 handle_dedent();
@@ -1956,10 +1958,10 @@ case YY_STATE_EOF(normal):
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 308 "lexer.l"
+#line 310 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1962 "lexer.cpp"
+#line 1964 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2935,7 +2937,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 308 "lexer.l"
+#line 310 "lexer.l"
 
 
 void handle_dedent() {

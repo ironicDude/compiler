@@ -286,7 +286,7 @@ FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 {KEYWORD_OR}            {/*printf("KEYWORD_OR: %s \n",yytext);*/return KEYWORD_OR;}
 {KEYWORD_YIELD}         {/*printf("KEYWORD_YIELD: %s \n",yytext);*/return KEYWORD_YIELD;}
 {KEYWORD_MATCH}         {/*printf("KEYWORD_MATCH: %s \n",yytext);*/return KEYWORD_MATCH;}
-{KEYWORD_CASE}         {/*printf("KEYWORD_CASE: %s \n",yytext);*/return KEYWORD_CASE;}
+{KEYWORD_CASE}          {/*printf("KEYWORD_CASE: %s \n",yytext);*/return KEYWORD_CASE;}
 {LITERALSTRING}         {/*printf("STRING_LITERAL: %s\n", yytext);*/return LITERALSTRING;}
 {LITERALCHAR}           {/*printf("CHAR_LITERAL: %s\n", yytext);*/return LITERALCHAR;}
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}
@@ -294,8 +294,14 @@ FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
                             yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext);
                             return IDENTIFIER;
                         }
-{INTEGER}               {/*printf("INTEGER: %s\n", yytext);*/return INTEGER;}
-{FLOAT}                 {/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}
+{INTEGER}               {   
+                            yylval.astNode = new NumberNode("INTEGER", "Integer", atoi(yytext));
+                            return INTEGER;
+                        }
+{FLOAT}                 {
+                            yylval.astNode = new NumberNode("FLOAT", "Float", atoi(yytext));
+                            return FLOAT;
+                        }
 . 			            {/* Ignore everything else. */ BEGIN (DEDENTATION);}
 <<EOF>> {
             while (top > 0) {
