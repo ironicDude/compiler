@@ -1,2 +1,2 @@
-def function():
-    pass
+def sami():
+    s = 100

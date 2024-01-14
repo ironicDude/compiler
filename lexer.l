@@ -10,17 +10,12 @@
 #include <cmath>
 using namespace std;
 extern int yylex();
-int indent_stack[100];
-int top = -1;
-int dedent_level = 0;  
-void handle_dedent();
 
 char firstChar;
 char *copyyytext;
 %}
 
 /* Regular expressions to match tokens */
-/*WHITESPACE              [ \t]*/
 LETTER                  [_a-zA-Z]
 ALPHANUM                {LETTER}|[0-9]
 IDENTIFIER              {LETTER}{ALPHANUM}*
@@ -104,8 +99,50 @@ SEMICOLON               ";"
 INTEGER                 [0-9]+
 FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 
+
+%{
+typedef struct stack {
+    int data;
+    struct stack *next;
+} stack;
+
+stack *top = NULL;
+
+void push(int value) {
+    stack *new_node = (stack *) malloc(sizeof(stack));
+    new_node->data = value;
+    new_node->next = top;
+    top = new_node;
+}
+
+int pop() {
+    if (top == NULL) 
+        return -1;
+    int value = top->data;
+    stack *temp = top;
+    top = top->next;
+    free(temp);
+    return value;
+}
+
+int peek() {
+    if (top == NULL) 
+        return -1;
+    return top->data;
+}
+
+int count_spaces(char *str) {
+    int count = 0;
+    while (*str == ' ' || *str == '\t') {
+        count++;
+        str++;
+    }
+    return count;
+}
+%}
+
 /* start state for parsing the indentation */
-%x DEDENTATION
+%x indent
 %x comment
 %x string
 /* normal start state for everything else */
@@ -113,97 +150,40 @@ FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 
 %%
 
-%{
-    if (top == -1) {
-        indent_stack[++top] = 0;
-    }
-%}
-
-
-^[ \t]*\r?\n   { /* Skip blank lines */ }
-
-^[ \t]*#.*\r?\n    { /* Skip whole-line comments. */ }
-
-#.*$             { /* Skip comments on the same line as a statement. */ }
-
-
-^[^ \t\n]+ {
-    if (indent_stack[top]!= 0){
-        copyyytext=strdup(yytext);
-        firstChar = yytext[0];
-        unput(yytext[0]);
-        BEGIN(DEDENTATION);
-    }
-    else
-    {
-        REJECT;
-    }
-}
-
-^[ \t]+  {
-    if (indent_stack[top] < yyleng) {
-        indent_stack[++top] = yyleng;
-    
+<indent>[ ]+ { 
+    int current = count_spaces(yytext);
+    if (current > peek()) {
+        push(current);
         return INDENT;
-    } else if (indent_stack[top] > yyleng) {
-        dedent_level=yyleng;
-        unput(32);/*32 for space*/
-        BEGIN(DEDENTATION);
-    }
-}
-
-
-<DEDENTATION>[ ] {
-        if (top >= 0 && indent_stack[top] != dedent_level) {
-            handle_dedent();
-            return DEDENT;
-            unput(32);
-        }
-        else {
-            dedent_level=0;
-            BEGIN(normal);
-        }
-        if (top == -1) {
-            fprintf(stderr, "Error: Incorrect indentation on line %d\n", yylineno);
-            exit(1);
-        }
-}
-
-<DEDENTATION>[^ \t\n] {
-    if (indent_stack[top] != 0) {
-        top--;
-        unput(yytext[0]);
+    }else if(current < peek()) {
+        pop();
         return DEDENT;
     }
-    else {
-        for (int i = strlen(copyyytext) - 1; i >= 0; i--) 
-            unput(copyyytext[i]);
-        BEGIN(normal);
-    }
 }
 
-\r?\n       {
+<indent>"\n" {
+    BEGIN (indent);
     return NEWLINE;
 }
 
-\"[^\n\"]*\"    { 
-                    return LITERALSTRING;
-                }
+<indent>[\"|\']{3} { 
+    BEGIN (comment);
+}
 
-[ \t]   { 
-            /* Ignore spaces that haven't been handled above. */ 
-        }
+<indent>. {
+    unput(*yytext);
+    BEGIN (normal);
+}
 
 <comment>[^\\\\|\"|\']+         { }
 <comment>\\\\(.|\\n)            { } 
 <comment>[\"|\'][\"|\']?        { } 
-<comment>[\"|\']{3}             { BEGIN (DEDENTATION); return MULTILINECOMMENT; }
+<comment>[\"|\']{3}             { BEGIN (indent); return MULTILINECOMMENT; }
 
 "\n" {
-    BEGIN (DEDENTATION);
+    BEGIN (indent);
     return NEWLINE;
 }
-
 <normal>[\"|\']{3} {
     BEGIN (string);
 }
@@ -211,7 +191,7 @@ FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 <string>[^\\\\|\"|\']+         { }
 <string>\\\\(.|\\n)            { }
 <string>[\"|\'][\"|\']?        { }
-<string>[\"|\']{3}             { BEGIN (DEDENTATION); return MULTILINESTRING; }
+<string>[\"|\']{3}             { BEGIN (indent); return MULTILINESTRING; }
 
 {ADD}                   {/*printf("ADD: %s\n", yytext);*/return ADD;}
 {MINUS}                 {/*printf("MINUS: %s\n", yytext);*/return MINUS;}
@@ -286,7 +266,7 @@ FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 {KEYWORD_OR}            {/*printf("KEYWORD_OR: %s \n",yytext);*/return KEYWORD_OR;}
 {KEYWORD_YIELD}         {/*printf("KEYWORD_YIELD: %s \n",yytext);*/return KEYWORD_YIELD;}
 {KEYWORD_MATCH}         {/*printf("KEYWORD_MATCH: %s \n",yytext);*/return KEYWORD_MATCH;}
-{KEYWORD_CASE}         {/*printf("KEYWORD_CASE: %s \n",yytext);*/return KEYWORD_CASE;}
+{KEYWORD_CASE}          {/*printf("KEYWORD_CASE: %s \n",yytext);*/return KEYWORD_CASE;}
 {LITERALSTRING}         {/*printf("STRING_LITERAL: %s\n", yytext);*/return LITERALSTRING;}
 {LITERALCHAR}           {/*printf("CHAR_LITERAL: %s\n", yytext);*/return LITERALCHAR;}
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}
@@ -294,18 +274,18 @@ FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
                             yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext);
                             return IDENTIFIER;
                         }
-{INTEGER}               {/*printf("INTEGER: %s\n", yytext);*/return INTEGER;}
-{FLOAT}                 {/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}
-. 			            {/* Ignore everything else. */ BEGIN (DEDENTATION);}
-<<EOF>> {
-            while (top > 0) {
-                handle_dedent();
-                return DEDENT;            
-            }
-}
+{INTEGER}               {   
+                            yylval.astNode = new NumberNode("INTEGER", "Integer", atoi(yytext));
+                            return INTEGER;
+                        }
+{FLOAT}                 {
+                            yylval.astNode = new NumberNode("FLOAT", "Float", atoi(yytext));
+                            return FLOAT;
+                        }
+. 			            {/* Ignore everything else. */ BEGIN (indent);}
+<<EOF>>                 {
+                            while (peek() != -1) 
+                                return DEDENT;
+                        }
 
 %%
-
-void handle_dedent() {
-        top--;
-}
