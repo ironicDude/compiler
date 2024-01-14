@@ -37,24 +37,13 @@ extern int yylex();
 
 %%
 
-/* Parser Grammar */
-prog        : /*empty */    { /* for empty put % empty */}
-            | NEWLINE
-            | prog statements {
+prog  :                 { }
+      | NEWLINE         { }
+      | prog statements {
                               printf("------------ PROGRAM ACCEPTED ------------\n");
                               YYACCEPT;
                         }
-            ;
-            /* | method prog {
-                              printf("prog accepted:\n");
-                              YYACCEPT;
-                        }
-            | class prog {
-                        printf("prog accepted:\n");
-                        YYACCEPT;
-                  }
-            ; 
-            */
+      ;
 
 statements  : statements statement
             | statement
@@ -99,7 +88,7 @@ import_statments  : import_statment NEWLINE
 
 import_statment   : KEYWORD_IMPORT member_expression 
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT '*'
+                  | KEYWORD_FROM member_expression KEYWORD_IMPORT MULTIPLY
                   | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
@@ -120,7 +109,7 @@ expression  : expression ADD expression         { }
             | expression MINUS expression       { }
             | expression MULTIPLY expression    { }
             | expression DIVIDE expression      { }
-            | expression POWER expression      { }
+            | expression POWER expression       { }
             | expression MODULO expression
             | '|' expression  %prec UMINUS      { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
@@ -129,8 +118,8 @@ expression  : expression ADD expression         { }
             | LEFT_PARENTHES expression RIGHT_PARENTHES                { }
             | MINUS expression %prec UMINUS       { }
             | number                            { }
-            | member_expression
-            | function_call
+            | member_expression                 { }
+            | function_call                     { }
             | LITERALSTRING
             | LIST
             | TUPLE
@@ -143,58 +132,69 @@ number: INTEGER
       | FLOAT
       ;
 
-del_statment      : KEYWORD_DEL IDENTIFIER
-                  | KEYWORD_DEL IDENTIFIER LIST
+del_statment      : KEYWORD_DEL IDENTIFIER      { }
+                  | KEYWORD_DEL IDENTIFIER LIST { }
                   ;
 
 return_statement  :KEYWORD_RETURN expression
                   | KEYWORD_RETURN logical_expression
                   ;
 
-yield_statement  :  KEYWORD_YIELD expression ;
+yield_statement  :  KEYWORD_YIELD expression
+                  ;
 
-assert_statement: KEYWORD_ASSERT logical_expression
-                  | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING;
+assert_statement  : KEYWORD_ASSERT logical_expression
+                  | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING
+                  ;
 
-raise_statement: KEYWORD_RAISE function_call
+raise_statement   : KEYWORD_RAISE function_call
                   | KEYWORD_RAISE function_call KEYWORD_FROM IDENTIFIER
                   ;
 
-global_statement: KEYWORD_GLOBAL global_nonlocal_targets
-                  ;
-nonlocal_statement: KEYWORD_NONLOCAL global_nonlocal_targets
+global_statement  : KEYWORD_GLOBAL global_nonlocal_targets
                   ;
 
-global_nonlocal_targets: IDENTIFIER
-                  | IDENTIFIER COMMA global_nonlocal_targets
+nonlocal_statement      : KEYWORD_NONLOCAL global_nonlocal_targets
+                        ;
+
+global_nonlocal_targets : IDENTIFIER
+                        | IDENTIFIER COMMA global_nonlocal_targets
+                        ;
+
+match_statement   : KEYWORD_MATCH IDENTIFIER COLON match_block
                   ;
 
-match_statement: KEYWORD_MATCH IDENTIFIER COLON match_block;
-
-match_block: NEWLINE INDENT cases DEDENT;
-
-cases: cases case
-      | case
-      ;
-case: KEYWORD_CASE expression COLON block;
-
-try_statement: try finally
-            | try except_statements
-            | try except_statements finally
-            | try except_statements else_statement
-            | try except_statements else_statement finally
+match_block : NEWLINE INDENT cases DEDENT
             ;
 
-try: KEYWORD_TRY COLON block
+cases : cases case
+      | case
+      ;
+
+case  : KEYWORD_CASE expression COLON block
+      ;
+
+try_statement     : try finally
+                  | try except_statements
+                  | try except_statements finally
+                  | try except_statements else_statement
+                  | try except_statements else_statement finally
+                  ;
+
+try   : KEYWORD_TRY COLON block
+      ;
+
 except: KEYWORD_EXCEPT COLON block
       | KEYWORD_EXCEPT member_expression COLON block
       | KEYWORD_EXCEPT member_expression KEYWORD_AS IDENTIFIER COLON block
       ;
-finally: KEYWORD_FINALLY COLON block
 
-except_statements: except_statements except
-      | except
-      ;
+finally     : KEYWORD_FINALLY COLON block
+            ;
+
+except_statements : except_statements except
+                  | except
+                  ;
 
 with_statment     : KEYWORD_WITH with_stmt COLON block
                   ;

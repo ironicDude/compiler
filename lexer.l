@@ -90,6 +90,7 @@ COMMA                   ","
 SEMICOLON               ";"
 INTEGER                 [0-9]+
 FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
+
 /* Define a stack to store indentation levels */
 %{
 typedef struct stack {
@@ -99,7 +100,6 @@ typedef struct stack {
 
 stack *top = NULL;
 
-/* Push a value to the stack */
 void push(int value) {
     stack *new_node = (stack *) malloc(sizeof(stack));
     new_node->data = value;
@@ -107,7 +107,6 @@ void push(int value) {
     top = new_node;
 }
 
-/* Pop a value from the stack */
 int pop() {
     if (top == NULL) 
         return -1;
@@ -118,49 +117,24 @@ int pop() {
     return value;
 }
 
-/* Peek the top value of the stack */
 int peek() {
     if (top == NULL) 
         return -1;
     return top->data;
 }
 
-/* Count the number of spaces at the beginning of a string */
 int count_spaces(char *str) {
     int count = 0;
-    while (*str == ' ' || *str == '\t') {    
+    while (*str == ' ' || *str == '\t') {
         count++;
         str++;
     }
     return count;
 }
-
-/* Handle indentation and dedentation */
-int handle_indent(char *str) {
-    int new_indent = count_spaces(str);
-    int current_indent = peek();
-    if (new_indent > current_indent) {
-        push(new_indent);
-        return new_indent;
-    } else if (new_indent < current_indent) {
-        while (new_indent < current_indent) {
-            int value = pop();
-            current_indent = peek();
-            return value;
-        }
-        if (new_indent == current_indent) 
-            return 0;
-        else {
-            fprintf(stderr, "Invalid indentation\n");
-            exit(1);
-        }
-    } else 
-        return 0;
-}
 %}
 
 /* start state for parsing the indentation */
-%x indent 
+%x indent
 %x comment
 %x string
 /* normal start state for everything else */
@@ -172,56 +146,49 @@ int handle_indent(char *str) {
     //     BEGIN indent;
     // %}
 
-<indent>" "+ { 
+<indent>[ ]+ { 
     int current = count_spaces(yytext);
-    int token = handle_indent(yytext); 
-    if (token != 0) { 
-        if(current < token){
-            /*printf("DEDENT: %d \n", token); */
-            return DEDENT;
-        }
-        else{
-            /*printf("INDENT: %d\n", token);*/
-            return INDENT;
-        }
-        BEGIN indent;
+    if (current > peek()) {
+        push(current);
+        return INDENT;
+    }else if(current < peek()) {
+        pop();
+        return DEDENT;
     }
 }
 
-<indent>"\n" { 
-    // printf("\n");
-    BEGIN indent;
+<indent>"\n" {
+    BEGIN (indent);
     return NEWLINE;
 }
 
 <indent>[\"|\']{3} { 
-    BEGIN comment;
+    BEGIN (comment);
 }
 
 <indent>. {
     unput(*yytext);
-    BEGIN normal;
+    BEGIN (normal);
 }
 
-<comment>[^\\\\|\"|\']+         { /*printf("inside triple comment1: %s \n", yytext);*/ }
-<comment>\\\\(.|\\n)            { /*printf("inside triple comment2: %s \n", yytext);*/ }
-<comment>[\"|\'][\"|\']?        { /*printf("inside triple comment3: %s \n", yytext);*/ }
-<comment>[\"|\']{3}             { /*printf("end of triple comment: %s \n", yytext);*/ BEGIN (indent); return MULTILINECOMMENT; }
+<comment>[^\\\\|\"|\']+         { }
+<comment>\\\\(.|\\n)            { } 
+<comment>[\"|\'][\"|\']?        { } 
+<comment>[\"|\']{3}             { BEGIN (indent); return MULTILINECOMMENT; }
 
 "\n" {
-    // printf("hkljhkljkljhkhkljhkhkhlk\n"); 
-    BEGIN indent;
+    BEGIN (indent);
     return NEWLINE;
 }
 
 <normal>[\"|\']{3} {
-    BEGIN string;
+    BEGIN (string);
 }
 
-<string>[^\\\\|\"|\']+         { /*printf("inside triple string: %s \n", yytext);*/ }
-<string>\\\\(.|\\n)            { /*printf("inside triple string: %s \n", yytext);*/ }
-<string>[\"|\'][\"|\']?        { /*printf("inside triple string: %s \n", yytext);*/ }
-<string>[\"|\']{3}             { /*printf("end of triple string: %s \n", yytext);*/ BEGIN (indent); return MULTILINESTRING; }
+<string>[^\\\\|\"|\']+         { }
+<string>\\\\(.|\\n)            { }
+<string>[\"|\'][\"|\']?        { }
+<string>[\"|\']{3}             { BEGIN (indent); return MULTILINESTRING; }
 
 {ADD}                   {/*printf("ADD: %s\n", yytext);*/return ADD;}
 {MINUS}                 {/*printf("MINUS: %s\n", yytext);*/return MINUS;}
@@ -304,10 +271,9 @@ int handle_indent(char *str) {
 {IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/return IDENTIFIER;}
 {INTEGER}               {/*printf("INTEGER: %s\n", yytext);*/return INTEGER;}
 {FLOAT}                 {/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}
-. 			            {/* Ignore everything else. */}
+. 			            {/* Ignore everything else. */ BEGIN (indent);}
 <<EOF>>                 {
                             while (peek() != -1) 
-                                //printf("DEDENT: %d\n", pop());
                                 return DEDENT;
                         }
 
