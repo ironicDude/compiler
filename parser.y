@@ -221,13 +221,14 @@ class : class_with_inheritance
       | class_without_inheritance
       ;
 
-class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT
+class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block
                         ;
 
-class_block : 
-            | class_block assignment
-            | class_block function
-            | class_block NEWLINE
+class_block: NEWLINE INDENT class_body DEDENT;
+
+class_body: | class_body assignment
+            | class_body function
+            | class_body NEWLINE
             ;
 
 class_without_inheritance     : KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT
