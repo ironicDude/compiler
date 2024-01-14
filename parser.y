@@ -243,6 +243,8 @@ function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON b
                   $$ = new FunctionNode(idFunc->value);
                   $$->add($4);
                   $$->add($7);
+                  root = $$;
+                  YYACCEPT;
             };
 
 block : NEWLINE INDENT statements DEDENT  {

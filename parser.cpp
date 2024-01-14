@@ -527,11 +527,11 @@ static const yytype_uint16 yyrline[] =
      170,   171,   174,   177,   180,   181,   184,   187,   188,   189,
      190,   191,   194,   197,   198,   201,   204,   205,   208,   211,
      212,   215,   216,   219,   222,   224,   225,   226,   227,   230,
-     233,   234,   235,   236,   239,   248,   252,   253,   254,   255,
-     256,   259,   260,   261,   264,   265,   266,   267,   268,   269,
-     270,   271,   272,   273,   274,   275,   278,   281,   282,   283,
-     284,   287,   288,   291,   292,   295,   298,   299,   302,   303,
-     304,   305,   306,   307,   310,   311
+     233,   234,   235,   236,   239,   251,   255,   256,   257,   258,
+     259,   262,   263,   264,   267,   268,   269,   270,   271,   272,
+     273,   274,   275,   276,   277,   278,   281,   284,   285,   286,
+     287,   290,   291,   294,   295,   298,   301,   302,   305,   306,
+     307,   308,   309,   310,   313,   314
 };
 #endif
 
@@ -1774,26 +1774,29 @@ yyreduce:
                   (yyval.astNode) = new FunctionNode(idFunc->value);
                   (yyval.astNode)->add((yyvsp[-3].astNode));
                   (yyval.astNode)->add((yyvsp[0].astNode));
+                  printf((yyval.astNode));
+                  root = (yyval.astNode);
+                  YYACCEPT;
             }
-#line 1779 "parser.cpp" /* yacc.c:1646  */
+#line 1782 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 248 "parser.y" /* yacc.c:1646  */
+#line 251 "parser.y" /* yacc.c:1646  */
     {
             (yyval.astNode) = (yyvsp[-1].astNode);
       }
-#line 1787 "parser.cpp" /* yacc.c:1646  */
+#line 1790 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 252 "parser.y" /* yacc.c:1646  */
+#line 255 "parser.y" /* yacc.c:1646  */
     { (yyval.astNode) = NULL; }
-#line 1793 "parser.cpp" /* yacc.c:1646  */
+#line 1796 "parser.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 1797 "parser.cpp" /* yacc.c:1646  */
+#line 1800 "parser.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2021,7 +2024,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 314 "parser.y" /* yacc.c:1906  */
+#line 317 "parser.y" /* yacc.c:1906  */
 
 
 int main(int argc, char **argv) {
