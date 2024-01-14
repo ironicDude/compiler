@@ -10,7 +10,7 @@
 LETTER                  [_a-zA-Z]
 ALPHANUM                {LETTER}|[0-9]
 IDENTIFIER              {LETTER}{ALPHANUM}*
-LIST                    (\[\s*([^,\[\]]+)\s*(,\s*([^,\[\]]+)\s*)*\])
+LIST                    (\[\s*([^,\[\]]*)\s*(,\s*([^,\[\]]*)\s*)*\])
 LITERALSTRING           \"([^\"\\\\]|\\\\.)*\" 
 LITERALCHAR             \"([^\"]|\\\\.)\" 
 KEYWORD_FALSE           False
