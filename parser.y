@@ -1,34 +1,46 @@
+%code requires {
+      #include "python_ast_node.hpp"
+      #include <iostream>
+      #include <string>
+}
+%union{
+	AstNode* astNode;
+}
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-int yydebug=1;
-FILE *yyin;
-void yyerror(const char *);
-extern int yylex();
+      extern int yylex();
+      extern int yyparse();
+      extern FILE *yyin;
+      void yyerror(const char *);
+      AstNode* root = NULL;
+      int n_nodes = 0;
 %}
 
 /* Tokens */
-%token WHITESPACE LETTER ALPHANUM IDENTIFIER LIST
-%token LITERALSTRING LITERALCHAR KEYWORD_FALSE KEYWORD_TRUE MULTILINESTRING
-%token KEYWORD_AWAIT KEYWORD_IF KEYWORD_ELSE KEYWORD_ELSE_IF 
-%token KEYWORD_IMPORT KEYWORD_PASS KEYWORD_NONE KEYWORD_BREAK
-%token KEYWORD_EXCEPT KEYWORD_IN KEYWORD_RAISE KEYWORD_CLASS
-%token KEYWORD_FINALLY KEYWORD_IS KEYWORD_RETURN KEYWORD_AND
-%token KEYWORD_CONTINUE KEYWORD_FOR KEYWORD_LAMBDA KEYWORD_TRY
-%token KEYWORD_AS KEYWORD_DEF KEYWORD_FROM KEYWORD_NONLOCAL
-%token KEYWORD_WHILE KEYWORD_ASSERT KEYWORD_DEL KEYWORD_GLOBAL
-%token KEYWORD_NOT KEYWORD_WITH KEYWORD_ASYNC KEYWORD_OR
-%token KEYWORD_YIELD OPERATORS COMMENT ADD MINUS MULTIPLY MULTILINECOMMENT 
-%token DIVIDE POWER MODULO ASSIGN ASSIGNADD ASSIGNMINUS 
-%token ASSIGNMULTIPLY ASSIGNDIVIDE ASSIGNMODULO ASSIGNFLOORDIVISION
-%token ASSIGNEXPONINTIATION ASSIGNBITWISEAND ASSIGNBITWISEOR
-%token ASSIGNBITWISEXOR ASSIGNRIGHTSHIFT ASSIGNLEFTSHIFT EQUAL NOT
-%token NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
-%token LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
-%token LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
-%token INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
-
+%token <astNode> WHITESPACE LETTER ALPHANUM IDENTIFIER LIST
+%token <astNode> LITERALSTRING LITERALCHAR KEYWORD_FALSE KEYWORD_TRUE MULTILINESTRING
+%token <astNode> KEYWORD_AWAIT KEYWORD_IF KEYWORD_ELSE KEYWORD_ELSE_IF 
+%token <astNode> KEYWORD_IMPORT KEYWORD_PASS KEYWORD_NONE KEYWORD_BREAK
+%token <astNode> KEYWORD_EXCEPT KEYWORD_IN KEYWORD_RAISE KEYWORD_CLASS
+%token <astNode> KEYWORD_FINALLY KEYWORD_IS KEYWORD_RETURN KEYWORD_AND
+%token <astNode> KEYWORD_CONTINUE KEYWORD_FOR KEYWORD_LAMBDA KEYWORD_TRY
+%token <astNode> KEYWORD_AS KEYWORD_DEF KEYWORD_FROM KEYWORD_NONLOCAL
+%token <astNode> KEYWORD_WHILE KEYWORD_ASSERT KEYWORD_DEL KEYWORD_GLOBAL
+%token <astNode> KEYWORD_NOT KEYWORD_WITH KEYWORD_ASYNC KEYWORD_OR
+%token <astNode> KEYWORD_YIELD OPERATORS COMMENT ADD MINUS MULTIPLY MULTILINECOMMENT 
+%token <astNode> DIVIDE POWER MODULO ASSIGN ASSIGNADD ASSIGNMINUS 
+%token <astNode> ASSIGNMULTIPLY ASSIGNDIVIDE ASSIGNMODULO ASSIGNFLOORDIVISION
+%token <astNode> ASSIGNEXPONINTIATION ASSIGNBITWISEAND ASSIGNBITWISEOR
+%token <astNode> ASSIGNBITWISEXOR ASSIGNRIGHTSHIFT ASSIGNLEFTSHIFT EQUAL NOT
+%token <astNode> NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
+%token <astNode> LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
+%token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
+%token <astNode> INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
+%type  <astNode> prog statements statement simple_statement compound_statement import_statments import_statment
+%type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
+%type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
+%type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class class_with_inheritance 
+%type  <astNode> class_block  class_without_inheritance function_call function block args member_expression logical_expression
+%type  <astNode> conditional_statement elif_else elif_stmts if_statement else_statement elif_statement for_statement while_statement
 %error-verbose
 %nonassoc EQUAL
 %left '+' '-'
@@ -41,17 +53,20 @@ prog  :                 { }
       | NEWLINE         { }
       | prog statements {
                               printf("------------ PROGRAM ACCEPTED ------------\n");
+                              $$ = new StatementsNode("prog");
+                              $$->add($1);
+                              root = $$;
                               YYACCEPT;
                         }
       ;
 
-statements  : statements statement
-            | statement
-            | statements NEWLINE
+statements  : statements statement  { $1->add($2); $$ = $1; }
+            | statement             { $$ = $1; }
+            | statements NEWLINE    { $$ = $1; }
             ;
 
-statement   : compound_statement 
-            | simple_statement
+statement   : compound_statement    { $$ = $1; }
+            | simple_statement      { $$ = $1; }
             | NEWLINE
             | COMMENT
             | MULTILINECOMMENT
@@ -68,12 +83,15 @@ simple_statement  : assignment
                   | import_statments
                   | function_call
                   | with_statment
-                  | KEYWORD_PASS
+                  | KEYWORD_PASS          {
+                        $$ = new StatementsNode("pass");
+                        $$->add($1);
+                  }
                   | KEYWORD_BREAK
                   | KEYWORD_CONTINUE
                   ;
 
-compound_statement: function
+compound_statement: function                    { $$ = $1; }
                   | conditional_statement
                   | class
                   | for_statement
@@ -221,13 +239,20 @@ function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES
                   | IDENTIFIER LEFT_PARENTHES function_call RIGHT_PARENTHES
                   ;
 
-function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block
-            ;
+function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block {
+                  std::string name = "function" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+                  $$ = new FunctionNode(idFunc->value);
+                  $$->add($4);
+                  $$->add($7);
+            };
 
-block : NEWLINE INDENT statements DEDENT
-      ;
+block : NEWLINE INDENT statements DEDENT  {
+            $$ = $3;
+      };
 
-args  :
+args  :                       { $$ = NULL; }
       | args expression COMMA
       | args expression 
       | expression COMMA

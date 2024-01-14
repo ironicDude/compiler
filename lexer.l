@@ -1,9 +1,23 @@
+%option noyywrap
 %{
+#pragma warning (disable: 4005)
+#include "parser.hpp"
+#include "python_ast_node.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "parser.tab.h"
+#include <string.h>
+#include <cmath>
+using namespace std;
+extern int yylex();
+int indent_stack[100];
+int top = -1;
+int dedent_level = 0;  
+void handle_dedent();
+
+char firstChar;
+char *copyyytext;
 %}
-%option noyywrap
 
 /* Regular expressions to match tokens */
 /*WHITESPACE              [ \t]*/
@@ -90,50 +104,8 @@ SEMICOLON               ";"
 INTEGER                 [0-9]+
 FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 
-/* Define a stack to store indentation levels */
-%{
-typedef struct stack {
-    int data;
-    struct stack *next;
-} stack;
-
-stack *top = NULL;
-
-void push(int value) {
-    stack *new_node = (stack *) malloc(sizeof(stack));
-    new_node->data = value;
-    new_node->next = top;
-    top = new_node;
-}
-
-int pop() {
-    if (top == NULL) 
-        return -1;
-    int value = top->data;
-    stack *temp = top;
-    top = top->next;
-    free(temp);
-    return value;
-}
-
-int peek() {
-    if (top == NULL) 
-        return -1;
-    return top->data;
-}
-
-int count_spaces(char *str) {
-    int count = 0;
-    while (*str == ' ' || *str == '\t') {
-        count++;
-        str++;
-    }
-    return count;
-}
-%}
-
 /* start state for parsing the indentation */
-%x indent
+%x DEDENTATION
 %x comment
 %x string
 /* normal start state for everything else */
@@ -141,42 +113,94 @@ int count_spaces(char *str) {
 
 %%
 
-    // %{
-    //     BEGIN indent;
-    // %}
+%{
+    if (top == -1) {
+        indent_stack[++top] = 0;
+    }
+%}
 
-<indent>[ ]+ { 
-    int current = count_spaces(yytext);
-    if (current > peek()) {
-        push(current);
-        return INDENT;
-    }else if(current < peek()) {
-        pop();
-        return DEDENT;
+
+^[ \t]*\r?\n   { /* Skip blank lines */ }
+
+^[ \t]*#.*\r?\n    { /* Skip whole-line comments. */ }
+
+#.*$             { /* Skip comments on the same line as a statement. */ }
+
+
+^[^ \t\n]+ {
+    if (indent_stack[top]!= 0){
+        copyyytext=strdup(yytext);
+        firstChar = yytext[0];
+        unput(yytext[0]);
+        BEGIN(DEDENTATION);
+    }
+    else
+    {
+        REJECT;
     }
 }
 
-<indent>"\n" {
-    BEGIN (indent);
+^[ \t]+  {
+    if (indent_stack[top] < yyleng) {
+        indent_stack[++top] = yyleng;
+    
+        return INDENT;
+    } else if (indent_stack[top] > yyleng) {
+        dedent_level=yyleng;
+        unput(32);/*32 for space*/
+        BEGIN(DEDENTATION);
+    }
+}
+
+
+<DEDENTATION>[ ] {
+        if (top >= 0 && indent_stack[top] != dedent_level) {
+            handle_dedent();
+            return DEDENT;
+            unput(32);
+        }
+        else {
+            dedent_level=0;
+            BEGIN(normal);
+        }
+        if (top == -1) {
+            fprintf(stderr, "Error: Incorrect indentation on line %d\n", yylineno);
+            exit(1);
+        }
+}
+
+<DEDENTATION>[^ \t\n] {
+    if (indent_stack[top] != 0) {
+        top--;
+        unput(yytext[0]);
+        return DEDENT;
+    }
+    else {
+        for (int i = strlen(copyyytext) - 1; i >= 0; i--) 
+            unput(copyyytext[i]);
+        BEGIN(normal);
+    }
+}
+
+\r?\n       {
     return NEWLINE;
 }
 
-<indent>[\"|\']{3} { 
-    BEGIN (comment);
-}
+\"[^\n\"]*\"    { 
+                    return LITERALSTRING;
+                }
 
-<indent>. {
-    unput(*yytext);
-    BEGIN (normal);
-}
+[ \t]   { 
+            /* Ignore spaces that haven't been handled above. */ 
+        }
 
 <comment>[^\\\\|\"|\']+         { }
 <comment>\\\\(.|\\n)            { } 
 <comment>[\"|\'][\"|\']?        { } 
-<comment>[\"|\']{3}             { BEGIN (indent); return MULTILINECOMMENT; }
+<comment>[\"|\']{3}             { BEGIN (DEDENTATION); return MULTILINECOMMENT; }
 
 "\n" {
-    BEGIN (indent);
+    BEGIN (DEDENTATION);
     return NEWLINE;
 }
 
@@ -187,7 +211,7 @@ int count_spaces(char *str) {
 <string>[^\\\\|\"|\']+         { }
 <string>\\\\(.|\\n)            { }
 <string>[\"|\'][\"|\']?        { }
-<string>[\"|\']{3}             { BEGIN (indent); return MULTILINESTRING; }
+<string>[\"|\']{3}             { BEGIN (DEDENTATION); return MULTILINESTRING; }
 
 {ADD}                   {/*printf("ADD: %s\n", yytext);*/return ADD;}
 {MINUS}                 {/*printf("MINUS: %s\n", yytext);*/return MINUS;}
@@ -266,13 +290,22 @@ int count_spaces(char *str) {
 {LITERALSTRING}         {/*printf("STRING_LITERAL: %s\n", yytext);*/return LITERALSTRING;}
 {LITERALCHAR}           {/*printf("CHAR_LITERAL: %s\n", yytext);*/return LITERALCHAR;}
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}
-{IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/return IDENTIFIER;}
+{IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/
+                            yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext);
+                            return IDENTIFIER;
+                        }
 {INTEGER}               {/*printf("INTEGER: %s\n", yytext);*/return INTEGER;}
 {FLOAT}                 {/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}
-. 			            {/* Ignore everything else. */ BEGIN (indent);}
-<<EOF>>                 {
-                            while (peek() != -1) 
-                                return DEDENT;
-                        }
+. 			            {/* Ignore everything else. */ BEGIN (DEDENTATION);}
+<<EOF>> {
+            while (top > 0) {
+                handle_dedent();
+                return DEDENT;            
+            }
+}
 
 %%
+
+void handle_dedent() {
+        top--;
+}
