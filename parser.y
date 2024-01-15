@@ -63,19 +63,18 @@ prog  :                 {
                         }
       ;
 
-statements  : statement             { 
-                  std::string name = "Statement" + std::to_string(n_nodes);
-                  ++n_nodes;
+statements  :  {
+                  std::string name = "Statement" + std::to_string(++n_nodes);
                   $$ = new StatementsNode(name);
-                  $$->add($1);
             }
-            | statement NEWLINE     { 
-                  std::string name = "Statement" + std::to_string(n_nodes);
-                  ++n_nodes;
-                  $$ = new StatementsNode(name);
-                  $$->add($1);
+            | statements statement NEWLINE     { 
+                  $1->add($2);
+                  $$ = $1;
             }
-            | statements statement  { $1->add($2); $$ = $1; }
+            | statements statement  { 
+                  $1->add($2);
+                  $$ = $1; 
+            }
             ;
 
 statement   : compound_statement    { $$ = $1; }
@@ -86,16 +85,16 @@ statement   : compound_statement    { $$ = $1; }
             ;
 
 simple_statement  : assignment            { $$ = $1; }
-                  | return_statement
-                  | yield_statement
-                  | assert_statement
-                  | raise_statement
-                  | global_statement
-                  | nonlocal_statement
-                  | del_statment
-                  | import_statments
-                  | function_call
-                  | with_statment
+                  | return_statement      { $$ = $1; }
+                  | yield_statement       { $$ = $1; }
+                  | assert_statement      { $$ = $1; }
+                  | raise_statement       { $$ = $1; }
+                  | global_statement      { $$ = $1; }
+                  | nonlocal_statement    { $$ = $1; }
+                  | del_statment          { $$ = $1; }
+                  | import_statments      { $$ = $1; }
+                  | function_call         { $$ = $1; }
+                  | with_statment         { $$ = $1; }
                   | KEYWORD_PASS
                   | KEYWORD_BREAK
                   | KEYWORD_CONTINUE
@@ -166,12 +165,29 @@ number: INTEGER { $$ = $1; }
       | FLOAT   { $$ = $1; }
       ;
 
-del_statment      : KEYWORD_DEL IDENTIFIER      { }
-                  | KEYWORD_DEL IDENTIFIER LIST { }
+del_statment      : KEYWORD_DEL IDENTIFIER      {
+                        std::string name = "Del" + std::to_string(++n_nodes);
+                        $$ = new DelNode(name);
+                        $$->add($2);
+                  }
+                  | KEYWORD_DEL IDENTIFIER LIST { 
+                        std::string name = "Del" + std::to_string(++n_nodes);
+                        $$ = new DelNode(name);
+                        $$->add($2);
+                        $$->add($3);
+                  }
                   ;
 
-return_statement  : KEYWORD_RETURN expression
-                  | KEYWORD_RETURN logical_expression
+return_statement  : KEYWORD_RETURN expression {
+                        std::string name = "Return" + std::to_string(++n_nodes);
+                        $$ = new ReturnNode(name);
+                        $$->add($2);
+                  }
+                  | KEYWORD_RETURN logical_expression {
+                        std::string name = "Return" + std::to_string(++n_nodes);
+                        $$ = new ReturnNode(name);
+                        $$->add($2);
+                  }
                   ;
 
 yield_statement  :  KEYWORD_YIELD expression
@@ -443,8 +459,18 @@ for_statement     : KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block
                   | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block
                   ;
 
-while_statement   : KEYWORD_WHILE logical_expression COLON block
-                  | KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+while_statement   : KEYWORD_WHILE logical_expression COLON block {
+                        std::string name = "While" + std::to_string(++n_nodes);
+                        $$ = new WhileNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                  }
+                  | KEYWORD_WHILE LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block {
+                        std::string name = "While" + std::to_string(++n_nodes);
+                        $$ = new WhileNode(name);
+                        $$->add($3);
+                        $$->add($6);
+                  }
                   ;
 
 %%

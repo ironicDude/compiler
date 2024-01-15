@@ -224,6 +224,77 @@ public:
     }
 };
 
+class WhileNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    WhileNode(const std::string& name) {
+        this->name = name;
+        this->label = "While";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "()" << "\"]" << std::endl;
+        std::vector<AstNode*>::iterator it;
+        for (const auto& item : next) {
+            std::cout << "\t" << name << " -> " << item->name << ";" << std::endl;
+            item->print();
+        }
+    }
+};
+
+class DelNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    DelNode(const std::string& name) {
+        this->name = name;
+        this->label = "Del";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~DelNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class ReturnNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    ReturnNode(const std::string& name) {
+        this->name = name;
+        this->label = "Return";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~ReturnNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
 
 class Arg : public AstNode {
 private:
