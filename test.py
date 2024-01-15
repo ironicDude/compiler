@@ -1,4 +1,3 @@
 def x():
     y = 10
-    oa = 20
-    
+    return x + 1
