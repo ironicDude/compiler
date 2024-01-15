@@ -49,11 +49,14 @@
 
 %%
 
-prog  :                 { $$ = new StatementsNode("empty"); }
+prog  :                 { 
+                              std::string nname = "Program" + std::to_string(n_nodes);
+                              ++n_nodes;
+                              $$ = new EmptyNode(nname); 
+                        }
       | NEWLINE         { }
       | prog statements {
-                              printf("------------ PROGRAM ACCEPTED ------------\n");
-                              $$ = new StatementsNode("prog");
+                              $$ = new StatementsNode("Program");
                               $$->add($1);
                               $$->add($2);
                               root = $$;
@@ -109,13 +112,13 @@ import_statment   : KEYWORD_IMPORT member_expression
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
 
-assignment  : IDENTIFIER ASSIGN number {  $$ = new assignmentStatement("assign1");
-                                          std::string nname = "iden" + std::to_string(n_nodes);
-                                          ++n_nodes;
-                                          $1->name=nname;
-                                          $$->add($1);
-                                          $$->add($3);
-                                    }
+assignment  : member_expression ASSIGN expression {  $$ = new AssignmentStatement("assignment");
+                                                      std::string nname = "iden" + std::to_string(n_nodes);
+                                                      ++n_nodes;
+                                                      $1->name=nname;
+                                                      $$->add($1);
+                                                      $$->add($3);
+                                                }
             ;
 
 expression  : expression ADD expression         { } 
@@ -230,9 +233,14 @@ class_body  :
 class_without_inheritance     : KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT
                               ;
 
-function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES
-                  | IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES
-                  | IDENTIFIER LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES
+function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES {
+                                                                        $$ = new FunctionCall($1);
+                                                                        std::string nname = "iden" + std::to_string(n_nodes);
+                                                                        ++n_nodes;
+                                                                        $1->name=nname;
+                                                                        $$->add($1);
+                                                                        $$->add($3);
+                                                                  }
                   | IDENTIFIER LEFT_PARENTHES function_call RIGHT_PARENTHES
                   ;
 
@@ -243,8 +251,6 @@ function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON b
                   $$ = new FunctionNode(idFunc->value);
                   $$->add($4);
                   $$->add($7);
-                  root = $$;
-                  YYACCEPT;
             };
 
 block : NEWLINE INDENT statements DEDENT  { 
@@ -253,16 +259,25 @@ block : NEWLINE INDENT statements DEDENT  {
                                           }
       ;
 
-args  :                       { $$ = new Args("empty"); }
+args  :                       { 
+                                    std::string nname = "Args" + std::to_string(n_nodes);
+                                    ++n_nodes;
+                                    $$ = new EmptyNode(nname); 
+                              }
       | args expression COMMA
       | args expression 
       | expression COMMA
       | expression
       ;
 
-member_expression : IDENTIFIER 
-                  | member_expression %prec '.' IDENTIFIER 
-                  | member_expression %prec '.' function_call
+member_expression : IDENTIFIER      {
+                                    std::string nname = "iden" + std::to_string(n_nodes);
+                                    ++n_nodes;
+                                    $1->name=nname;
+                                    $$ = $1;
+                              }
+                  | member_expression %prec '.' IDENTIFIER        { $$ = new MemberExpression($1, $2); }
+                  | member_expression %prec '.' function_call     { $$ = new MemberExpression($1, $2); $$->add($2); }
                   ;
 
 logical_expression: expression
