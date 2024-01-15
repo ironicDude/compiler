@@ -79,6 +79,61 @@ public:
     }
 };
 
+class ClassNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    ClassNode(const std::string& name) {
+        this->name = name;
+        this->label = "ClassDeclaration";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label <<": "<<name<<"\"]" << std::endl;
+        std::vector<AstNode*>::iterator it;
+        for (const auto& item : next) {
+            std::cout << "\t" << name << " -> " << item->name << ";" << std::endl;
+            item->print();
+        }
+    }
+    ~ClassNode() {
+        for (const auto& arg : next) {
+            delete arg;
+        }
+    }
+};
+
+class ClassBodyNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    ClassBodyNode(const std::string& name) {
+        this->name = name;
+        this->label = "Body";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        // std::vector<AstNode*>::iterator it;
+        // for (it = next.begin(); it != next.end(); ++it) {
+        //     std::cout << "\t" << name << " -> " << (*it)->name << ";" << std::endl;
+        //     (*it)->print();
+        // }
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~ClassBodyNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
 // base node for representing identifier ,will create object  from lexer
 class IdentifierNode : public AstNode {
 public:
@@ -270,7 +325,7 @@ private:
 public:
     StatementsNode(const std::string& name) {
         this->name = name;
-        this->label = "Block Statements";
+        this->label = "Statements";
     }
     void add(AstNode* node) override {
         next.push_back(node);

@@ -10,7 +10,8 @@
 #include <cmath>
 using namespace std;
 extern int yylex();
-
+int number_of_nodes = 0;
+string name = "";
 char firstChar;
 char *copyyytext;
 %}
@@ -20,6 +21,7 @@ LETTER                  [_a-zA-Z]
 ALPHANUM                {LETTER}|[0-9]
 IDENTIFIER              {LETTER}{ALPHANUM}*
 LIST                    (\[\s*([^,\[\]]+)\s*(,\s*([^,\[\]]+)\s*)*\])
+TUPLE                   (\(\s*([^,\(\)]+)\s*(,\s*([^,\(\)]+)\s*)*\))
 LITERALSTRING           \"([^\"\\\\]|\\\\.)*\" 
 LITERALCHAR             \"([^\"]|\\\\.)\" 
 KEYWORD_FALSE           False
@@ -280,16 +282,23 @@ int count_spaces(char *str) {
                         }
 {LITERALCHAR}           {/*printf("CHAR_LITERAL: %s\n", yytext);*/return LITERALCHAR;}
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}
-{IDENTIFIER}            {
-                            yylval.astNode = new IdentifierNode("IDENTIFIER" + to_string(++nodeNumber), "Identifier", yytext);
+{TUPLE}                  {/*printf("tuple: %s \n",yytext);*/return TUPLE;}
+{IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/
+                            name = "IDENTIFIER" + to_string(number_of_nodes);
+                            ++number_of_nodes;
+                            yylval.astNode = new IdentifierNode(name, "Identifier", yytext);
                             return IDENTIFIER;
                         }
-{INTEGER}               {  
-                            yylval.astNode = new NumberNode("Integer" + to_string(++nodeNumber), "Integer", atoi(yytext));
+{INTEGER}               {   
+                            name = "INTEGER" + to_string(number_of_nodes);
+                            ++number_of_nodes;
+                            yylval.astNode = new NumberNode(name, "Integer", atoi(yytext));
                             return INTEGER;
                         }
 {FLOAT}                 {
-                            yylval.astNode = new NumberNode("Float" + to_string(++nodeNumber), "Float", atoi(yytext));
+                            name = "FLOAT" + to_string(number_of_nodes);
+                            ++number_of_nodes;
+                            yylval.astNode = new NumberNode(name, "Float", atoi(yytext));
                             return FLOAT;
                         }
 . 			            {/* Ignore everything else. */ BEGIN (indent);}

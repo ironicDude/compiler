@@ -14,7 +14,6 @@
       AstNode* root = NULL;
       int n_nodes = 0;
 %}
-
 /* Tokens */
 %token <astNode> WHITESPACE LETTER ALPHANUM IDENTIFIER LIST
 %token <astNode> LITERALSTRING LITERALCHAR KEYWORD_FALSE KEYWORD_TRUE MULTILINESTRING
@@ -33,13 +32,13 @@
 %token <astNode> ASSIGNBITWISEXOR ASSIGNRIGHTSHIFT ASSIGNLEFTSHIFT EQUAL NOT
 %token <astNode> NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
 %token <astNode> LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
-%token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
+%token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON TUPLE
 %token <astNode> INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
 %type  <astNode> prog statements statement simple_statement compound_statement import_statments import_statment
 %type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
 %type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
-%type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class class_with_inheritance 
-%type  <astNode> class_block  class_without_inheritance function_call function block args member_expression logical_expression
+%type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class 
+%type  <astNode> class_block  class_body function_call function block args member_expression logical_expression
 %type  <astNode> conditional_statement elif_else elif_stmts if_statement else_statement elif_statement for_statement while_statement
 %error-verbose
 %nonassoc EQUAL
@@ -64,9 +63,19 @@ prog  :                 {
                         }
       ;
 
-statements  : statements statement  { $1->add($2); $$ = $1; }
-            | statement             { $$ = $1; }
-            | statements NEWLINE    { $$ = $1; }
+statements  : statement             { 
+                  std::string name = "Statement" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  $$ = new StatementsNode(name);
+                  $$->add($1);
+            }
+            | statement NEWLINE     { 
+                  std::string name = "Statement" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  $$ = new StatementsNode(name);
+                  $$->add($1);
+            }
+            | statements statement  { $1->add($2); $$ = $1; }
             ;
 
 statement   : compound_statement    { $$ = $1; }
@@ -142,14 +151,15 @@ expression  : expression ADD expression   {
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                                       rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
                                                 }
-            | '(' expression ')'                { $$ = $2; }
-            | '-' expression %prec UMINUS       { }
+            | LEFT_PARENTHES expression RIGHT_PARENTHES                {$$ = $2; }
+            | MINUS expression %prec UMINUS       { }
+            | LIST
+            | TUPLE
+            | KEYWORD_NONE
             | number                            { $$ = $1; }
             | member_expression                 { $$ = $1; }
             | function_call                     { $$ = $1; }
             | LITERALSTRING                     { $$ = $1; }
-            | LIST                              { }
-            | KEYWORD_NONE                      { }
             ;
 
 number: INTEGER { $$ = $1; }
@@ -164,7 +174,7 @@ return_statement  : KEYWORD_RETURN expression
                   | KEYWORD_RETURN logical_expression
                   ;
 
-yield_statement   :  KEYWORD_YIELD expression
+yield_statement  :  KEYWORD_YIELD expression
                   ;
 
 assert_statement  : KEYWORD_ASSERT logical_expression
@@ -210,6 +220,7 @@ try   : KEYWORD_TRY COLON block
 
 except: KEYWORD_EXCEPT COLON block
       | KEYWORD_EXCEPT member_expression COLON block
+      | KEYWORD_EXCEPT member_expression KEYWORD_AS IDENTIFIER COLON block
       ;
 
 finally     : KEYWORD_FINALLY COLON block
@@ -226,23 +237,47 @@ with_stmt   : function_call KEYWORD_AS IDENTIFIER
             | with_stmt COMMA function_call KEYWORD_AS IDENTIFIER
             ;
 
-class : class_with_inheritance 
-      | class_without_inheritance
+class : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block {
+                  std::string name = "class with inheritance" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+                  $$ = new ClassNode(idFunc->value);
+                  $$->add($4);
+                  $$->add($7);
+                  }
+
+      | KEYWORD_CLASS IDENTIFIER COLON class_block {
+                  std::string name = "class without inheritance" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+                  $$ = new ClassNode(idFunc->value);
+                  $$->add($4);
+                  }
       ;
 
-class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block
-                        ;
 
-class_block: NEWLINE INDENT class_body DEDENT;
+class_block: NEWLINE INDENT class_body DEDENT{
+                                                $$ = $3;
+                                          };
 
-class_body  : 
-            | class_body assignment
-            | class_body function
-            | class_body NEWLINE
+class_body  : /* Empty */ { 
+            std::string nname = "Classbody" + std::to_string(n_nodes);
+            ++n_nodes;
+            $$ = new EmptyNode(nname);
+            }
+            | class_body function { 
+                  $$ = new ClassBodyNode("ClassBody");
+                  $$->add($2);
+
+            }
+            | class_body assignment { 
+                  $$ = new ClassBodyNode("ClassBody");
+                  $$->add($2);
+            }
+            | class_body NEWLINE{
+                  $$ = $1;
+            }
             ;
-
-class_without_inheritance     : KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT
-                              ;
 
 function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES {
                         std::string name = dynamic_cast<IdentifierNode*>($1)->value + std::to_string(++n_nodes);
@@ -265,11 +300,12 @@ function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON b
                   $$->add($7);
             };
 
-block : NEWLINE INDENT statements DEDENT  { 
-            std::string name = "Block" + std::to_string(++n_nodes);
-            $$ = new BlockNode(name);
-            $$->add($3);
-      }
+block : NEWLINE INDENT statements DEDENT  {     
+                  std::string name = "block" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  $$ = new BlockNode(name);
+                  $$->add($3);
+            }
       ;
 
 args  : /* EMPTY */     { 
@@ -413,15 +449,23 @@ while_statement   : KEYWORD_WHILE logical_expression COLON block
 
 %%
 
-int main(int argc, char **argv) {
-      /*success("This is a valid python expression");*/
-      if (argc > 1){
-            for(int i=0;i<argc;i++)
-                  printf("value of argv[%d] = %s\n\n",i,argv[i]);
+int main(int argc, char **argv)
+{
+ /*success("This is a valid python expression");
+ expression : NUMBER  { }
+            ;
+                : expression '+' expression     { }
+    | expression '-' expression     { }
+    | expression '*' expression     { }
+    | expression '/' expression     { }*/
+     if (argc > 1){
+        for(int i=0;i<argc;i++)
+            // printf("value of argv[%d] = %s\n\n",i,argv[i]);
             yyin=fopen(argv[1],"r");
       }
       else
-            yyin=stdin;
+        yyin=stdin;
+      
       yyparse();
       if (root != NULL) {
             AST ast(root);
@@ -430,6 +474,7 @@ int main(int argc, char **argv) {
       return 0;
 }
 
-void yyerror(const char *msg) {
-      printf(" %s \n", msg);
+
+void yyerror(const char* s) {
+    std::cerr << "Parser error: " << s << std::endl;
 }
