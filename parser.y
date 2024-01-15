@@ -190,7 +190,11 @@ return_statement  : KEYWORD_RETURN expression {
                   }
                   ;
 
-yield_statement  :  KEYWORD_YIELD expression
+yield_statement  :  KEYWORD_YIELD expression    {
+                        std::string name = "Yield" + std::to_string(++n_nodes);
+                        $$ = new YieldNode(name);
+                        $$->add($2);
+                  }
                   ;
 
 assert_statement  : KEYWORD_ASSERT logical_expression

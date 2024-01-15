@@ -295,6 +295,30 @@ public:
     }
 };
 
+class YieldNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    YieldNode(const std::string& name) {
+        this->name = name;
+        this->label = "Yield";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~YieldNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
 
 class Arg : public AstNode {
 private:
@@ -652,26 +676,6 @@ public:
     }
 };
 
-
-class ReturnStatementNode : public AstNode {
-private:
-    AstNode* returnValue;
-public:
-    ReturnStatementNode(AstNode* value)
-        : returnValue(value) {
-        this->name = "ReturnStatement";
-    }
-    void add(AstNode* /*node*/) override {
-        std::cerr << "Cannot add a child to a leaf node." << std::endl;
-    }
-    void print() const override {
-        std::cout << "\t" << name << " [label=\"" << "ReturnStatement" << "\"]" << std::endl;
-        returnValue->print();
-    }
-    ~ReturnStatementNode() {
-        delete returnValue;
-    }
-};
 
 class AST {
 private:

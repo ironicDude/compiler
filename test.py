@@ -1,3 +1,3 @@
 def x():
     y = 10
-    return x + 1
+    yield x + 1
