@@ -1,0 +1,23 @@
+digraph G {
+	Program [label="Block Statements: Program"]
+	Program -> Program0;
+	Program0 [label="Empty: Program0"]
+	Program -> sami;
+	sami [label="Declare Fun: sami"]
+	sami -> Args1;
+	Args1 [label="Empty: Args1"]
+	sami -> functionBlock;
+	functionBlock [label="Block: functionBlock"]
+	functionBlock -> assignment;
+	assignment [label="assignment"]
+	assignment -> iden5;
+	iden5 [shape=box,label="MemberExpression: s.a"]
+	iden5 -> a;
+	a [shape=box,label="FunctionCall: a()"]
+	a -> iden4;
+	iden4 [label="Identifier: a"]
+	a -> Args3;
+	Args3 [label="Empty: Args3"]
+	assignment -> INTEGER;
+	INTEGER [shape=box,label="Integer: 100"]
+}

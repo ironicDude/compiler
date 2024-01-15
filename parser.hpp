@@ -141,8 +141,12 @@ extern int yydebug;
     NEWLINE = 343,
     KEYWORD_MATCH = 344,
     KEYWORD_CASE = 345,
+<<<<<<< HEAD
     TUPLE = 346,
     UMINUS = 347
+=======
+    UMINUS = 346
+>>>>>>> main
   };
 #endif
 
@@ -155,7 +159,11 @@ union YYSTYPE
 
 	AstNode* astNode;
 
+<<<<<<< HEAD
 #line 159 "parser.hpp" /* yacc.c:1909  */
+=======
+#line 158 "parser.hpp" /* yacc.c:1909  */
+>>>>>>> main
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

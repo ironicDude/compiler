@@ -6,8 +6,8 @@
 %union{
 	AstNode* astNode;
 }
-%{    
-extern int yylex();
+%{
+      extern int yylex();
       extern int yyparse();
       extern FILE *yyin;
       void yyerror(const char *);
@@ -32,13 +32,13 @@ extern int yylex();
 %token <astNode> ASSIGNBITWISEXOR ASSIGNRIGHTSHIFT ASSIGNLEFTSHIFT EQUAL NOT
 %token <astNode> NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
 %token <astNode> LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
-%token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON 
-%token <astNode> INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE TUPLE
+%token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON TUPLE
+%token <astNode> INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
 %type  <astNode> prog statements statement simple_statement compound_statement import_statments import_statment
 %type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
 %type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
 %type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class class_with_inheritance 
-%type  <astNode> class_block class_body class_without_inheritance function_call function block args member_expression logical_expression
+%type  <astNode> class_block  class_without_inheritance function_call function block args member_expression logical_expression
 %type  <astNode> conditional_statement elif_else elif_stmts if_statement else_statement elif_statement for_statement while_statement
 %error-verbose
 %nonassoc EQUAL
@@ -48,27 +48,34 @@ extern int yylex();
 
 %%
 
-prog  :                 { }
+prog  :                 { 
+                              std::string nname = "Program" + std::to_string(n_nodes);
+                              ++n_nodes;
+                              $$ = new EmptyNode(nname); 
+                        }
       | NEWLINE         { }
       | prog statements {
-                              printf("------------ PROGRAM ACCEPTED ------------\n");
+                              $$ = new StatementsNode("Program");
+                              $$->add($1);
+                              $$->add($2);
+                              root = $$;
                               YYACCEPT;
                         }
       ;
 
-statements  : statements statement
-            | statement
-            | statements NEWLINE
+statements  : statements statement  { $1->add($2); $$ = $1; }
+            | statement             { $$ = $1; }
+            | statements NEWLINE    { $$ = $1; }
             ;
 
-statement   : compound_statement 
-            | simple_statement
+statement   : compound_statement    { $$ = $1; }
+            | simple_statement      { $$ = $1; }
             | NEWLINE
             | COMMENT
             | MULTILINECOMMENT
             ;
 
-simple_statement  : assignment
+simple_statement  : assignment            { $$ = $1; }
                   | return_statement
                   | yield_statement
                   | assert_statement
@@ -84,7 +91,7 @@ simple_statement  : assignment
                   | KEYWORD_CONTINUE
                   ;
 
-compound_statement: function
+compound_statement: function                    { $$ = $1; }
                   | conditional_statement
                   | class
                   | for_statement
@@ -104,16 +111,13 @@ import_statment   : KEYWORD_IMPORT member_expression
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
 
-assignment  : member_expression ASSIGN expression
-            | member_expression ASSIGNADD expression
-            | member_expression ASSIGNDIVIDE expression
-            | member_expression ASSIGNEXPONINTIATION expression
-            | member_expression ASSIGNMULTIPLY expression
-            | member_expression ASSIGNMODULO expression
-            | member_expression ASSIGNMINUS expression
-            | member_expression ASSIGNFLOORDIVISION expression
-            | member_expression ASSIGNRIGHTSHIFT expression
-            | member_expression ASSIGNLEFTSHIFT expression
+assignment  : member_expression ASSIGN expression {  $$ = new AssignmentStatement("assignment");
+                                                      std::string nname = "iden" + std::to_string(n_nodes);
+                                                      ++n_nodes;
+                                                      $1->name=nname;
+                                                      $$->add($1);
+                                                      $$->add($3);
+                                                }
             ;
 
 expression  : expression ADD expression         { } 
@@ -139,15 +143,15 @@ expression  : expression ADD expression         { }
             | KEYWORD_FALSE
             ;
 
-number: INTEGER 
-      | FLOAT
+number: INTEGER { $$ = $1; }
+      | FLOAT   { $$ = $1; }
       ;
 
 del_statment      : KEYWORD_DEL IDENTIFIER      { }
                   | KEYWORD_DEL IDENTIFIER LIST { }
                   ;
 
-return_statement  :KEYWORD_RETURN expression
+return_statement  : KEYWORD_RETURN expression
                   | KEYWORD_RETURN logical_expression
                   ;
 
@@ -220,36 +224,62 @@ class : class_with_inheritance
 
 class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block
                         ;
+
 class_block: NEWLINE INDENT class_body DEDENT;
 
-class_body: | class_body assignment
+class_body  : 
+            | class_body assignment
             | class_body function
             | class_body NEWLINE
             ;
 
 class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON class_block
 
-function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES
-                  | IDENTIFIER LEFT_PARENTHES number RIGHT_PARENTHES
-                  | IDENTIFIER LEFT_PARENTHES LITERALSTRING RIGHT_PARENTHES
+function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES {
+                                                                        $$ = new FunctionCall($1);
+                                                                        std::string nname = "iden" + std::to_string(n_nodes);
+                                                                        ++n_nodes;
+                                                                        $1->name=nname;
+                                                                        $$->add($1);
+                                                                        $$->add($3);
+                                                                  }
                   | IDENTIFIER LEFT_PARENTHES function_call RIGHT_PARENTHES
                   ;
 
-function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block
-            ;
+function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block {
+                  std::string name = "function" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+                  $$ = new FunctionNode(idFunc->value);
+                  $$->add($4);
+                  $$->add($7);
+            };
 
-block : NEWLINE INDENT statements DEDENT
+block : NEWLINE INDENT statements DEDENT  { 
+                                                $$ = new BlockNode("functionBlock");
+                                                $$->add($3);
+                                          }
       ;
 
-args  :
+args  :                       { 
+                                    std::string nname = "Args" + std::to_string(n_nodes);
+                                    ++n_nodes;
+                                    $$ = new EmptyNode(nname); 
+                              }
       | args expression COMMA
       | args expression 
       | expression COMMA
       | expression
       ;
 
-member_expression : IDENTIFIER 
-                  | member_expression %prec '.' IDENTIFIER 
+member_expression : IDENTIFIER      {
+                                    std::string nname = "iden" + std::to_string(n_nodes);
+                                    ++n_nodes;
+                                    $1->name=nname;
+                                    $$ = $1;
+                              }
+                  | member_expression %prec '.' IDENTIFIER        { $$ = new MemberExpression($1, $2); }
+                  | member_expression %prec '.' function_call     { $$ = new MemberExpression($1, $2); $$->add($2); }
                   ;
 
 logical_expression: expression
@@ -321,8 +351,6 @@ int main(int argc, char **argv)
         yyin=stdin;
       
       yyparse();
-
-      // AST is constructed, you can print it now
       if (root != NULL) {
             AST ast(root);
             ast.Print();

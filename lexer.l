@@ -7,10 +7,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cmath>
+using namespace std;
+extern int yylex();
+
+char firstChar;
+char *copyyytext;
 %}
 
 /* Regular expressions to match tokens */
-/*WHITESPACE              [ \t]*/
 LETTER                  [_a-zA-Z]
 ALPHANUM                {LETTER}|[0-9]
 IDENTIFIER              {LETTER}{ALPHANUM}*
@@ -95,7 +100,7 @@ SEMICOLON               ";"
 INTEGER                 [0-9]+
 FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 
-/* Define a stack to store indentation levels */
+
 %{
 typedef struct stack {
     int data;
@@ -146,10 +151,6 @@ int count_spaces(char *str) {
 
 %%
 
-    // %{
-    //     BEGIN indent;
-    // %}
-
 <indent>[ ]+ { 
     int current = count_spaces(yytext);
     if (current > peek()) {
@@ -184,7 +185,6 @@ int count_spaces(char *str) {
     BEGIN (indent);
     return NEWLINE;
 }
-
 <normal>[\"|\']{3} {
     BEGIN (string);
 }
@@ -267,14 +267,23 @@ int count_spaces(char *str) {
 {KEYWORD_OR}            {/*printf("KEYWORD_OR: %s \n",yytext);*/return KEYWORD_OR;}
 {KEYWORD_YIELD}         {/*printf("KEYWORD_YIELD: %s \n",yytext);*/return KEYWORD_YIELD;}
 {KEYWORD_MATCH}         {/*printf("KEYWORD_MATCH: %s \n",yytext);*/return KEYWORD_MATCH;}
-{KEYWORD_CASE}         {/*printf("KEYWORD_CASE: %s \n",yytext);*/return KEYWORD_CASE;}
+{KEYWORD_CASE}          {/*printf("KEYWORD_CASE: %s \n",yytext);*/return KEYWORD_CASE;}
 {LITERALSTRING}         {/*printf("STRING_LITERAL: %s\n", yytext);*/return LITERALSTRING;}
 {LITERALCHAR}           {/*printf("CHAR_LITERAL: %s\n", yytext);*/return LITERALCHAR;}
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}
 {TUPLE}                  {/*printf("tuple: %s \n",yytext);*/return TUPLE;}
-{IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/return IDENTIFIER;}
-{INTEGER}               {/*printf("INTEGER: %s\n", yytext);*/return INTEGER;}
-{FLOAT}                 {/*printf("FLOAT: %s\n", yytext);*/return FLOAT;}
+{IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/
+                            yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext);
+                            return IDENTIFIER;
+                        }
+{INTEGER}               {   
+                            yylval.astNode = new NumberNode("INTEGER", "Integer", atoi(yytext));
+                            return INTEGER;
+                        }
+{FLOAT}                 {
+                            yylval.astNode = new NumberNode("FLOAT", "Float", atoi(yytext));
+                            return FLOAT;
+                        }
 . 			            {/* Ignore everything else. */ BEGIN (indent);}
 <<EOF>>                 {
                             while (peek() != -1) 
