@@ -38,6 +38,7 @@ class AstNode {
 public:
     std::string name = "undefined";   // String member variable with default value
     std::string label = "undefined";
+    std::string value = "undefined";
     virtual void add(AstNode* node) = 0;
     virtual void print() const = 0;
     virtual ~AstNode() {}
@@ -57,7 +58,7 @@ public:
         next.push_back(node);
     }
     void print() const override {
-        std::cout << "\t" << name << " [label=\"" << label <<" : "<<name<<"\"]" << std::endl;
+        std::cout << "\t" << name << " [label=\"" << label <<": "<<name<<"\"]" << std::endl;
         std::vector<AstNode*>::iterator it;
         // for (it = next.begin(); it != next.end(); ++it) {
         //     // example
@@ -81,7 +82,6 @@ public:
 // base node for representing identifier ,will create object  from lexer
 class IdentifierNode : public AstNode {
 public:
-    std::string value = "undefined";
     IdentifierNode(std::string name, std::string label, std::string value) {
         this->name = name;
         this->label = label;
@@ -91,9 +91,55 @@ public:
         std::cerr << "Cannot add a child to a leaf node." << std::endl;
     }
     void print() const override {
-        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << std::endl;
+        std::cout << "\t" << name << " [label=\"" << label << ": " << value << "\"]" << std::endl;
     }
 };
+
+class MemberExpression : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    std::string value = "undefined";
+    MemberExpression(AstNode* first, AstNode* second) {
+        this->name = first->name + '.' + second->name;
+        this->label = "MemberExpression";
+        this->value = first->value + '.' + second->value;
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "\"]" << std::endl;
+        std::vector<AstNode*>::iterator it;
+        for (const auto& item : next) {
+            std::cout << "\t" << name << " -> " << item->name << ";" << std::endl;
+            item->print();
+        }
+    }
+};
+
+class FunctionCall : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    FunctionCall(AstNode* identifier) {
+        this->name = identifier->value;
+        this->label = "FunctionCall";
+        this->value = identifier->value;
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "()" << "\"]" << std::endl;
+        std::vector<AstNode*>::iterator it;
+        for (const auto& item : next) {
+            std::cout << "\t" << name << " -> " << item->name << ";" << std::endl;
+            item->print();
+        }
+    }
+};
+
 
 class Arg : public AstNode {
 private:
@@ -107,7 +153,7 @@ public:
         next.push_back(node);
     }
     void print() const override {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
         for (const auto& arg : next) {
             arg->print();
         }
@@ -126,7 +172,7 @@ public:
         next.push_back(node);
     }
     void print() const override {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
         for (const auto& arg : next) {
             std::cout << "\t" << name << " -> " << arg->name << ";" << std::endl;
             arg->print();
@@ -146,7 +192,7 @@ public:
         next.push_back(node);
     }
     void print() const override {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
         // std::vector<AstNode*>::iterator it;
         // for (it = next.begin(); it != next.end(); ++it) {
         //     std::cout << "\t" << name << " -> " << (*it)->name << ";" << std::endl;
@@ -158,6 +204,32 @@ public:
         }
     }
     ~BlockNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+
+class EmptyNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    EmptyNode(const std::string& name) {
+        this->name = name;
+        this->label = "Empty";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~EmptyNode() {
         for (const auto& stmt : next) {
             delete stmt;
         }
@@ -176,7 +248,7 @@ public:
         next.push_back(node);
     }
     void print() const override {
-        std::cout << "\t" << name << " [label=\"" << label << "\"]" << std::endl;
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
         for (const auto& stmt : next) {
             std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
             stmt->print();
@@ -189,11 +261,11 @@ public:
     }
 };
 
-class assignmentStatement : public AstNode {
+class AssignmentStatement : public AstNode {
 private:
     std::vector<AstNode*> next;
 public:
-    assignmentStatement(const std::string& name) {
+    AssignmentStatement(const std::string& name) {
         this->name = name;
         this->label = "assignment";
     }
@@ -210,7 +282,7 @@ public:
         //     stmt->print();
         // }
     }
-    ~assignmentStatement() {
+    ~AssignmentStatement() {
         for (const auto& stmt : next) {
             delete stmt;
         }
