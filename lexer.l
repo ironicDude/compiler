@@ -10,7 +10,8 @@
 #include <cmath>
 using namespace std;
 extern int yylex();
-
+int number_of_nodes = 0;
+string name = "";
 char firstChar;
 char *copyyytext;
 %}
@@ -273,15 +274,21 @@ int count_spaces(char *str) {
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}
 {TUPLE}                  {/*printf("tuple: %s \n",yytext);*/return TUPLE;}
 {IDENTIFIER}            {/*printf("IDENTIFIER: %s \n",yytext);*/
-                            yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext);
+                            name = "IDENTIFIER" + to_string(number_of_nodes);
+                            ++number_of_nodes;
+                            yylval.astNode = new IdentifierNode(name, "Identifier", yytext);
                             return IDENTIFIER;
                         }
 {INTEGER}               {   
-                            yylval.astNode = new NumberNode("INTEGER", "Integer", atoi(yytext));
+                            name = "INTEGER" + to_string(number_of_nodes);
+                            ++number_of_nodes;
+                            yylval.astNode = new NumberNode(name, "Integer", atoi(yytext));
                             return INTEGER;
                         }
 {FLOAT}                 {
-                            yylval.astNode = new NumberNode("FLOAT", "Float", atoi(yytext));
+                            name = "FLOAT" + to_string(number_of_nodes);
+                            ++number_of_nodes;
+                            yylval.astNode = new NumberNode(name, "Float", atoi(yytext));
                             return FLOAT;
                         }
 . 			            {/* Ignore everything else. */ BEGIN (indent);}

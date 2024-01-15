@@ -1,23 +1,25 @@
 digraph G {
-	Program [label="Block Statements: Program"]
+	Program [label="Statements: Program"]
 	Program -> Program0;
 	Program0 [label="Empty: Program0"]
-	Program -> sami;
-	sami [label="Declare Fun: sami"]
-	sami -> Args1;
-	Args1 [label="Empty: Args1"]
-	sami -> functionBlock;
-	functionBlock [label="Block: functionBlock"]
-	functionBlock -> assignment;
-	assignment [label="assignment"]
-	assignment -> iden5;
-	iden5 [shape=box,label="MemberExpression: s.a"]
-	iden5 -> a;
-	a [shape=box,label="FunctionCall: a()"]
-	a -> iden4;
-	iden4 [label="Identifier: a"]
-	a -> Args3;
-	Args3 [label="Empty: Args3"]
-	assignment -> INTEGER;
-	INTEGER [shape=box,label="Integer: 100"]
+	Program -> Statement13;
+	Statement13 [label="Statements: Statement13"]
+	Statement13 -> myclass;
+	myclass [label="ClassDeclaration: myclass"]
+	myclass -> ClassBody;
+	ClassBody [label="Body: ClassBody"]
+	ClassBody -> method;
+	method [label="Declare Fun: method"]
+	method -> Args6;
+	Args6 [label="Empty: Args6"]
+	method -> block10;
+	block10 [label="Block: block10"]
+	block10 -> Statement9;
+	Statement9 [label="Statements: Statement9"]
+	Statement9 -> Assignment8;
+	Assignment8 [label="assignment"]
+	Assignment8 -> iden7;
+	iden7 [label="Identifier: x"]
+	Assignment8 -> INTEGER7;
+	INTEGER7 [shape=box,label="Integer: 10"]
 }

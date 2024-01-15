@@ -37,8 +37,8 @@
 %type  <astNode> prog statements statement simple_statement compound_statement import_statments import_statment
 %type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
 %type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
-%type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class class_with_inheritance 
-%type  <astNode> class_block  class_without_inheritance function_call function block args member_expression logical_expression
+%type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class 
+%type  <astNode> class_block  class_body function_call function block args member_expression logical_expression
 %type  <astNode> conditional_statement elif_else elif_stmts if_statement else_statement elif_statement for_statement while_statement
 %error-verbose
 %nonassoc EQUAL
@@ -63,9 +63,19 @@ prog  :                 {
                         }
       ;
 
-statements  : statements statement  { $1->add($2); $$ = $1; }
-            | statement             { $$ = $1; }
-            | statements NEWLINE    { $$ = $1; }
+statements  : statement             { 
+            std::string name = "Statement" + std::to_string(n_nodes);
+            ++n_nodes;
+            $$ = new StatementsNode(name);
+            $$->add($1);
+            }
+            | statement NEWLINE     { 
+            std::string name = "Statement" + std::to_string(n_nodes);
+            ++n_nodes;
+            $$ = new StatementsNode(name);
+            $$->add($1);
+            }
+            | statements statement  { $1->add($2); $$ = $1; }
             ;
 
 statement   : compound_statement    { $$ = $1; }
@@ -93,7 +103,7 @@ simple_statement  : assignment            { $$ = $1; }
 
 compound_statement: function                    { $$ = $1; }
                   | conditional_statement
-                  | class
+                  | class { $$ = $1; }
                   | for_statement
                   | while_statement
                   | match_statement
@@ -111,13 +121,13 @@ import_statment   : KEYWORD_IMPORT member_expression
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
 
-assignment  : member_expression ASSIGN expression {  $$ = new AssignmentStatement("assignment");
-                                                      std::string nname = "iden" + std::to_string(n_nodes);
-                                                      ++n_nodes;
-                                                      $1->name=nname;
-                                                      $$->add($1);
-                                                      $$->add($3);
-                                                }
+assignment  : member_expression ASSIGN expression { 
+            std::string name = "Assignment" + std::to_string(n_nodes);
+            $$ = new AssignmentStatement(name);  
+            ++n_nodes;
+            $$->add($1);
+            $$->add($3);
+            }
             ;
 
 expression  : expression ADD expression         { } 
@@ -218,22 +228,47 @@ with_stmt   : function_call KEYWORD_AS IDENTIFIER
             | with_stmt COMMA function_call KEYWORD_AS IDENTIFIER
             ;
 
-class : class_with_inheritance 
-      | class_without_inheritance
+class : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block {
+                  std::string name = "class with inheritance" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+                  $$ = new ClassNode(idFunc->value);
+                  $$->add($4);
+                  $$->add($7);
+                  }
+
+      | KEYWORD_CLASS IDENTIFIER COLON class_block {
+                  std::string name = "class without inheritance" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+                  $$ = new ClassNode(idFunc->value);
+                  $$->add($4);
+                  }
       ;
 
-class_with_inheritance  : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block
-                        ;
 
-class_block: NEWLINE INDENT class_body DEDENT;
+class_block: NEWLINE INDENT class_body DEDENT{
+                                                $$ = $3;
+                                          };
 
-class_body  : 
-            | class_body assignment
-            | class_body function
-            | class_body NEWLINE
+class_body  : /* Empty */ { 
+            std::string nname = "Classbody" + std::to_string(n_nodes);
+            ++n_nodes;
+            $$ = new EmptyNode(nname);
+            }
+            | class_body function { 
+                  $$ = new ClassBodyNode("ClassBody");
+                  $$->add($2);
+
+            }
+            | class_body assignment { 
+                  $$ = new ClassBodyNode("ClassBody");
+                  $$->add($2);
+            }
+            | class_body NEWLINE{
+                  $$ = $1;
+            }
             ;
-
-class_without_inheritance: KEYWORD_CLASS IDENTIFIER COLON class_block
 
 function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES {
                                                                         $$ = new FunctionCall($1);
@@ -255,10 +290,12 @@ function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON b
                   $$->add($7);
             };
 
-block : NEWLINE INDENT statements DEDENT  { 
-                                                $$ = new BlockNode("functionBlock");
-                                                $$->add($3);
-                                          }
+block : NEWLINE INDENT statements DEDENT  {     
+                  std::string name = "block" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  $$ = new BlockNode(name);
+                  $$->add($3);
+            }
       ;
 
 args  :                       { 
