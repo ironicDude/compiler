@@ -197,7 +197,11 @@ yield_statement  :  KEYWORD_YIELD expression    {
                   }
                   ;
 
-assert_statement  : KEYWORD_ASSERT logical_expression
+assert_statement  : KEYWORD_ASSERT logical_expression {
+                        std::string name = "Assert" + std::to_string(++n_nodes);
+                        $$ = new AssertNode(name);
+                        $$->add($2);
+                  }
                   | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING
                   ;
 
