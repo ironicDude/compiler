@@ -269,7 +269,6 @@ class : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class
                   $$->add($4);
                   $$->add($7);
                   }
-
       | KEYWORD_CLASS IDENTIFIER COLON class_block {
                   std::string name = "class without inheritance" + std::to_string(n_nodes);
                   ++n_nodes;

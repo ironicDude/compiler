@@ -1,17 +1,91 @@
 digraph G {
-	Program10 [label="Statements: Program10"]
-	Program10 -> Program1;
+	Program29 [label="Statements: Program29"]
+	Program29 -> Program1;
 	Program1 [label="Empty: Program1"]
-	Program10 -> Statement2;
+	Program29 -> Statement2;
 	Statement2 [label="Statements: Statement2"]
 	Statement2 -> x;
 	x [label="Declare Fun: x"]
 	x -> Args3;
 	Args3 [label="Empty: Args3"]
-	x -> block8;
-	block8 [label="Block: block8"]
-	block8 -> Statement4;
+	x -> block27;
+	block27 [label="Block: block27"]
+	block27 -> Statement4;
 	Statement4 [label="Statements: Statement4"]
+<<<<<<< HEAD
+	Statement4 -> ConditionalStatement_if9;
+	ConditionalStatement_if9 [label="if"]
+	ConditionalStatement_if9 -> BinaryLogicalExpression_INTEGER1GREATERTHANINTEGER2;
+	BinaryLogicalExpression_INTEGER1GREATERTHANINTEGER2 [label=">"]
+	BinaryLogicalExpression_INTEGER1GREATERTHANINTEGER2 -> INTEGER1;
+	INTEGER1 [shape=box,label="Integer: 1"]
+	BinaryLogicalExpression_INTEGER1GREATERTHANINTEGER2 -> INTEGER2;
+	INTEGER2 [shape=box,label="Integer: 0"]
+	ConditionalStatement_if9 -> block7;
+	block7 [label="Block: block7"]
+	block7 -> Statement5;
+	Statement5 [label="Statements: Statement5"]
+	Statement5 -> Return7;
+	Return7 [label="Return: Return7"]
+	Return7 -> identifire6;
+	identifire6 [label="Identifier: x"]
+	ConditionalStatement_if9 -> ConditionalStatement_elif18;
+	ConditionalStatement_elif18 [label="elif"]
+	ConditionalStatement_elif18 -> BinaryLogicalExpression_INTEGER4GREATERTHANINTEGER5;
+	BinaryLogicalExpression_INTEGER4GREATERTHANINTEGER5 [label=">"]
+	BinaryLogicalExpression_INTEGER4GREATERTHANINTEGER5 -> INTEGER4;
+	INTEGER4 [shape=box,label="Integer: 2"]
+	BinaryLogicalExpression_INTEGER4GREATERTHANINTEGER5 -> INTEGER5;
+	INTEGER5 [shape=box,label="Integer: 1"]
+	ConditionalStatement_elif18 -> block16;
+	block16 [label="Block: block16"]
+	block16 -> Statement10;
+	Statement10 [label="Statements: Statement10"]
+	Statement10 -> ConditionalStatement_if15;
+	ConditionalStatement_if15 [label="if"]
+	ConditionalStatement_if15 -> BinaryLogicalExpression_INTEGER6GREATERTHANINTEGER7;
+	BinaryLogicalExpression_INTEGER6GREATERTHANINTEGER7 [label=">"]
+	BinaryLogicalExpression_INTEGER6GREATERTHANINTEGER7 -> INTEGER6;
+	INTEGER6 [shape=box,label="Integer: 4"]
+	BinaryLogicalExpression_INTEGER6GREATERTHANINTEGER7 -> INTEGER7;
+	INTEGER7 [shape=box,label="Integer: 3"]
+	ConditionalStatement_if15 -> block13;
+	block13 [label="Block: block13"]
+	block13 -> Statement11;
+	Statement11 [label="Statements: Statement11"]
+	Statement11 -> Assert13;
+	Assert13 [label="Assert: Assert13"]
+	Assert13 -> identifire12;
+	identifire12 [label="Identifier: y"]
+	ConditionalStatement_if15 -> elif_else16;
+	elif_else16 [label="Empty: elif_else16"]
+	ConditionalStatement_elif18 -> ConditionalStatement_elif23;
+	ConditionalStatement_elif23 [label="elif"]
+	ConditionalStatement_elif23 -> BinaryLogicalExpression_INTEGER9GREATERTHANINTEGER10;
+	BinaryLogicalExpression_INTEGER9GREATERTHANINTEGER10 [label=">"]
+	BinaryLogicalExpression_INTEGER9GREATERTHANINTEGER10 -> INTEGER9;
+	INTEGER9 [shape=box,label="Integer: 3"]
+	BinaryLogicalExpression_INTEGER9GREATERTHANINTEGER10 -> INTEGER10;
+	INTEGER10 [shape=box,label="Integer: 2"]
+	ConditionalStatement_elif23 -> block21;
+	block21 [label="Block: block21"]
+	block21 -> Statement19;
+	Statement19 [label="Statements: Statement19"]
+	Statement19 -> Yield21;
+	Yield21 [label="Yield: Yield21"]
+	Yield21 -> identifire20;
+	identifire20 [label="Identifier: z"]
+	ConditionalStatement_elif18 -> ConditionalStatement_else27;
+	ConditionalStatement_else27 [label="else"]
+	ConditionalStatement_else27 -> block25;
+	block25 [label="Block: block25"]
+	block25 -> Statement24;
+	Statement24 [label="Statements: Statement24"]
+	Statement24 -> Del25;
+	Del25 [label="Del: Del25"]
+	Del25 -> IDENTIFIER12;
+	IDENTIFIER12 [label="Identifier: k"]
+=======
 	Statement4 -> assignment6;
 	assignment6 [label="assignment"]
 	assignment6 -> identifire5;
@@ -26,4 +100,5 @@ digraph G {
 	identifire7 [label="Identifier: x"]
 	BinaryExpression_identifire7PLUSINTEGER4 -> INTEGER4;
 	INTEGER4 [shape=box,label="Integer: 1"]
+>>>>>>> main
 }
