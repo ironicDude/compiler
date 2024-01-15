@@ -49,7 +49,7 @@
 
 %%
 
-prog  :                 { $$ = NULL; }
+prog  :                 { $$ = new StatementsNode("empty"); }
       | NEWLINE         { }
       | prog statements {
                               printf("------------ PROGRAM ACCEPTED ------------\n");
@@ -247,11 +247,13 @@ function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON b
                   YYACCEPT;
             };
 
-block : NEWLINE INDENT statements DEDENT  {
-            $$ = $3;
-      };
+block : NEWLINE INDENT statements DEDENT  { 
+                                                $$ = new BlockNode("functionBlock");
+                                                $$->add($3);
+                                          }
+      ;
 
-args  :                       { $$ = NULL; }
+args  :                       { $$ = new Args("empty"); }
       | args expression COMMA
       | args expression 
       | expression COMMA
@@ -325,6 +327,10 @@ int main(int argc, char **argv) {
       else
             yyin=stdin;
       yyparse();
+      if (root != NULL) {
+            AST ast(root);
+            ast.Print();
+      }
       return 0;
 }
 
