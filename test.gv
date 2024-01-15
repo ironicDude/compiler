@@ -1,16 +1,16 @@
 digraph G {
-	Program39 [label="Statements: Program39"]
-	Program39 -> Program1;
+	Program10 [label="Statements: Program10"]
+	Program10 -> Program1;
 	Program1 [label="Empty: Program1"]
-	Program39 -> Statement37;
-	Statement37 [label="Statements: Statement37"]
-	Statement37 -> sami;
-	sami [label="Declare Fun: sami"]
-	sami -> Args2;
+	Program10 -> Statement8;
+	Statement8 [label="Statements: Statement8"]
+	Statement8 -> x;
+	x [label="Declare Fun: x"]
+	x -> Args2;
 	Args2 [label="Empty: Args2"]
-	sami -> block36;
-	block36 [label="Block: block36"]
-	block36 -> Statement4;
+	x -> block7;
+	block7 [label="Block: block7"]
+	block7 -> Statement4;
 	Statement4 [label="Statements: Statement4"]
 	Statement4 -> assignment4;
 	assignment4 [label="assignment"]
@@ -21,107 +21,9 @@ digraph G {
 	Statement4 -> assignment7;
 	assignment7 [label="assignment"]
 	assignment7 -> identifire6;
-	identifire6 [label="Identifier: s"]
+	identifire6 [label="Identifier: oa"]
 	assignment7 -> INTEGER4;
 	INTEGER4 [shape=box,label="Integer: 20"]
 	Statement4 -> INTEGER4;
 	INTEGER4 [shape=box,label="Integer: 20"]
-	Statement4 -> ConditionalStatement_if15;
-	ConditionalStatement_if15 [label="if"]
-	ConditionalStatement_if15 -> BinaryLogicalExpression_INTEGER5GREATERTHANINTEGER6;
-	BinaryLogicalExpression_INTEGER5GREATERTHANINTEGER6 [label=">"]
-	BinaryLogicalExpression_INTEGER5GREATERTHANINTEGER6 -> INTEGER5;
-	INTEGER5 [shape=box,label="Integer: 1"]
-	BinaryLogicalExpression_INTEGER5GREATERTHANINTEGER6 -> INTEGER6;
-	INTEGER6 [shape=box,label="Integer: 0"]
-	ConditionalStatement_if15 -> block13;
-	block13 [label="Block: block13"]
-	block13 -> Statement12;
-	Statement12 [label="Statements: Statement12"]
-	Statement12 -> assignment12;
-	assignment12 [label="assignment"]
-	assignment12 -> identifire8a10identifire11;
-	identifire8a10identifire11 [shape=box,label="MemberExpression: s.a.m"]
-	identifire8a10identifire11 -> identifire8a10;
-	identifire8a10 [shape=box,label="MemberExpression: s.a"]
-	identifire8a10 -> identifire8;
-	identifire8 [label="Identifier: s"]
-	identifire8a10 -> a10;
-	a10 [shape=box,label="FunctionCall: a()"]
-	a10 -> IDENTIFIER8;
-	IDENTIFIER8 [label="Identifier: a"]
-	a10 -> Args9;
-	Args9 [label="Empty: Args9"]
-	identifire8a10identifire11 -> identifire11;
-	identifire11 [label="Identifier: m"]
-	assignment12 -> INTEGER10;
-	INTEGER10 [shape=box,label="Integer: 1"]
-	ConditionalStatement_if15 -> ConditionalStatement_elif23;
-	ConditionalStatement_elif23 [label="elif"]
-	ConditionalStatement_elif23 -> BinaryLogicalExpression_INTEGER11GREATERTHANINTEGER12;
-	BinaryLogicalExpression_INTEGER11GREATERTHANINTEGER12 [label=">"]
-	BinaryLogicalExpression_INTEGER11GREATERTHANINTEGER12 -> INTEGER11;
-	INTEGER11 [shape=box,label="Integer: 2"]
-	BinaryLogicalExpression_INTEGER11GREATERTHANINTEGER12 -> INTEGER12;
-	INTEGER12 [shape=box,label="Integer: 1"]
-	ConditionalStatement_elif23 -> block21;
-	block21 [label="Block: block21"]
-	block21 -> Statement20;
-	Statement20 [label="Statements: Statement20"]
-	Statement20 -> assignment20;
-	assignment20 [label="assignment"]
-	assignment20 -> identifire16a18identifire19;
-	identifire16a18identifire19 [shape=box,label="MemberExpression: s.a.m"]
-	identifire16a18identifire19 -> identifire16a18;
-	identifire16a18 [shape=box,label="MemberExpression: s.a"]
-	identifire16a18 -> identifire16;
-	identifire16 [label="Identifier: s"]
-	identifire16a18 -> a18;
-	a18 [shape=box,label="FunctionCall: a()"]
-	a18 -> IDENTIFIER14;
-	IDENTIFIER14 [label="Identifier: a"]
-	a18 -> Args17;
-	Args17 [label="Empty: Args17"]
-	identifire16a18identifire19 -> identifire19;
-	identifire19 [label="Identifier: m"]
-	assignment20 -> INTEGER16;
-	INTEGER16 [shape=box,label="Integer: 2"]
-	ConditionalStatement_elif23 -> ConditionalStatement_else31;
-	ConditionalStatement_else31 [label="else"]
-	ConditionalStatement_else31 -> block29;
-	block29 [label="Block: block29"]
-	block29 -> Statement28;
-	Statement28 [label="Statements: Statement28"]
-	Statement28 -> assignment28;
-	assignment28 [label="assignment"]
-	assignment28 -> identifire24a26identifire27;
-	identifire24a26identifire27 [shape=box,label="MemberExpression: s.a.m"]
-	identifire24a26identifire27 -> identifire24a26;
-	identifire24a26 [shape=box,label="MemberExpression: s.a"]
-	identifire24a26 -> identifire24;
-	identifire24 [label="Identifier: s"]
-	identifire24a26 -> a26;
-	a26 [shape=box,label="FunctionCall: a()"]
-	a26 -> IDENTIFIER18;
-	IDENTIFIER18 [label="Identifier: a"]
-	a26 -> Args25;
-	Args25 [label="Empty: Args25"]
-	identifire24a26identifire27 -> identifire27;
-	identifire27 [label="Identifier: m"]
-	assignment28 -> INTEGER20;
-	INTEGER20 [shape=box,label="Integer: 3"]
-	Statement4 -> jafar;
-	jafar [label="Declare Fun: jafar"]
-	jafar -> Args32;
-	Args32 [label="Empty: Args32"]
-	jafar -> block35;
-	block35 [label="Block: block35"]
-	block35 -> Statement34;
-	Statement34 [label="Statements: Statement34"]
-	Statement34 -> assignment34;
-	assignment34 [label="assignment"]
-	assignment34 -> identifire33;
-	identifire33 [label="Identifier: y"]
-	assignment34 -> INTEGER23;
-	INTEGER23 [shape=box,label="Integer: 3"]
 }
