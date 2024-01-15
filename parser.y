@@ -64,16 +64,16 @@ prog  :                 {
       ;
 
 statements  : statement             { 
-            std::string name = "Statement" + std::to_string(n_nodes);
-            ++n_nodes;
-            $$ = new StatementsNode(name);
-            $$->add($1);
+                  std::string name = "Statement" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  $$ = new StatementsNode(name);
+                  $$->add($1);
             }
             | statement NEWLINE     { 
-            std::string name = "Statement" + std::to_string(n_nodes);
-            ++n_nodes;
-            $$ = new StatementsNode(name);
-            $$->add($1);
+                  std::string name = "Statement" + std::to_string(n_nodes);
+                  ++n_nodes;
+                  $$ = new StatementsNode(name);
+                  $$->add($1);
             }
             | statements statement  { $1->add($2); $$ = $1; }
             ;
@@ -151,25 +151,15 @@ expression  : expression ADD expression   {
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                                       rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
                                                 }
-            | LEFT_PARENTHES expression RIGHT_PARENTHES                { }
+            | LEFT_PARENTHES expression RIGHT_PARENTHES                {$$ = $2; }
             | MINUS expression %prec UMINUS       { }
-            | number                            { }
-            | member_expression                 { }
-            | function_call                     { }
-            | LITERALSTRING
             | LIST
             | TUPLE
             | KEYWORD_NONE
-            | KEYWORD_TRUE
-            | KEYWORD_FALSE
-            | '(' expression ')'                { $$ = $2; }
-            | '-' expression %prec UMINUS       { }
             | number                            { $$ = $1; }
             | member_expression                 { $$ = $1; }
             | function_call                     { $$ = $1; }
             | LITERALSTRING                     { $$ = $1; }
-            | LIST                              { }
-            | KEYWORD_NONE                      { }
             ;
 
 number: INTEGER { $$ = $1; }
