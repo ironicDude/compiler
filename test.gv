@@ -2,28 +2,28 @@ digraph G {
 	Program10 [label="Statements: Program10"]
 	Program10 -> Program1;
 	Program1 [label="Empty: Program1"]
-	Program10 -> Statement8;
-	Statement8 [label="Statements: Statement8"]
-	Statement8 -> x;
+	Program10 -> Statement2;
+	Statement2 [label="Statements: Statement2"]
+	Statement2 -> x;
 	x [label="Declare Fun: x"]
-	x -> Args2;
-	Args2 [label="Empty: Args2"]
-	x -> block7;
-	block7 [label="Block: block7"]
-	block7 -> Statement4;
+	x -> Args3;
+	Args3 [label="Empty: Args3"]
+	x -> block8;
+	block8 [label="Block: block8"]
+	block8 -> Statement4;
 	Statement4 [label="Statements: Statement4"]
-	Statement4 -> assignment4;
-	assignment4 [label="assignment"]
-	assignment4 -> identifire3;
-	identifire3 [label="Identifier: y"]
-	assignment4 -> INTEGER2;
+	Statement4 -> assignment6;
+	assignment6 [label="assignment"]
+	assignment6 -> identifire5;
+	identifire5 [label="Identifier: y"]
+	assignment6 -> INTEGER2;
 	INTEGER2 [shape=box,label="Integer: 10"]
-	Statement4 -> assignment7;
-	assignment7 [label="assignment"]
-	assignment7 -> identifire6;
-	identifire6 [label="Identifier: oa"]
-	assignment7 -> INTEGER4;
-	INTEGER4 [shape=box,label="Integer: 20"]
-	Statement4 -> INTEGER4;
-	INTEGER4 [shape=box,label="Integer: 20"]
+	Statement4 -> Return8;
+	Return8 [label="Return: Return8"]
+	Return8 -> BinaryExpression_identifire7PLUSINTEGER4;
+	BinaryExpression_identifire7PLUSINTEGER4 [label="+"]
+	BinaryExpression_identifire7PLUSINTEGER4 -> identifire7;
+	identifire7 [label="Identifier: x"]
+	BinaryExpression_identifire7PLUSINTEGER4 -> INTEGER4;
+	INTEGER4 [shape=box,label="Integer: 1"]
 }
