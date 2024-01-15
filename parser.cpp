@@ -518,6 +518,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
+<<<<<<< HEAD
        0,    51,    51,    56,    57,    66,    72,    78,    81,    82,
       83,    84,    85,    88,    89,    90,    91,    92,    93,    94,
       95,    96,    97,    98,    99,   100,   101,   104,   105,   106,
@@ -533,6 +534,23 @@ static const yytype_uint16 yyrline[] =
      328,   329,   330,   331,   332,   335,   338,   339,   340,   341,
      344,   345,   348,   349,   352,   355,   356,   359,   360,   361,
      362,   363,   364,   367,   368
+=======
+       0,    52,    52,    57,    58,    67,    68,    69,    72,    73,
+      74,    75,    76,    79,    80,    81,    82,    83,    84,    85,
+      86,    87,    88,    89,    90,    91,    92,    95,    96,    97,
+      98,    99,   100,   101,   104,   105,   108,   109,   110,   111,
+     112,   115,   124,   125,   126,   127,   128,   129,   130,   134,
+     135,   136,   137,   138,   139,   140,   141,   144,   145,   148,
+     149,   152,   153,   156,   159,   160,   163,   164,   167,   170,
+     173,   174,   177,   180,   183,   184,   187,   190,   191,   192,
+     193,   194,   197,   200,   201,   204,   207,   208,   211,   214,
+     215,   218,   219,   222,   225,   227,   228,   229,   230,   233,
+     236,   244,   247,   256,   262,   267,   268,   269,   270,   273,
+     279,   280,   283,   284,   285,   286,   287,   288,   289,   290,
+     291,   292,   293,   294,   297,   300,   301,   302,   303,   306,
+     307,   310,   311,   314,   317,   318,   321,   322,   323,   324,
+     325,   326,   329,   330
+>>>>>>> main
 };
 #endif
 
@@ -1593,23 +1611,36 @@ yyreduce:
         case 2:
 #line 51 "parser.y" /* yacc.c:1646  */
     { 
-                              std::string nname = "Program" + std::to_string(n_nodes);
-                              ++n_nodes;
-                              (yyval.astNode) = new EmptyNode(nname); 
+                              std::string name = "Program" + std::to_string(++n_nodes);
+                              (yyval.astNode) = new EmptyNode(name); 
                         }
+<<<<<<< HEAD
 #line 1601 "parser.cpp" /* yacc.c:1646  */
+=======
+#line 1585 "parser.cpp" /* yacc.c:1646  */
+>>>>>>> main
     break;
 
   case 3:
 #line 56 "parser.y" /* yacc.c:1646  */
     { }
+<<<<<<< HEAD
 #line 1607 "parser.cpp" /* yacc.c:1646  */
+=======
+#line 1591 "parser.cpp" /* yacc.c:1646  */
+>>>>>>> main
     break;
 
   case 4:
 #line 57 "parser.y" /* yacc.c:1646  */
+<<<<<<< HEAD
     {
                               (yyval.astNode) = new StatementsNode("Program");
+=======
+    {     
+                              std::string name = "Program" + std::to_string(++n_nodes);
+                              (yyval.astNode) = new StatementsNode(name);
+>>>>>>> main
                               (yyval.astNode)->add((yyvsp[-1].astNode));
                               (yyval.astNode)->add((yyvsp[0].astNode));
                               root = (yyval.astNode);
@@ -1676,7 +1707,14 @@ yyreduce:
 #line 1677 "parser.cpp" /* yacc.c:1646  */
     break;
 
+  case 28:
+#line 96 "parser.y" /* yacc.c:1646  */
+    { (yyval.astNode) = (yyvsp[0].astNode); }
+#line 1651 "parser.cpp" /* yacc.c:1646  */
+    break;
+
   case 41:
+<<<<<<< HEAD
 #line 124 "parser.y" /* yacc.c:1646  */
     { 
             std::string name = "Assignment" + std::to_string(n_nodes);
@@ -1686,44 +1724,79 @@ yyreduce:
             (yyval.astNode)->add((yyvsp[0].astNode));
             }
 #line 1689 "parser.cpp" /* yacc.c:1646  */
+=======
+#line 115 "parser.y" /* yacc.c:1646  */
+    {  
+                  std::string name = "assignment" + std::to_string(++n_nodes);
+                  (yyval.astNode) = new AssignmentStatement(name);
+                  (yyval.astNode)->add((yyvsp[-2].astNode));
+                  (yyval.astNode)->add((yyvsp[0].astNode));
+            }
+#line 1662 "parser.cpp" /* yacc.c:1646  */
+>>>>>>> main
     break;
 
   case 42:
 #line 133 "parser.y" /* yacc.c:1646  */
     { }
+<<<<<<< HEAD
 #line 1695 "parser.cpp" /* yacc.c:1646  */
+=======
+#line 1663 "parser.cpp" /* yacc.c:1646  */
+>>>>>>> main
     break;
 
   case 43:
 #line 134 "parser.y" /* yacc.c:1646  */
     { }
+<<<<<<< HEAD
 #line 1701 "parser.cpp" /* yacc.c:1646  */
+=======
+#line 1669 "parser.cpp" /* yacc.c:1646  */
+>>>>>>> main
     break;
 
   case 44:
 #line 135 "parser.y" /* yacc.c:1646  */
     { }
+<<<<<<< HEAD
 #line 1707 "parser.cpp" /* yacc.c:1646  */
+=======
+#line 1675 "parser.cpp" /* yacc.c:1646  */
+>>>>>>> main
     break;
 
   case 45:
 #line 136 "parser.y" /* yacc.c:1646  */
     { }
+<<<<<<< HEAD
 #line 1713 "parser.cpp" /* yacc.c:1646  */
+=======
+#line 1681 "parser.cpp" /* yacc.c:1646  */
+>>>>>>> main
     break;
 
   case 46:
 #line 137 "parser.y" /* yacc.c:1646  */
     { }
+<<<<<<< HEAD
 #line 1719 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 48:
 #line 139 "parser.y" /* yacc.c:1646  */
+=======
+#line 1687 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 141 "parser.y" /* yacc.c:1646  */
+>>>>>>> main
     { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                                       rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
                                                 }
+<<<<<<< HEAD
 #line 1728 "parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -1866,14 +1939,114 @@ yyreduce:
 
   case 104:
 #line 284 "parser.y" /* yacc.c:1646  */
+=======
+#line 1696 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 145 "parser.y" /* yacc.c:1646  */
+    { (yyval.astNode) = (yyvsp[-1].astNode); }
+#line 1725 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 146 "parser.y" /* yacc.c:1646  */
+    { }
+#line 1731 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 51:
+#line 147 "parser.y" /* yacc.c:1646  */
+    { (yyval.astNode) = (yyvsp[0].astNode); }
+#line 1737 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 52:
+#line 148 "parser.y" /* yacc.c:1646  */
+    { (yyval.astNode) = (yyvsp[0].astNode); }
+#line 1743 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 149 "parser.y" /* yacc.c:1646  */
+    { (yyval.astNode) = (yyvsp[0].astNode); }
+#line 1749 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 139 "parser.y" /* yacc.c:1646  */
+    { }
+#line 1732 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 55:
+#line 151 "parser.y" /* yacc.c:1646  */
+    { }
+#line 1738 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 56:
+#line 152 "parser.y" /* yacc.c:1646  */
+    { }
+#line 1744 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 155 "parser.y" /* yacc.c:1646  */
+    { (yyval.astNode) = (yyvsp[0].astNode); }
+#line 1773 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 156 "parser.y" /* yacc.c:1646  */
+    { (yyval.astNode) = (yyvsp[0].astNode); }
+#line 1756 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 159 "parser.y" /* yacc.c:1646  */
+    { }
+#line 1762 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 160 "parser.y" /* yacc.c:1646  */
+    { }
+#line 1768 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 100:
+#line 247 "parser.y" /* yacc.c:1646  */
     {
-                  std::string name = "function" + std::to_string(n_nodes);
-                  ++n_nodes;
+                        std::string name = dynamic_cast<IdentifierNode*>((yyvsp[-3].astNode))->value + std::to_string(++n_nodes);
+                        (yyval.astNode) = new FunctionCall(name, (yyvsp[-3].astNode));
+                        (yyval.astNode)->add((yyvsp[-3].astNode));
+                        (yyval.astNode)->add((yyvsp[-1].astNode));                                         
+                  }
+#line 1802 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 101:
+#line 253 "parser.y" /* yacc.c:1646  */
+    {
+                        std::string name = dynamic_cast<IdentifierNode*>((yyvsp[-3].astNode))->value + std::to_string(++n_nodes);
+                        (yyval.astNode) = new FunctionCall(name, (yyvsp[-3].astNode));
+                        (yyval.astNode)->add((yyvsp[-3].astNode));
+                        (yyval.astNode)->add((yyvsp[-1].astNode));
+                  }
+#line 1813 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 102:
+#line 247 "parser.y" /* yacc.c:1646  */
+>>>>>>> main
+    {
                   IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>((yyvsp[-5].astNode));
                   (yyval.astNode) = new FunctionNode(idFunc->value);
                   (yyval.astNode)->add((yyvsp[-3].astNode));
                   (yyval.astNode)->add((yyvsp[0].astNode));
             }
+<<<<<<< HEAD
 #line 1878 "parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -1923,6 +2096,64 @@ yyreduce:
 
 
 #line 1926 "parser.cpp" /* yacc.c:1646  */
+=======
+#line 1794 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 103:
+#line 268 "parser.y" /* yacc.c:1646  */
+    { 
+            std::string name = "Block" + std::to_string(++n_nodes);
+            (yyval.astNode) = new BlockNode(name);
+            (yyval.astNode)->add((yyvsp[-1].astNode));
+      }
+#line 1834 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 104:
+#line 275 "parser.y" /* yacc.c:1646  */
+    { 
+            std::string name = "Args" + std::to_string(++n_nodes);
+            (yyval.astNode) = new EmptyNode(name); 
+      }
+#line 1843 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 109:
+#line 285 "parser.y" /* yacc.c:1646  */
+    {
+                        std::string name = "identifire" + std::to_string(++n_nodes);
+                        (yyvsp[0].astNode)->name=name;
+                        (yyval.astNode) = (yyvsp[0].astNode);
+                  }
+#line 1853 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 110:
+#line 290 "parser.y" /* yacc.c:1646  */
+    {
+                        std::string name = "identifire" + std::to_string(++n_nodes);
+                        (yyvsp[0].astNode)->name=name;
+                        (yyval.astNode) = new MemberExpression((yyvsp[-1].astNode), (yyvsp[0].astNode));
+                        (yyval.astNode)->add((yyvsp[-1].astNode)); 
+                        (yyval.astNode)->add((yyvsp[0].astNode)); 
+                  }
+#line 1865 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 111:
+#line 297 "parser.y" /* yacc.c:1646  */
+    { 
+                        (yyval.astNode) = new MemberExpression((yyvsp[-1].astNode), (yyvsp[0].astNode)); 
+                        (yyval.astNode)->add((yyvsp[-1].astNode)); 
+                        (yyval.astNode)->add((yyvsp[0].astNode)); 
+                  }
+#line 1875 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+
+#line 1840 "parser.cpp" /* yacc.c:1646  */
+>>>>>>> main
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2150,7 +2381,11 @@ yyreturn:
 #endif
   return yyresult;
 }
+<<<<<<< HEAD
 #line 371 "parser.y" /* yacc.c:1906  */
+=======
+#line 414 "parser.y" /* yacc.c:1906  */
+>>>>>>> main
 
 
 int main(int argc, char **argv)

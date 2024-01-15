@@ -103,6 +103,7 @@ FLOAT                   [0-9]+"."[0-9]+([Ee][+-]?[0-9]+)?
 
 
 %{
+int nodeNumber = 0;
 typedef struct stack {
     int data;
     struct stack *next;
@@ -232,8 +233,14 @@ int count_spaces(char *str) {
 {SEMICOLON}             {/*printf("SEMICOLON: %s\n", yytext);*/return SEMICOLON;}
 {COMMENT}               {/*printf("COMMENT: %s\n", yytext);*/return COMMENT;}
 {OPERATORS}		        {/*printf("OPERATOR: %s\n", yytext);*/return OPERATORS;}
-{KEYWORD_FALSE}         {/*printf("KEYWORD_FALSE: %s \n",yytext);*/return KEYWORD_FALSE;}
-{KEYWORD_TRUE}          {/*printf("KEYWORD_TRUE: %s \n",yytext);*/return KEYWORD_TRUE;}
+{KEYWORD_FALSE}         {
+                            yylval.astNode = new KeywordNode("Keyword_FALSE" + to_string(++nodeNumber), "Keyword_FALSE", yytext);
+                            return KEYWORD_FALSE;
+                        }
+{KEYWORD_TRUE}          {
+                            yylval.astNode = new KeywordNode("Keyword_TRUE" + to_string(++nodeNumber), "Keyword_TRUE", yytext);
+                            return KEYWORD_TRUE;
+                        }
 {KEYWORD_AWAIT}         {/*printf("KEYWORD_AWAIT: %s \n",yytext);*/return KEYWORD_AWAIT;}
 {KEYWORD_IF}            {/*printf("KEYWORD_IF: %s \n",yytext);*/return KEYWORD_IF;}
 {KEYWORD_ELSE}          {/*printf("KEYWORD_ELSE: %s \n",yytext);*/return KEYWORD_ELSE;}
@@ -269,7 +276,10 @@ int count_spaces(char *str) {
 {KEYWORD_YIELD}         {/*printf("KEYWORD_YIELD: %s \n",yytext);*/return KEYWORD_YIELD;}
 {KEYWORD_MATCH}         {/*printf("KEYWORD_MATCH: %s \n",yytext);*/return KEYWORD_MATCH;}
 {KEYWORD_CASE}          {/*printf("KEYWORD_CASE: %s \n",yytext);*/return KEYWORD_CASE;}
-{LITERALSTRING}         {/*printf("STRING_LITERAL: %s\n", yytext);*/return LITERALSTRING;}
+{LITERALSTRING}         {
+                            yylval.astNode = new StringNode("String" + to_string(++nodeNumber), "String", yytext);
+                            return LITERALSTRING;
+                        }
 {LITERALCHAR}           {/*printf("CHAR_LITERAL: %s\n", yytext);*/return LITERALCHAR;}
 {LIST}                  {/*printf("list: %s \n",yytext);*/return LIST;}
 {TUPLE}                  {/*printf("tuple: %s \n",yytext);*/return TUPLE;}

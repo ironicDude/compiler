@@ -49,13 +49,13 @@
 %%
 
 prog  :                 { 
-                              std::string nname = "Program" + std::to_string(n_nodes);
-                              ++n_nodes;
-                              $$ = new EmptyNode(nname); 
+                              std::string name = "Program" + std::to_string(++n_nodes);
+                              $$ = new EmptyNode(name); 
                         }
       | NEWLINE         { }
-      | prog statements {
-                              $$ = new StatementsNode("Program");
+      | prog statements {     
+                              std::string name = "Program" + std::to_string(++n_nodes);
+                              $$ = new StatementsNode(name);
                               $$->add($1);
                               $$->add($2);
                               root = $$;
@@ -102,8 +102,8 @@ simple_statement  : assignment            { $$ = $1; }
                   ;
 
 compound_statement: function                    { $$ = $1; }
-                  | conditional_statement
-                  | class { $$ = $1; }
+                  | conditional_statement       { $$ = $1; }
+                  | class
                   | for_statement
                   | while_statement
                   | match_statement
@@ -121,21 +121,32 @@ import_statment   : KEYWORD_IMPORT member_expression
                   | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
                   ;
 
-assignment  : member_expression ASSIGN expression { 
-            std::string name = "Assignment" + std::to_string(n_nodes);
-            $$ = new AssignmentStatement(name);  
-            ++n_nodes;
-            $$->add($1);
-            $$->add($3);
+assignment  : member_expression ASSIGN expression {  
+                  std::string name = "assignment" + std::to_string(++n_nodes);
+                  $$ = new AssignmentStatement(name);
+                  $$->add($1);
+                  $$->add($3);
             }
             ;
 
-expression  : expression ADD expression         { } 
-            | expression MINUS expression       { }
-            | expression MULTIPLY expression    { }
-            | expression DIVIDE expression      { }
-            | expression POWER expression       { }
-            | expression MODULO expression
+expression  : expression ADD expression   { 
+                  $$ = new BinaryExpressionNode("+", $1, $3);
+            } 
+            | expression MINUS expression       { 
+                  $$ = new BinaryExpressionNode("-", $1, $3);
+            }
+            | expression MULTIPLY expression    { 
+                  $$ = new BinaryExpressionNode("*", $1, $3);
+            }
+            | expression DIVIDE expression      { 
+                  $$ = new BinaryExpressionNode("/", $1, $3);
+            }
+            | expression POWER expression       { 
+                  $$ = new BinaryExpressionNode("**", $1, $3);
+            }
+            | expression MODULO expression      {
+                  $$ = new BinaryExpressionNode("%", $1, $3);
+            }
             | '|' expression  %prec UMINUS      { /*The rule for negation includes %prec UMINUS . The only operator in this rule is - , 
                                                       which has low precedence, but we want unary minus to have higher precedence than multiplication 
                                                       rather than lower. The %prec tells bison to use the precedence of UMINUS for this rule.*/
@@ -151,6 +162,14 @@ expression  : expression ADD expression         { }
             | KEYWORD_NONE
             | KEYWORD_TRUE
             | KEYWORD_FALSE
+            | '(' expression ')'                { $$ = $2; }
+            | '-' expression %prec UMINUS       { }
+            | number                            { $$ = $1; }
+            | member_expression                 { $$ = $1; }
+            | function_call                     { $$ = $1; }
+            | LITERALSTRING                     { $$ = $1; }
+            | LIST                              { }
+            | KEYWORD_NONE                      { }
             ;
 
 number: INTEGER { $$ = $1; }
@@ -271,19 +290,20 @@ class_body  : /* Empty */ {
             ;
 
 function_call     : IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES {
-                                                                        $$ = new FunctionCall($1);
-                                                                        std::string nname = "iden" + std::to_string(n_nodes);
-                                                                        ++n_nodes;
-                                                                        $1->name=nname;
-                                                                        $$->add($1);
-                                                                        $$->add($3);
-                                                                  }
-                  | IDENTIFIER LEFT_PARENTHES function_call RIGHT_PARENTHES
+                        std::string name = dynamic_cast<IdentifierNode*>($1)->value + std::to_string(++n_nodes);
+                        $$ = new FunctionCall(name, $1);
+                        $$->add($1);
+                        $$->add($3);                                         
+                  }
+                  | IDENTIFIER LEFT_PARENTHES function_call RIGHT_PARENTHES {
+                        std::string name = dynamic_cast<IdentifierNode*>($1)->value + std::to_string(++n_nodes);
+                        $$ = new FunctionCall(name, $1);
+                        $$->add($1);
+                        $$->add($3);
+                  }
                   ;
 
 function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON block {
-                  std::string name = "function" + std::to_string(n_nodes);
-                  ++n_nodes;
                   IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
                   $$ = new FunctionNode(idFunc->value);
                   $$->add($4);
@@ -298,62 +318,131 @@ block : NEWLINE INDENT statements DEDENT  {
             }
       ;
 
-args  :                       { 
-                                    std::string nname = "Args" + std::to_string(n_nodes);
-                                    ++n_nodes;
-                                    $$ = new EmptyNode(nname); 
-                              }
-      | args expression COMMA
+args  : /* EMPTY */     { 
+            std::string name = "Args" + std::to_string(++n_nodes);
+            $$ = new EmptyNode(name); 
+      }
+      | args expression COMMA 
       | args expression 
       | expression COMMA
       | expression
       ;
 
 member_expression : IDENTIFIER      {
-                                    std::string nname = "iden" + std::to_string(n_nodes);
-                                    ++n_nodes;
-                                    $1->name=nname;
-                                    $$ = $1;
-                              }
-                  | member_expression %prec '.' IDENTIFIER        { $$ = new MemberExpression($1, $2); }
-                  | member_expression %prec '.' function_call     { $$ = new MemberExpression($1, $2); $$->add($2); }
+                        std::string name = "identifire" + std::to_string(++n_nodes);
+                        $1->name=name;
+                        $$ = $1;
+                  }
+                  | member_expression %prec '.' IDENTIFIER  {
+                        std::string name = "identifire" + std::to_string(++n_nodes);
+                        $2->name=name;
+                        $$ = new MemberExpression($1, $2);
+                        $$->add($1); 
+                        $$->add($2); 
+                  }
+                  | member_expression %prec '.' function_call     { 
+                        $$ = new MemberExpression($1, $2); 
+                        $$->add($1); 
+                        $$->add($2); 
+                  }
                   ;
 
-logical_expression: expression
-                  | expression GREATEROREQUAL expression
-                  | expression GREATERTHAN expression
-                  | expression LESSOREQUAL expression
-                  | expression LESSTHAN expression
-                  | expression EQUAL expression
-                  | expression NOTEQUAL expression
-                  | expression KEYWORD_IS expression
-                  | logical_expression KEYWORD_AND logical_expression
-                  | logical_expression KEYWORD_OR logical_expression
-                  | KEYWORD_NOT logical_expression
+logical_expression: expression      { $$ = $1; }
+                  | expression GREATEROREQUAL expression    {
+                        $$ = new BinaryLogicalExpression(">=", $1, $3);
+                  }
+                  | expression GREATERTHAN expression {
+                        $$ = new BinaryLogicalExpression(">", $1, $3);
+                  }
+                  | expression LESSOREQUAL expression {
+                        $$ = new BinaryLogicalExpression("<=", $1, $3);
+                  }
+                  | expression LESSTHAN expression    {
+                        $$ = new BinaryLogicalExpression("<", $1, $3);
+                  }
+                  | expression EQUAL expression {
+                        $$ = new BinaryLogicalExpression("==", $1, $3);
+                  }
+                  | expression NOTEQUAL expression    {
+                        $$ = new BinaryLogicalExpression("!=", $1, $3);
+                  }
+                  | logical_expression KEYWORD_AND logical_expression   {
+                        $$ = new BinaryLogicalExpression("and", $1, $3);
+                  }
+                  | logical_expression KEYWORD_OR logical_expression    {
+                        $$ = new BinaryLogicalExpression("or", $1, $3);
+                  }
+                  | KEYWORD_NOT logical_expression    {
+                        $$ = new BinaryLogicalExpression("not", $1, $2);
+                  }
+                  | KEYWORD_TRUE    { $$ = $1; }
+                  | KEYWORD_FALSE   { $$ = $1; }
                   ;
 
-conditional_statement   : if_statement elif_else
+conditional_statement   : if_statement elif_else      {
+                              $1->add($2);
+                              $$ = $1;
+                        }
                         ;
 
-elif_else   : 
-            | elif_stmts else_statement
-            | elif_stmts
-            | else_statement
+elif_else   : /* EMPTY */     { 
+                  std::string name = "elif_else" + std::to_string(++n_nodes);
+                  $$ = new EmptyNode(name); 
+            }
+            | elif_stmts else_statement {
+                  $1->add($2);
+                  $$ = $1;
+            }
+            | elif_stmts      {
+                  $$ = $1;
+            }
+            | else_statement  {
+                  $$ = $1;
+            }
             ;
 
-elif_stmts  : elif_statement
-            | elif_stmts elif_statement 
+elif_stmts  : elif_statement  {
+                  $$ = $1;
+            }
+            | elif_stmts elif_statement   {
+                  $1->add($2);
+                  $$ = $1;
+            }
             ;
 
-if_statement      : KEYWORD_IF logical_expression COLON block
-                  | KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+if_statement      : KEYWORD_IF logical_expression COLON block     {
+                        std::string name = "if" + std::to_string(++n_nodes);
+                        $$ = new ConditionalStatement("if", name);
+                        $$->add($2);
+                        $$->add($4);
+                  }
+                  | KEYWORD_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block {
+                        std::string name = "if" + std::to_string(++n_nodes);
+                        $$ = new ConditionalStatement("if", name);
+                        $$->add($3);
+                        $$->add($6);
+                  }
                   ;
 
-else_statement    : KEYWORD_ELSE COLON block
+else_statement    : KEYWORD_ELSE COLON block    {
+                        std::string name = "else" + std::to_string(++n_nodes);
+                        $$ = new ConditionalStatement("else", name);
+                        $$->add($3);
+                  }
                   ;
 
-elif_statement    : KEYWORD_ELSE_IF logical_expression COLON block
-                  | KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block
+elif_statement    : KEYWORD_ELSE_IF logical_expression COLON block      {
+                        std::string name = "elif" + std::to_string(++n_nodes);
+                        $$ = new ConditionalStatement("elif", name);
+                        $$->add($2);
+                        $$->add($4);
+                  }
+                  | KEYWORD_ELSE_IF LEFT_PARENTHES logical_expression RIGHT_PARENTHES COLON block     {
+                        std::string name = "elif" + std::to_string(++n_nodes);
+                        $$ = new ConditionalStatement("elif", name);
+                        $$->add($3);
+                        $$->add($6);
+                  }
                   ;
 
 for_statement     : KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block

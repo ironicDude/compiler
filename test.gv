@@ -1,4 +1,5 @@
 digraph G {
+<<<<<<< HEAD
 	Program [label="Statements: Program"]
 	Program -> Program0;
 	Program0 [label="Empty: Program0"]
@@ -22,4 +23,93 @@ digraph G {
 	iden7 [label="Identifier: x"]
 	Assignment8 -> INTEGER7;
 	INTEGER7 [shape=box,label="Integer: 10"]
+=======
+	Program25 [label="Block Statements: Program25"]
+	Program25 -> Program1;
+	Program1 [label="Empty: Program1"]
+	Program25 -> sami;
+	sami [label="Declare Fun: sami"]
+	sami -> Args2;
+	Args2 [label="Empty: Args2"]
+	sami -> Block24;
+	Block24 [label="Block: Block24"]
+	Block24 -> ConditionalStatement_if9;
+	ConditionalStatement_if9 [label="if"]
+	ConditionalStatement_if9 -> BinaryLogicalExpression_Integer2GREATERTHANInteger3;
+	BinaryLogicalExpression_Integer2GREATERTHANInteger3 [label=">"]
+	BinaryLogicalExpression_Integer2GREATERTHANInteger3 -> Integer2;
+	Integer2 [shape=box,label="Integer: 1"]
+	BinaryLogicalExpression_Integer2GREATERTHANInteger3 -> Integer3;
+	Integer3 [shape=box,label="Integer: 0"]
+	ConditionalStatement_if9 -> Block8;
+	Block8 [label="Block: Block8"]
+	Block8 -> assignment7;
+	assignment7 [label="assignment"]
+	assignment7 -> identifire3a5identifire6;
+	identifire3a5identifire6 [shape=box,label="MemberExpression: s.a.m"]
+	identifire3a5identifire6 -> identifire3a5;
+	identifire3a5 [shape=box,label="MemberExpression: s.a"]
+	identifire3a5 -> identifire3;
+	identifire3 [label="Identifier: s"]
+	identifire3a5 -> a5;
+	a5 [shape=box,label="FunctionCall: a()"]
+	a5 -> IDENTIFIER5;
+	IDENTIFIER5 [label="Identifier: a"]
+	a5 -> Args4;
+	Args4 [label="Empty: Args4"]
+	identifire3a5identifire6 -> identifire6;
+	identifire6 [label="Identifier: m"]
+	assignment7 -> Integer7;
+	Integer7 [shape=box,label="Integer: 1"]
+	ConditionalStatement_if9 -> ConditionalStatement_elif16;
+	ConditionalStatement_elif16 [label="elif"]
+	ConditionalStatement_elif16 -> BinaryLogicalExpression_Integer8GREATERTHANInteger9;
+	BinaryLogicalExpression_Integer8GREATERTHANInteger9 [label=">"]
+	BinaryLogicalExpression_Integer8GREATERTHANInteger9 -> Integer8;
+	Integer8 [shape=box,label="Integer: 2"]
+	BinaryLogicalExpression_Integer8GREATERTHANInteger9 -> Integer9;
+	Integer9 [shape=box,label="Integer: 1"]
+	ConditionalStatement_elif16 -> Block15;
+	Block15 [label="Block: Block15"]
+	Block15 -> assignment14;
+	assignment14 [label="assignment"]
+	assignment14 -> identifire10a12identifire13;
+	identifire10a12identifire13 [shape=box,label="MemberExpression: s.a.m"]
+	identifire10a12identifire13 -> identifire10a12;
+	identifire10a12 [shape=box,label="MemberExpression: s.a"]
+	identifire10a12 -> identifire10;
+	identifire10 [label="Identifier: s"]
+	identifire10a12 -> a12;
+	a12 [shape=box,label="FunctionCall: a()"]
+	a12 -> IDENTIFIER11;
+	IDENTIFIER11 [label="Identifier: a"]
+	a12 -> Args11;
+	Args11 [label="Empty: Args11"]
+	identifire10a12identifire13 -> identifire13;
+	identifire13 [label="Identifier: m"]
+	assignment14 -> Integer13;
+	Integer13 [shape=box,label="Integer: 2"]
+	ConditionalStatement_elif16 -> ConditionalStatement_else23;
+	ConditionalStatement_else23 [label="else"]
+	ConditionalStatement_else23 -> Block22;
+	Block22 [label="Block: Block22"]
+	Block22 -> assignment21;
+	assignment21 [label="assignment"]
+	assignment21 -> identifire17a19identifire20;
+	identifire17a19identifire20 [shape=box,label="MemberExpression: s.a.m"]
+	identifire17a19identifire20 -> identifire17a19;
+	identifire17a19 [shape=box,label="MemberExpression: s.a"]
+	identifire17a19 -> identifire17;
+	identifire17 [label="Identifier: s"]
+	identifire17a19 -> a19;
+	a19 [shape=box,label="FunctionCall: a()"]
+	a19 -> IDENTIFIER15;
+	IDENTIFIER15 [label="Identifier: a"]
+	a19 -> Args18;
+	Args18 [label="Empty: Args18"]
+	identifire17a19identifire20 -> identifire20;
+	identifire20 [label="Identifier: m"]
+	assignment21 -> Integer17;
+	Integer17 [shape=box,label="Integer: 3"]
+>>>>>>> main
 }

@@ -150,13 +150,42 @@ public:
     }
 };
 
+class StringNode : public AstNode {
+public:
+    StringNode(std::string name, std::string label, std::string value) {
+        this->name = name;
+        this->label = label;
+        this->value = value; 
+    }
+    void add(AstNode* /*node*/) override {
+        std::cerr << "Cannot add a child to a leaf node." << std::endl;
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << value << "\"]" << std::endl;
+    }
+};
+
+class KeywordNode : public AstNode {
+public:
+    KeywordNode(std::string name, std::string label, std::string value) {
+        this->name = name;
+        this->label = label;
+        this->value = value; 
+    }
+    void add(AstNode* /*node*/) override {
+        std::cerr << "Cannot add a child to a leaf node." << std::endl;
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << value << "\"]" << std::endl;
+    }
+};
+
 class MemberExpression : public AstNode {
 private:
     std::vector<AstNode*> next;
 public:
-    std::string value = "undefined";
     MemberExpression(AstNode* first, AstNode* second) {
-        this->name = first->name + '.' + second->name;
+        this->name = first->name + second->name;
         this->label = "MemberExpression";
         this->value = first->value + '.' + second->value;
     }
@@ -177,8 +206,8 @@ class FunctionCall : public AstNode {
 private:
     std::vector<AstNode*> next;
 public:
-    FunctionCall(AstNode* identifier) {
-        this->name = identifier->value;
+    FunctionCall(const std::string& name, AstNode* identifier) {
+        this->name = name;
         this->label = "FunctionCall";
         this->value = identifier->value;
     }
@@ -265,7 +294,6 @@ public:
     }
 };
 
-
 class EmptyNode : public AstNode {
 private:
     std::vector<AstNode*> next;
@@ -346,9 +374,8 @@ public:
 
 // Leaf node for representing numeric literals
 class NumberNode : public AstNode {
-private:
-    int value;
 public:
+    int value;
     NumberNode(std::string name, std::string label, int value) {
         this->name = name;
         this->label = label;
@@ -362,34 +389,198 @@ public:
     }
 };
 
-// Composite node for representing binary expressions
+class ConditionalStatement : public AstNode {
+private:
+    std::vector<AstNode*> next;
+    std::string condition;
+public:
+    ConditionalStatement(const std::string& cond, const std::string& name) {
+        this->condition = cond;
+        if(cond == "if"){
+            this->name = "ConditionalStatement_" + name;
+            this->label = cond;
+        }
+        if(cond == "elif"){
+            this->name = "ConditionalStatement_" + name;
+            this->label = cond;
+        }
+        if(cond == "else"){
+            this->name = "ConditionalStatement_" + name;
+            this->label = cond;
+        }
+    }
+    void add(AstNode* node) override {    
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << condition << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~ConditionalStatement() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
 class BinaryExpressionNode : public AstNode {
 private:
-    char operation;
+    std::vector<AstNode*> next;
+    std::string operation;
     AstNode* left;
     AstNode* right;
 public:
-    BinaryExpressionNode(char op, AstNode* l, AstNode* r)
-        : operation(op), left(l), right(r) {}
+    BinaryExpressionNode(const std::string& op, AstNode* l, AstNode* r) {
+            this->operation = op;
+            this->left = l;
+            this->right = r;
+            next.push_back(l);
+            next.push_back(r);
+            if(op == "+"){
+                this->name = "BinaryExpression_" + l->name + "PLUS" + r->name;
+                this->label = "BinaryExpression_" + l->name + "PLUS" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "-"){
+                this->name = "BinaryExpression_" + l->name + "MINUS" + r->name;
+                this->label = "BinaryExpression_" + l->name + "MINUS" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "*"){
+                this->name = "BinaryExpression_" + l->name + "MULTIPLY" + r->name;
+                this->label = "BinaryExpression_" + l->name + "MULTIPLY" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "/"){
+                this->name = "BinaryExpression_" + l->name + "DIVIDE" + r->name;
+                this->label = "BinaryExpression_" + l->name + "DIVIDE" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "**"){
+                this->name = "BinaryExpression_" + l->name + "POWER" + r->name;
+                this->label = "BinaryExpression_" + l->name + "POWER" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "%"){
+                this->name = "BinaryExpression_" + l->name + "MODULO" + r->name;
+                this->label = "BinaryExpression_" + l->name + "MODULO" + r->name;
+                this->value = l->value + r->value;
+            }
+        }
     void add(AstNode* node) override {
-        if (!left)
+        if (!left){
             left = node;
-        else if (!right)
+            next.push_back(node);
+        }
+        else if (!right) {
             right = node;
+            next.push_back(node);
+        }
         else
             std::cerr << "Binary expression already has two children." << std::endl;
     }
     void print() const override {
-        std::cout << "\t" << "BinaryExpressionNode" << " [label=\"" << operation << "\"]" << std::endl;
-        left->print();
-        std::cout << "\t" << "BinaryExpressionNode" << " [label=\"" << operation << "\"]" << std::endl;
-        right->print();
+        std::cout << "\t" << name << " [label=\"" << operation << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
     }
     ~BinaryExpressionNode() {
-        delete left;
-        delete right;
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
     }
 };
+
+class BinaryLogicalExpression : public AstNode {
+private:
+    std::vector<AstNode*> next;
+    std::string operation;
+    AstNode* left;
+    AstNode* right;
+public:
+    BinaryLogicalExpression(const std::string& op, AstNode* l, AstNode* r) {
+            this->operation = op;
+            this->left = l;
+            this->right = r;
+            next.push_back(l);
+            next.push_back(r);
+            if(op == ">="){
+                this->name = "BinaryLogicalExpression_" + l->name + "GREATERTHANOREQUAL" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "GREATERTHANOREQUAL" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == ">"){
+                this->name = "BinaryLogicalExpression_" + l->name + "GREATERTHAN" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "GREATERTHAN" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "<="){
+                this->name = "BinaryLogicalExpression_" + l->name + "LESSTHANOREQUAL" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "LESSTHANOREQUAL" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "<"){
+                this->name = "BinaryLogicalExpression_" + l->name + "LESSTHAN" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "LESSTHAN" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "=="){
+                this->name = "BinaryLogicalExpression_" + l->name + "EQUAL" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "EQUAL" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "!="){
+                this->name = "BinaryLogicalExpression_" + l->name + "NOTEQUAL" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "NOTEQUAL" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "and"){
+                this->name = "BinaryLogicalExpression_" + l->name + "AND" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "AND" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "or"){
+                this->name = "BinaryLogicalExpression_" + l->name + "OR" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "OR" + r->name;
+                this->value = l->value + r->value;
+            }
+            if(op == "not"){
+                this->name = "BinaryLogicalExpression_" + l->name + "NOT" + r->name;
+                this->label = "BinaryLogicalExpression_" + l->name + "NOT" + r->name;
+                this->value = l->value + r->value;
+            }
+        }
+    void add(AstNode* node) override {
+        if (!left){
+            left = node;
+            next.push_back(node);
+        }
+        else if (!right){
+            right = node;
+            next.push_back(node);
+        }
+        else
+            std::cerr << "Binary Logical expression already has two children." << std::endl;
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << operation << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~BinaryLogicalExpression() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
 
 class ReturnStatementNode : public AstNode {
 private:
