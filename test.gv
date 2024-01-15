@@ -12,6 +12,7 @@ digraph G {
 	block27 [label="Block: block27"]
 	block27 -> Statement4;
 	Statement4 [label="Statements: Statement4"]
+<<<<<<< HEAD
 	Statement4 -> ConditionalStatement_if9;
 	ConditionalStatement_if9 [label="if"]
 	ConditionalStatement_if9 -> BinaryLogicalExpression_INTEGER1GREATERTHANINTEGER2;
@@ -84,4 +85,20 @@ digraph G {
 	Del25 [label="Del: Del25"]
 	Del25 -> IDENTIFIER12;
 	IDENTIFIER12 [label="Identifier: k"]
+=======
+	Statement4 -> assignment6;
+	assignment6 [label="assignment"]
+	assignment6 -> identifire5;
+	identifire5 [label="Identifier: y"]
+	assignment6 -> INTEGER2;
+	INTEGER2 [shape=box,label="Integer: 10"]
+	Statement4 -> Assert8;
+	Assert8 [label="Assert: Assert8"]
+	Assert8 -> BinaryExpression_identifire7PLUSINTEGER4;
+	BinaryExpression_identifire7PLUSINTEGER4 [label="+"]
+	BinaryExpression_identifire7PLUSINTEGER4 -> identifire7;
+	identifire7 [label="Identifier: x"]
+	BinaryExpression_identifire7PLUSINTEGER4 -> INTEGER4;
+	INTEGER4 [shape=box,label="Integer: 1"]
+>>>>>>> main
 }

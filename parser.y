@@ -202,7 +202,6 @@ assert_statement  : KEYWORD_ASSERT logical_expression {
                         $$ = new AssertNode(name);
                         $$->add($2);
                   }
-                  ;
                   | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING
                   ;
 
