@@ -1,29 +1,13 @@
 digraph G {
-	Program10 [label="Statements: Program10"]
-	Program10 -> Program1;
+	Program13 [label="Statements: Program13"]
+	Program13 -> Program1;
 	Program1 [label="Empty: Program1"]
-	Program10 -> Statement2;
+	Program13 -> Statement2;
 	Statement2 [label="Statements: Statement2"]
-	Statement2 -> x;
-	x [label="Declare Fun: x"]
-	x -> Args3;
-	Args3 [label="Empty: Args3"]
-	x -> block8;
-	block8 [label="Block: block8"]
-	block8 -> Statement4;
-	Statement4 [label="Statements: Statement4"]
-	Statement4 -> assignment6;
-	assignment6 [label="assignment"]
-	assignment6 -> identifire5;
-	identifire5 [label="Identifier: y"]
-	assignment6 -> INTEGER2;
-	INTEGER2 [shape=box,label="Integer: 10"]
-	Statement4 -> Assert8;
-	Assert8 [label="Assert: Assert8"]
-	Assert8 -> BinaryExpression_identifire7PLUSINTEGER4;
-	BinaryExpression_identifire7PLUSINTEGER4 [label="+"]
-	BinaryExpression_identifire7PLUSINTEGER4 -> identifire7;
-	identifire7 [label="Identifier: x"]
-	BinaryExpression_identifire7PLUSINTEGER4 -> INTEGER4;
-	INTEGER4 [shape=box,label="Integer: 1"]
+	Statement2 -> Match12;
+	Match12 [label="Match: Match12"]
+	Match12 -> IDENTIFIER0;
+	IDENTIFIER0 [label="Identifier: x"]
+	Match12 -> IDENTIFIER0;
+	IDENTIFIER0 [label="Identifier: x"]
 }

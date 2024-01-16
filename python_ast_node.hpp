@@ -369,6 +369,106 @@ public:
     }
 };
 
+class WithNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    WithNode(const std::string& name) {
+        this->name = name;
+        this->label = "With";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~WithNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class TryNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    TryNode(const std::string& name) {
+        this->name = name;
+        this->label = "Try";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~TryNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class ExceptNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    ExceptNode(const std::string& name) {
+        this->name = name;
+        this->label = "Except";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~ExceptNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class FinallyNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    FinallyNode(const std::string& name) {
+        this->name = name;
+        this->label = "Finally";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~FinallyNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
 class NonLocalNode : public AstNode {
 private:
     std::vector<AstNode*> next;

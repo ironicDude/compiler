@@ -37,7 +37,7 @@
 %type  <astNode> prog statements statement simple_statement compound_statement import_statment
 %type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
 %type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
-%type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class 
+%type  <astNode> cases case try_statement try except finally except_statements with with_statements class 
 %type  <astNode> class_block  class_body function_call function block args member_expression logical_expression
 %type  <astNode> conditional_statement elif_else elif_stmts if_statement else_statement elif_statement for_statement while_statement
 %error-verbose
@@ -94,7 +94,7 @@ simple_statement  : assignment            { $$ = $1; }
                   | del_statment          { $$ = $1; }
                   | import_statment       { $$ = $1; }
                   | function_call         { $$ = $1; }
-                  | with_statment         { $$ = $1; }
+                  | with                  { $$ = $1; }
                   | KEYWORD_PASS
                   | KEYWORD_BREAK
                   | KEYWORD_CONTINUE
@@ -282,8 +282,6 @@ cases : cases case {
 }
       | case { 
             $$ = $1; 
-            std::string name = "Case" + std::to_string(++n_nodes);
-            $$ = new CaseNode(name);
       }
       ;
 
@@ -293,33 +291,80 @@ case  : KEYWORD_CASE expression COLON block {
                   }
       ;
 
-try_statement     : try finally
-                  | try except_statements
-                  | try except_statements finally
-                  | try except_statements else_statement
-                  | try except_statements else_statement finally
+try_statement     : try finally {
+      $$->add($1);
+      $$->add($2);
+}
+                  | try except_statements {
+      $$->add($1);
+      $$->add($2);
+}
+                  | try except_statements finally {
+      $$->add($1);
+      $$->add($2);
+      $$->add($3);
+}
+                  | try except_statements else_statement {
+      $$->add($1);
+      $$->add($2);
+      $$->add($3);
+}
+                  | try except_statements else_statement finally{
+      $$->add($1);
+      $$->add($2);
+      $$->add($3);
+      $$->add($4);
+}
                   ;
 
-try   : KEYWORD_TRY COLON block
+try   : KEYWORD_TRY COLON block {
+                        std::string name = "Try" + std::to_string(++n_nodes);
+                        $$ = new TryNode(name);
+                        $$->add($3);
+                  }
       ;
 
-except: KEYWORD_EXCEPT COLON block
-      | KEYWORD_EXCEPT member_expression COLON block
-      | KEYWORD_EXCEPT member_expression KEYWORD_AS IDENTIFIER COLON block
+except: KEYWORD_EXCEPT COLON block {
+                        std::string name = "Except" + std::to_string(++n_nodes);
+                        $$ = new ExceptNode(name);
+                        $$->add($3);
+                  }
+      | KEYWORD_EXCEPT member_expression COLON block {
+                        std::string name = "Except" + std::to_string(++n_nodes);
+                        $$ = new ExceptNode(name);
+                        $$->add($4);
+                        $$->add($2);
+                  }
+      | KEYWORD_EXCEPT member_expression KEYWORD_AS IDENTIFIER COLON block {
+                        std::string name = "Except" + std::to_string(++n_nodes);
+                        $$ = new ExceptNode(name);
+                        $$->add($4);
+                        $$->add($2);
+                        $$->add($6);
+                  }
       ;
 
-finally     : KEYWORD_FINALLY COLON block
+finally     : KEYWORD_FINALLY COLON block {
+                        std::string name = "Finally" + std::to_string(++n_nodes);
+                        $$ = new FinallyNode(name);
+                        $$->add($3);
+                  }
             ;
 
 except_statements : except_statements except
                   | except
                   ;
 
-with_statment     : KEYWORD_WITH with_stmt COLON block
+with     : KEYWORD_WITH with_statements COLON block {
+                        std::string name = "With" + std::to_string(++n_nodes);
+                        $$ = new WithNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                  }
                   ;
 
-with_stmt   : function_call KEYWORD_AS IDENTIFIER
-            | with_stmt COMMA function_call KEYWORD_AS IDENTIFIER
+with_statements   : function_call KEYWORD_AS IDENTIFIER
+            | with_statements COMMA function_call KEYWORD_AS IDENTIFIER
             ;
 
 class : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block {
