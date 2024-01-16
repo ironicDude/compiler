@@ -1,29 +1,61 @@
 digraph G {
-	Program10 [label="Statements: Program10"]
-	Program10 -> Program1;
+	Program19 [label="Statements: Program19"]
+	Program19 -> Program1;
 	Program1 [label="Empty: Program1"]
-	Program10 -> Statement2;
+	Program19 -> Statement2;
 	Statement2 [label="Statements: Statement2"]
 	Statement2 -> x;
-	x [label="Declare Fun: x"]
-	x -> Args3;
-	Args3 [label="Empty: Args3"]
-	x -> block8;
-	block8 [label="Block: block8"]
-	block8 -> Statement4;
-	Statement4 [label="Statements: Statement4"]
-	Statement4 -> assignment6;
-	assignment6 [label="assignment"]
-	assignment6 -> identifire5;
-	identifire5 [label="Identifier: y"]
-	assignment6 -> INTEGER2;
-	INTEGER2 [shape=box,label="Integer: 10"]
-	Statement4 -> Assert8;
-	Assert8 [label="Assert: Assert8"]
-	Assert8 -> BinaryExpression_identifire7PLUSINTEGER4;
-	BinaryExpression_identifire7PLUSINTEGER4 [label="+"]
-	BinaryExpression_identifire7PLUSINTEGER4 -> identifire7;
-	identifire7 [label="Identifier: x"]
-	BinaryExpression_identifire7PLUSINTEGER4 -> INTEGER4;
-	INTEGER4 [shape=box,label="Integer: 1"]
+	x [label="Match: x"]
+	x -> IDENTIFIER0;
+	IDENTIFIER0 [label="Identifier: x"]
+	x -> MatchBlock8;
+	MatchBlock8 [label="MatchBlock: MatchBlock8"]
+	MatchBlock8 -> Case7;
+	Case7 [label="Case: Case7"]
+	Case7 -> INTEGER1;
+	INTEGER1 [shape=box,label="Integer: 1"]
+	Case7 -> block5;
+	block5 [label="Block: block5"]
+	block5 -> Statement3;
+	Statement3 [label="Statements: Statement3"]
+	Statement3 -> Return5;
+	Return5 [label="Return: Return5"]
+	Return5 -> BinaryExpression_identifire4PLUSINTEGER3;
+	BinaryExpression_identifire4PLUSINTEGER3 [label="+"]
+	BinaryExpression_identifire4PLUSINTEGER3 -> identifire4;
+	identifire4 [label="Identifier: x"]
+	BinaryExpression_identifire4PLUSINTEGER3 -> INTEGER3;
+	INTEGER3 [shape=box,label="Integer: 1"]
+	MatchBlock8 -> Case13;
+	Case13 [label="Case: Case13"]
+	Case13 -> INTEGER4;
+	INTEGER4 [shape=box,label="Integer: 2"]
+	Case13 -> block11;
+	block11 [label="Block: block11"]
+	block11 -> Statement9;
+	Statement9 [label="Statements: Statement9"]
+	Statement9 -> Return11;
+	Return11 [label="Return: Return11"]
+	Return11 -> BinaryExpression_identifire10PLUSINTEGER6;
+	BinaryExpression_identifire10PLUSINTEGER6 [label="+"]
+	BinaryExpression_identifire10PLUSINTEGER6 -> identifire10;
+	identifire10 [label="Identifier: y"]
+	BinaryExpression_identifire10PLUSINTEGER6 -> INTEGER6;
+	INTEGER6 [shape=box,label="Integer: 2"]
+	MatchBlock8 -> Case18;
+	Case18 [label="Case: Case18"]
+	Case18 -> INTEGER7;
+	INTEGER7 [shape=box,label="Integer: 3"]
+	Case18 -> block16;
+	block16 [label="Block: block16"]
+	block16 -> Statement14;
+	Statement14 [label="Statements: Statement14"]
+	Statement14 -> Return16;
+	Return16 [label="Return: Return16"]
+	Return16 -> BinaryExpression_identifire15PLUSINTEGER9;
+	BinaryExpression_identifire15PLUSINTEGER9 [label="+"]
+	BinaryExpression_identifire15PLUSINTEGER9 -> identifire15;
+	identifire15 [label="Identifier: z"]
+	BinaryExpression_identifire15PLUSINTEGER9 -> INTEGER9;
+	INTEGER9 [shape=box,label="Integer: 3"]
 }
