@@ -1,17 +1,16 @@
 digraph G {
-<<<<<<< HEAD
-	Program23 [label="Statements: Program23"]
-	Program23 -> Program1;
+	Program29 [label="Statements: Program29"]
+	Program29 -> Program1;
 	Program1 [label="Empty: Program1"]
-	Program23 -> Statement2;
+	Program29 -> Statement2;
 	Statement2 [label="Statements: Statement2"]
-	Statement2 -> classWithoutInheritance22;
-	classWithoutInheritance22 [label="ClassDeclaration: classWithoutInheritance22"]
-	classWithoutInheritance22 -> IDENTIFIER0;
+	Statement2 -> classWithoutInheritance28;
+	classWithoutInheritance28 [label="ClassDeclaration: classWithoutInheritance28"]
+	classWithoutInheritance28 -> IDENTIFIER0;
 	IDENTIFIER0 [label="Identifier: MyClass"]
-	classWithoutInheritance22 -> ClassBlock21;
-	ClassBlock21 [label="ClassBlock: ClassBlock21"]
-	ClassBlock21 -> Classbody5;
+	classWithoutInheritance28 -> ClassBlock27;
+	ClassBlock27 [label="ClassBlock: ClassBlock27"]
+	ClassBlock27 -> Classbody5;
 	Classbody5 [label="Body: Classbody5"]
 	Classbody5 -> Classbody3;
 	Classbody3 [label="Body: Classbody3"]
@@ -31,23 +30,23 @@ digraph G {
 	IDENTIFIER4 [label="Identifier: x"]
 	Arg6 -> IDENTIFIER5;
 	IDENTIFIER5 [label="Identifier: y"]
-	function -> block20;
-	block20 [label="Block: block20"]
-	block20 -> Statement8;
+	function -> block26;
+	block26 [label="Block: block26"]
+	block26 -> Statement8;
 	Statement8 [label="Statements: Statement8"]
 	Statement8 -> x;
 	x [label="Match: x"]
 	x -> IDENTIFIER6;
 	IDENTIFIER6 [label="Identifier: x"]
-	x -> MatchBlock15;
-	MatchBlock15 [label="MatchBlock: MatchBlock15"]
-	MatchBlock15 -> Case14;
-	Case14 [label="Case: Case14"]
-	Case14 -> INTEGER7;
+	x -> MatchBlock13;
+	MatchBlock13 [label="MatchBlock: MatchBlock13"]
+	MatchBlock13 -> Case12;
+	Case12 [label="Case: Case12"]
+	Case12 -> INTEGER7;
 	INTEGER7 [shape=box,label="Integer: 1"]
-	Case14 -> block13;
-	block13 [label="Block: block13"]
-	block13 -> Statement9;
+	Case12 -> block11;
+	block11 [label="Block: block11"]
+	block11 -> Statement9;
 	Statement9 [label="Statements: Statement9"]
 	Statement9 -> Return10;
 	Return10 [label="Return: Return10"]
@@ -59,55 +58,56 @@ digraph G {
 	INTEGER9 [shape=box,label="Integer: 1"]
 	Statement9 -> INTEGER9;
 	INTEGER9 [shape=box,label="Integer: 1"]
-	Statement9 -> Return11;
-	Return11 [label="Return: Return11"]
-	Return11 -> IDENTIFIER10;
-	IDENTIFIER10 [label="Identifier: y"]
-	Statement9 -> IDENTIFIER10;
-	IDENTIFIER10 [label="Identifier: y"]
-	Statement9 -> Return12;
-	Return12 [label="Return: Return12"]
-	Return12 -> IDENTIFIER11;
-	IDENTIFIER11 [label="Identifier: z"]
-	Statement9 -> IDENTIFIER11;
-	IDENTIFIER11 [label="Identifier: z"]
-	MatchBlock15 -> Case19;
-	Case19 [label="Case: Case19"]
-	Case19 -> INTEGER12;
+	MatchBlock13 -> Case17;
+	Case17 [label="Case: Case17"]
+	Case17 -> INTEGER10;
+	INTEGER10 [shape=box,label="Integer: 2"]
+	Case17 -> block16;
+	block16 [label="Block: block16"]
+	block16 -> Statement14;
+	Statement14 [label="Statements: Statement14"]
+	Statement14 -> Return15;
+	Return15 [label="Return: Return15"]
+	Return15 -> BinaryExpression_IDENTIFIER11PLUSINTEGER12;
+	BinaryExpression_IDENTIFIER11PLUSINTEGER12 [label="+"]
+	BinaryExpression_IDENTIFIER11PLUSINTEGER12 -> IDENTIFIER11;
+	IDENTIFIER11 [label="Identifier: w"]
+	BinaryExpression_IDENTIFIER11PLUSINTEGER12 -> INTEGER12;
 	INTEGER12 [shape=box,label="Integer: 2"]
-	Case19 -> block18;
-	block18 [label="Block: block18"]
-	block18 -> Statement16;
-	Statement16 [label="Statements: Statement16"]
-	Statement16 -> Return17;
-	Return17 [label="Return: Return17"]
-	Return17 -> BinaryExpression_IDENTIFIER13PLUSINTEGER14;
-	BinaryExpression_IDENTIFIER13PLUSINTEGER14 [label="+"]
-	BinaryExpression_IDENTIFIER13PLUSINTEGER14 -> IDENTIFIER13;
-	IDENTIFIER13 [label="Identifier: w"]
-	BinaryExpression_IDENTIFIER13PLUSINTEGER14 -> INTEGER14;
-	INTEGER14 [shape=box,label="Integer: 2"]
-=======
-	Program9 [label="Statements: Program9"]
-	Program9 -> Program1;
-	Program1 [label="Empty: Program1"]
-	Program9 -> Statement2;
-	Statement2 [label="Statements: Statement2"]
-	Statement2 -> For8;
-	For8 [shape=box,label="For: undefined()"]
-	For8 -> IDENTIFIER0;
-	IDENTIFIER0 [label="Identifier: x"]
-	For8 -> identifire3;
-	identifire3 [label="Identifier: y"]
-	For8 -> block6;
-	block6 [label="Block: block6"]
-	block6 -> Statement4;
-	Statement4 [label="Statements: Statement4"]
-	Statement4 -> assignment6;
-	assignment6 [label="assignment"]
-	assignment6 -> identifire5;
-	identifire5 [label="Identifier: y"]
-	assignment6 -> INTEGER3;
-	INTEGER3 [shape=box,label="Integer: 12"]
->>>>>>> bc6b282237893be9c9804cb3f37b2539f5959754
+	Statement14 -> INTEGER12;
+	INTEGER12 [shape=box,label="Integer: 2"]
+	MatchBlock13 -> Case21;
+	Case21 [label="Case: Case21"]
+	Case21 -> INTEGER13;
+	INTEGER13 [shape=box,label="Integer: 1"]
+	Case21 -> block20;
+	block20 [label="Block: block20"]
+	block20 -> Statement18;
+	Statement18 [label="Statements: Statement18"]
+	Statement18 -> Assert19;
+	Assert19 [label="Assert: Assert19"]
+	Assert19 -> BinaryExpression_IDENTIFIER14PLUSINTEGER15;
+	BinaryExpression_IDENTIFIER14PLUSINTEGER15 [label="+"]
+	BinaryExpression_IDENTIFIER14PLUSINTEGER15 -> IDENTIFIER14;
+	IDENTIFIER14 [label="Identifier: x"]
+	BinaryExpression_IDENTIFIER14PLUSINTEGER15 -> INTEGER15;
+	INTEGER15 [shape=box,label="Integer: 1"]
+	Statement18 -> INTEGER15;
+	INTEGER15 [shape=box,label="Integer: 1"]
+	MatchBlock13 -> Case25;
+	Case25 [label="Case: Case25"]
+	Case25 -> INTEGER16;
+	INTEGER16 [shape=box,label="Integer: 2"]
+	Case25 -> block24;
+	block24 [label="Block: block24"]
+	block24 -> Statement22;
+	Statement22 [label="Statements: Statement22"]
+	Statement22 -> Return23;
+	Return23 [label="Return: Return23"]
+	Return23 -> BinaryExpression_IDENTIFIER17PLUSINTEGER18;
+	BinaryExpression_IDENTIFIER17PLUSINTEGER18 [label="+"]
+	BinaryExpression_IDENTIFIER17PLUSINTEGER18 -> IDENTIFIER17;
+	IDENTIFIER17 [label="Identifier: w"]
+	BinaryExpression_IDENTIFIER17PLUSINTEGER18 -> INTEGER18;
+	INTEGER18 [shape=box,label="Integer: 2"]
 }
