@@ -343,6 +343,156 @@ public:
         }
     }
 };
+
+class RaiseNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    RaiseNode(const std::string& name) {
+        this->name = name;
+        this->label = "Raise";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~RaiseNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class NonLocalNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    NonLocalNode(const std::string& name) {
+        this->name = name;
+        this->label = "NonLocal";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~NonLocalNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class GlobalNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    GlobalNode(const std::string& name) {
+        this->name = name;
+        this->label = "Global";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~GlobalNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class CaseNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    CaseNode(const std::string& name) {
+        this->name = name;
+        this->label = "Case";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~CaseNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class MatchNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    MatchNode(const std::string& name) {
+        this->name = name;
+        this->label = "Match";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~MatchNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class ImportNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    ImportNode(const std::string& name) {
+        this->name = name;
+        this->label = "Import";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~ImportNode() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
 class Arg : public AstNode {
 private:
     std::vector<AstNode*> next;

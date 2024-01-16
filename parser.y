@@ -34,7 +34,7 @@
 %token <astNode> LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
 %token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON TUPLE
 %token <astNode> INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
-%type  <astNode> prog statements statement simple_statement compound_statement import_statments import_statment
+%type  <astNode> prog statements statement simple_statement compound_statement import_statment
 %type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
 %type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
 %type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class 
@@ -92,7 +92,7 @@ simple_statement  : assignment            { $$ = $1; }
                   | global_statement      { $$ = $1; }
                   | nonlocal_statement    { $$ = $1; }
                   | del_statment          { $$ = $1; }
-                  | import_statments      { $$ = $1; }
+                  | import_statment       { $$ = $1; }
                   | function_call         { $$ = $1; }
                   | with_statment         { $$ = $1; }
                   | KEYWORD_PASS
@@ -109,15 +109,36 @@ compound_statement: function                    { $$ = $1; }
                   | try_statement
                   ;
 
-import_statments  : import_statment NEWLINE
-                  | import_statments import_statment
-                  ;
 
-import_statment   : KEYWORD_IMPORT member_expression 
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT MULTIPLY
-                  | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER
-                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER
+import_statment   : KEYWORD_IMPORT member_expression {
+                        std::string name = "Import" + std::to_string(++n_nodes);
+                        $$ = new ImportNode(name);
+                        $$->add($2);
+                  }
+                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER {
+                        std::string name = "Import" + std::to_string(++n_nodes);
+                        $$ = new ImportNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                  }
+                  | KEYWORD_FROM member_expression KEYWORD_IMPORT MULTIPLY {
+                        std::string name = "Import" + std::to_string(++n_nodes);
+                        $$ = new ImportNode(name);
+                        $$->add($2);
+                  }
+                  | KEYWORD_IMPORT member_expression KEYWORD_AS IDENTIFIER {
+                        std::string name = "Import" + std::to_string(++n_nodes);
+                        $$ = new ImportNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                  }
+                  | KEYWORD_FROM member_expression KEYWORD_IMPORT IDENTIFIER KEYWORD_AS IDENTIFIER {
+                        std::string name = "Import" + std::to_string(++n_nodes);
+                        $$ = new ImportNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                        $$->add($6);
+                  }
                   ;
 
 assignment  : member_expression ASSIGN expression {  
@@ -202,34 +223,74 @@ assert_statement  : KEYWORD_ASSERT logical_expression {
                         $$ = new AssertNode(name);
                         $$->add($2);
                   }
-                  | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING
+                  | KEYWORD_ASSERT logical_expression COMMA LITERALSTRING {
+                  }
                   ;
 
-raise_statement   : KEYWORD_RAISE function_call
-                  | KEYWORD_RAISE function_call KEYWORD_FROM IDENTIFIER
+raise_statement   : KEYWORD_RAISE function_call {
+                        std::string name = "Raise" + std::to_string(++n_nodes);
+                        $$ = new RaiseNode(name);
+                        $$->add($2);
+                  }
+                  | KEYWORD_RAISE function_call KEYWORD_FROM IDENTIFIER {
+                        std::string name = "Raise" + std::to_string(++n_nodes);
+                        $$ = new RaiseNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                  }
                   ;
 
-global_statement  : KEYWORD_GLOBAL global_nonlocal_targets
+global_statement  : KEYWORD_GLOBAL global_nonlocal_targets {
+                        std::string name = "Global" + std::to_string(++n_nodes);
+                        $$ = new GlobalNode(name);
+                        $$->add($2);
+                  }
                   ;
 
-nonlocal_statement      : KEYWORD_NONLOCAL global_nonlocal_targets
+nonlocal_statement      : KEYWORD_NONLOCAL global_nonlocal_targets {
+                        std::string name = "NonLocal" + std::to_string(++n_nodes);
+                        $$ = new NonLocalNode(name);
+                        $$->add($2);
+                  }
                         ;
 
-global_nonlocal_targets : IDENTIFIER
-                        | IDENTIFIER COMMA global_nonlocal_targets
+global_nonlocal_targets : IDENTIFIER {
+                              $$ = $1;
+                        }
+                        | IDENTIFIER COMMA global_nonlocal_targets { 
+                              $1->add($3);
+                              $$ = $1;
+                         }
                         ;
 
-match_statement   : KEYWORD_MATCH IDENTIFIER COLON match_block
+match_statement   : KEYWORD_MATCH IDENTIFIER COLON match_block {
+                        std::string name = "Match" + std::to_string(++n_nodes);
+                        $$ = new MatchNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                  }
                   ;
 
-match_block : NEWLINE INDENT cases DEDENT
+match_block : NEWLINE INDENT cases DEDENT { $$ = $3; }
             ;
 
-cases : cases case
-      | case
+cases : cases case {
+      std::string name = "Case" + std::to_string(++n_nodes);
+      $$ = new CaseNode(name);
+      $1->add($2);
+      $$ = $1;
+}
+      | case { 
+            $$ = $1; 
+            std::string name = "Case" + std::to_string(++n_nodes);
+            $$ = new CaseNode(name);
+      }
       ;
 
-case  : KEYWORD_CASE expression COLON block
+case  : KEYWORD_CASE expression COLON block {
+                        $$->add($2);
+                        $$->add($4);
+                  }
       ;
 
 try_statement     : try finally
@@ -262,19 +323,19 @@ with_stmt   : function_call KEYWORD_AS IDENTIFIER
             ;
 
 class : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block {
-                  std::string name = "class with inheritance" + std::to_string(n_nodes);
+                  std::string name = "classWithInheritance" + std::to_string(n_nodes);
                   ++n_nodes;
-                  IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
-                  $$ = new ClassNode(idFunc->value);
+                  $$ = new ClassNode(name);
+                  $$->add($2);
                   $$->add($4);
                   $$->add($7);
                   }
 
       | KEYWORD_CLASS IDENTIFIER COLON class_block {
-                  std::string name = "class without inheritance" + std::to_string(n_nodes);
+                  std::string name = "classWithoutInheritance" + std::to_string(n_nodes);
                   ++n_nodes;
-                  IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
-                  $$ = new ClassNode(idFunc->value);
+                  $$ = new ClassNode(name);
+                  $$->add($2);
                   $$->add($4);
                   }
       ;
@@ -292,7 +353,6 @@ class_body  : /* Empty */ {
             | class_body function { 
                   $$ = new ClassBodyNode("ClassBody");
                   $$->add($2);
-
             }
             | class_body assignment { 
                   $$ = new ClassBodyNode("ClassBody");

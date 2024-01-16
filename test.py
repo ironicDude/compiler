@@ -1,3 +1,4 @@
-def x():
+class classy:
     y = 10
-    assert x + 1
+    def hello():
+        return x
