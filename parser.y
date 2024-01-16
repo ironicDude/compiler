@@ -91,18 +91,18 @@ simple_statement  : assignment            { $$ = $1; }
                   | import_statment       { $$ = $1; }
                   | function_call         { $$ = $1; }
                   | with                  { $$ = $1; }
-                  | KEYWORD_PASS
-                  | KEYWORD_BREAK
-                  | KEYWORD_CONTINUE
+                  | KEYWORD_PASS          { $$ = $1; }
+                  | KEYWORD_BREAK         { $$ = $1; }
+                  | KEYWORD_CONTINUE      { $$ = $1; }
                   ;
 
 compound_statement: function                    { $$ = $1; }
                   | conditional_statement       { $$ = $1; }
-                  | class
-                  | for_statement
-                  | while_statement
-                  | match_statement
-                  | try_statement
+                  | class                       { $$ = $1; }
+                  | for_statement               { $$ = $1; }
+                  | while_statement             { $$ = $1; }
+                  | match_statement             { $$ = $1; }
+                  | try_statement               { $$ = $1; }
                   ;
 
 
@@ -170,7 +170,7 @@ expression  : expression ADD expression   {
             | LEFT_PARENTHES expression RIGHT_PARENTHES                {$$ = $2; }
             | MINUS expression %prec UMINUS       { }
             | LIST
-            | KEYWORD_NONE
+            | KEYWORD_NONE                      { $$ = $1; }
             | number                            { $$ = $1; }
             | member_expression                 { $$ = $1; }
             | function_call                     { $$ = $1; }
@@ -243,10 +243,10 @@ global_statement  : KEYWORD_GLOBAL global_nonlocal_targets {
                   ;
 
 nonlocal_statement      : KEYWORD_NONLOCAL global_nonlocal_targets {
-                        std::string name = "NonLocal" + std::to_string(++n_nodes);
-                        $$ = new NonLocalNode(name);
-                        $$->add($2);
-                  }
+                              std::string name = "NonLocal" + std::to_string(++n_nodes);
+                              $$ = new NonLocalNode(name);
+                              $$->add($2);
+                        }
                         ;
 
 global_nonlocal_targets : IDENTIFIER {
@@ -346,9 +346,9 @@ finally     : KEYWORD_FINALLY COLON block {
             ;
 
 except_statements : except_statements except {
-                  $1->add($2);
-                  $$ = $1;
-}
+                        $1->add($2);
+                        $$ = $1;
+                  }
                   | except {
                         $$ = $1;
                   }
@@ -450,7 +450,7 @@ args  : args arg {
       }
       ;
 
-arg: /*Empty*/    { 
+arg   : /*Empty*/    { 
             std::string name = "Arg" + std::to_string(++n_nodes);
             $$ = new Arg(name);
       }

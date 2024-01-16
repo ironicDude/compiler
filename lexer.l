@@ -230,7 +230,10 @@ int count_spaces(char *str) {
 {COLON}                 {/*printf("COLON: %s\n", yytext);*/return COLON;}
 {COMMA}                 {/*printf("COMMA: %s\n", yytext);*/return COMMA;}
 {SEMICOLON}             {/*printf("SEMICOLON: %s\n", yytext);*/return SEMICOLON;}
-{COMMENT}               {/*printf("COMMENT: %s\n", yytext);*/return COMMENT;}
+{COMMENT}               {
+                            yylval.astNode = new CommentNode("COMMENT" + to_string(++nodeNumber), "COMMENT", yytext);
+                            return COMMENT;
+                        }
 {OPERATORS}		        {/*printf("OPERATOR: %s\n", yytext);*/return OPERATORS;}
 {KEYWORD_FALSE}         {
                             yylval.astNode = new KeywordNode("Keyword_FALSE" + to_string(++nodeNumber), "Keyword_FALSE", yytext);
@@ -240,14 +243,20 @@ int count_spaces(char *str) {
                             yylval.astNode = new KeywordNode("Keyword_TRUE" + to_string(++nodeNumber), "Keyword_TRUE", yytext);
                             return KEYWORD_TRUE;
                         }
-{KEYWORD_AWAIT}         {/*printf("KEYWORD_AWAIT: %s \n",yytext);*/return KEYWORD_AWAIT;}
 {KEYWORD_IF}            {/*printf("KEYWORD_IF: %s \n",yytext);*/return KEYWORD_IF;}
 {KEYWORD_ELSE}          {/*printf("KEYWORD_ELSE: %s \n",yytext);*/return KEYWORD_ELSE;}
 {KEYWORD_ELSE_IF}       {/*printf("KEYWORD_ELSE_IF: %s \n",yytext);*/return KEYWORD_ELSE_IF;}
 {KEYWORD_IMPORT}        {/*printf("KEYWORD_IMPORT: %s \n",yytext);*/return KEYWORD_IMPORT;}
-{KEYWORD_PASS}          {/*printf("KEYWORD_PASS: %s \n",yytext);*/return KEYWORD_PASS;}
+{KEYWORD_PASS}          {
+                            
+                            yylval.astNode = new KeywordNode("Keyword_PASS" + to_string(++nodeNumber), "Keyword_PASS", yytext);
+                            return KEYWORD_PASS;
+                        }
 {KEYWORD_NONE}          {/*printf("NONE: %s \n",yytext);*/return KEYWORD_NONE;}
-{KEYWORD_BREAK}         {/*printf("BREAK: %s \n",yytext);*/return KEYWORD_BREAK;}
+{KEYWORD_BREAK}         {
+                            yylval.astNode = new KeywordNode("Keyword_BREAK" + to_string(++nodeNumber), "Keyword_BREAK", yytext);
+                            return KEYWORD_BREAK;
+                        }
 {KEYWORD_EXCEPT}        {/*printf("KEYWORD_PASS: %s \n",yytext);*/return KEYWORD_EXCEPT;}
 {KEYWORD_IN}            {/*printf("KEYWORD_IN: %s \n",yytext);*/return KEYWORD_IN;}
 {KEYWORD_RAISE}         {/*printf("KEYWORD_RAISE: %s \n",yytext);*/return KEYWORD_RAISE;}
@@ -258,7 +267,6 @@ int count_spaces(char *str) {
 {KEYWORD_AND}           {/*printf("KEYWORD_AND: %s \n",yytext);*/return KEYWORD_AND;}
 {KEYWORD_CONTINUE}      {/*printf("KEYWORD_CONTINUE: %s \n",yytext);*/return KEYWORD_CONTINUE;}
 {KEYWORD_FOR}           {/*printf("KEYWORD_FOR: %s \n",yytext);*/return KEYWORD_FOR;}
-{KEYWORD_LAMBDA}        {/*printf("KEYWORD_LAMBDA: %s \n",yytext);*/return KEYWORD_LAMBDA;}
 {KEYWORD_TRY}           {/*printf("KEYWORD_TRY: %s \n",yytext);*/return KEYWORD_TRY;}
 {KEYWORD_AS}            {/*printf("KEYWORD_AS: %s \n",yytext);*/return KEYWORD_AS;}
 {KEYWORD_DEF}           {/*printf("KEYWORD_DEF: %s \n",yytext);*/return KEYWORD_DEF;}

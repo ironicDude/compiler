@@ -164,6 +164,21 @@ public:
     }
 };
 
+class CommentNode : public AstNode {
+public:
+    CommentNode(std::string name, std::string label, std::string value) {
+        this->name = name;
+        this->label = label;
+        this->value = value; 
+    }
+    void add(AstNode* /*node*/) override {
+        std::cerr << "Cannot add a child to a leaf node." << std::endl;
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << value << "\"]" << std::endl;
+    }
+};
+
 class KeywordNode : public AstNode {
 public:
     KeywordNode(std::string name, std::string label, std::string value) {
