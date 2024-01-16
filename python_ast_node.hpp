@@ -343,30 +343,6 @@ public:
         }
     }
 };
-class AssertNode : public AstNode {
-private:
-    std::vector<AstNode*> next;
-public:
-    AssertNode(const std::string& name) {
-        this->name = name;
-        this->label = "Assert";
-    }
-    void add(AstNode* node) override {
-        next.push_back(node);
-    }
-    void print() const override {
-        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
-        for (const auto& stmt : next) {
-            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
-            stmt->print();
-        }
-    }
-    ~AssertNode() {
-        for (const auto& stmt : next) {
-            delete stmt;
-        }
-    }
-};
 
 class RaiseNode : public AstNode {
 private:
