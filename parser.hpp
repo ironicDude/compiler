@@ -134,15 +134,14 @@ extern int yydebug;
     COLON = 336,
     COMMA = 337,
     SEMICOLON = 338,
-    TUPLE = 339,
-    INTEGER = 340,
-    FLOAT = 341,
-    DEDENT = 342,
-    INDENT = 343,
-    NEWLINE = 344,
-    KEYWORD_MATCH = 345,
-    KEYWORD_CASE = 346,
-    UMINUS = 347
+    INTEGER = 339,
+    FLOAT = 340,
+    DEDENT = 341,
+    INDENT = 342,
+    NEWLINE = 343,
+    KEYWORD_MATCH = 344,
+    KEYWORD_CASE = 345,
+    UMINUS = 346
   };
 #endif
 
@@ -155,7 +154,7 @@ union YYSTYPE
 
 	AstNode* astNode;
 
-#line 159 "parser.hpp" /* yacc.c:1909  */
+#line 158 "parser.hpp" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

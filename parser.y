@@ -32,13 +32,13 @@
 %token <astNode> ASSIGNBITWISEXOR ASSIGNRIGHTSHIFT ASSIGNLEFTSHIFT EQUAL NOT
 %token <astNode> NOTEQUAL GREATERTHAN GREATEROREQUAL LESSTHAN LESSOREQUAL
 %token <astNode> LEFT_PARENTHES RIGHT_PARENTHES LEFT_BRACES RIGHT_BRACES 
-%token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON TUPLE
+%token <astNode> LEFT_BRACKETS RIGHT_BRACKETS COLON COMMA SEMICOLON
 %token <astNode> INTEGER FLOAT DEDENT INDENT NEWLINE KEYWORD_MATCH KEYWORD_CASE
 %type  <astNode> prog statements statement simple_statement compound_statement import_statment
 %type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
 %type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
 %type  <astNode> case try_statement try except finally except_statements with with_statements class 
-%type  <astNode> class_block  class_body function_call function block args member_expression logical_expression
+%type  <astNode> class_block  class_body function_call function block args arg member_expression logical_expression
 %type  <astNode> conditional_statement elif_else elif_stmts if_statement else_statement elif_statement for_statement while_statement
 %error-verbose
 %nonassoc EQUAL
@@ -48,28 +48,24 @@
 
 %%
 
-prog  :                 { 
-                              std::string name = "Program" + std::to_string(++n_nodes);
-                              $$ = new EmptyNode(name); 
-                        }
+prog  : /*Empty*/ { 
+            std::string name = "Program" + std::to_string(++n_nodes);
+            $$ = new EmptyNode(name); 
+      }
       | NEWLINE         { }
       | prog statements {     
-                              std::string name = "Program" + std::to_string(++n_nodes);
-                              $$ = new StatementsNode(name);
-                              $$->add($1);
-                              $$->add($2);
-                              root = $$;
-                              YYACCEPT;
-                        }
+            std::string name = "Program" + std::to_string(++n_nodes);
+            $$ = new StatementsNode(name);
+            $$->add($1);
+            $$->add($2);
+            root = $$;
+            YYACCEPT;
+      }
       ;
 
-statements  :  {
+statements  : /*Empty*/ {
                   std::string name = "Statement" + std::to_string(++n_nodes);
                   $$ = new StatementsNode(name);
-            }
-            | statements statement NEWLINE     { 
-                  $1->add($2);
-                  $$ = $1;
             }
             | statements statement  { 
                   $1->add($2);
@@ -174,7 +170,6 @@ expression  : expression ADD expression   {
             | LEFT_PARENTHES expression RIGHT_PARENTHES                {$$ = $2; }
             | MINUS expression %prec UMINUS       { }
             | LIST
-            | TUPLE
             | KEYWORD_NONE
             | number                            { $$ = $1; }
             | member_expression                 { $$ = $1; }
@@ -273,6 +268,7 @@ match_statement   : KEYWORD_MATCH IDENTIFIER COLON NEWLINE INDENT match_block DE
 
 match_block : match_block case      { 
                   $1->add($2);
+                  $$ = $1;
             }
             | case      {
                   std::string name = "MatchBlock" + std::to_string(++n_nodes);
@@ -290,118 +286,123 @@ case  : KEYWORD_CASE expression COLON block {
       ;
 
 try_statement     : try finally {
-      $$->add($1);
-      $$->add($2);
-}
+                        $$->add($1);
+                        $$->add($2);
+                  }
                   | try except_statements {
-      $$->add($1);
-      $$->add($2);
-}
+                        $$->add($1);
+                        $$->add($2);
+                  }
                   | try except_statements finally {
-      $$->add($1);
-      $$->add($2);
-      $$->add($3);
-}
+                        $$->add($1);
+                        $$->add($2);
+                        $$->add($3);
+                  }
                   | try except_statements else_statement {
-      $$->add($1);
-      $$->add($2);
-      $$->add($3);
-}
+                        $$->add($1);
+                        $$->add($2);
+                        $$->add($3);
+                  }
                   | try except_statements else_statement finally{
-      $$->add($1);
-      $$->add($2);
-      $$->add($3);
-      $$->add($4);
-}
+                        $$->add($1);
+                        $$->add($2);
+                        $$->add($3);
+                        $$->add($4);
+                  }
                   ;
 
 try   : KEYWORD_TRY COLON block {
-                        std::string name = "Try" + std::to_string(++n_nodes);
-                        $$ = new TryNode(name);
-                        $$->add($3);
-                  }
+            std::string name = "Try" + std::to_string(++n_nodes);
+            $$ = new TryNode(name);
+            $$->add($3);
+      }
       ;
 
 except: KEYWORD_EXCEPT COLON block {
-                        std::string name = "Except" + std::to_string(++n_nodes);
-                        $$ = new ExceptNode(name);
-                        $$->add($3);
-                  }
+            std::string name = "Except" + std::to_string(++n_nodes);
+            $$ = new ExceptNode(name);
+            $$->add($3);
+      }
       | KEYWORD_EXCEPT member_expression COLON block {
-                        std::string name = "Except" + std::to_string(++n_nodes);
-                        $$ = new ExceptNode(name);
-                        $$->add($4);
-                        $$->add($2);
-                  }
+            std::string name = "Except" + std::to_string(++n_nodes);
+            $$ = new ExceptNode(name);
+            $$->add($4);
+            $$->add($2);
+      }
       | KEYWORD_EXCEPT member_expression KEYWORD_AS IDENTIFIER COLON block {
-                        std::string name = "Except" + std::to_string(++n_nodes);
-                        $$ = new ExceptNode(name);
-                        $$->add($4);
-                        $$->add($2);
-                        $$->add($6);
-                  }
+            std::string name = "Except" + std::to_string(++n_nodes);
+            $$ = new ExceptNode(name);
+            $$->add($4);
+            $$->add($2);
+            $$->add($6);
+      }
       ;
 
 finally     : KEYWORD_FINALLY COLON block {
-                        std::string name = "Finally" + std::to_string(++n_nodes);
-                        $$ = new FinallyNode(name);
-                        $$->add($3);
-                  }
+                  std::string name = "Finally" + std::to_string(++n_nodes);
+                  $$ = new FinallyNode(name);
+                  $$->add($3);
+            }
             ;
 
 except_statements : except_statements except
                   | except
                   ;
 
-with     : KEYWORD_WITH with_statements COLON block {
-                        std::string name = "With" + std::to_string(++n_nodes);
-                        $$ = new WithNode(name);
-                        $$->add($2);
-                        $$->add($4);
-                  }
-                  ;
-
-with_statements   : function_call KEYWORD_AS IDENTIFIER
-            | with_statements COMMA function_call KEYWORD_AS IDENTIFIER
-            ;
-
-class : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON class_block {
-                  std::string name = "classWithInheritance" + std::to_string(n_nodes);
-                  ++n_nodes;
-                  $$ = new ClassNode(name);
-                  $$->add($2);
-                  $$->add($4);
-                  $$->add($7);
-                  }
-      | KEYWORD_CLASS IDENTIFIER COLON class_block {
-                  std::string name = "classWithoutInheritance" + std::to_string(n_nodes);
-                  ++n_nodes;
-                  $$ = new ClassNode(name);
-                  $$->add($2);
-                  $$->add($4);
-                  }
+with  : KEYWORD_WITH with_statements COLON block {
+            std::string name = "With" + std::to_string(++n_nodes);
+            $$ = new WithNode(name);
+            $$->add($2);
+            $$->add($4);
+      }
       ;
 
+with_statements   : function_call KEYWORD_AS IDENTIFIER
+                  | with_statements COMMA function_call KEYWORD_AS IDENTIFIER
+                  ;
 
-class_block: NEWLINE INDENT class_body DEDENT{
-                                                $$ = $3;
-                                          };
+class : KEYWORD_CLASS IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON NEWLINE INDENT class_block DEDENT   {
+            std::string name = "classWithInheritance" + std::to_string(++n_nodes);
+            $$ = new ClassNode(name);
+            $$->add($2);
+            $$->add($4);
+            $$->add($9);
+      }
+      | KEYWORD_CLASS IDENTIFIER COLON NEWLINE INDENT class_block DEDENT {
+            std::string name = "classWithoutInheritance" + std::to_string(++n_nodes);
+            $$ = new ClassNode(name);
+            $$->add($2);
+            $$->add($6);
+      }
+      ;
+
+class_block : class_block class_body {
+                  $1->add($2);
+                  $$ = $1;
+            }
+            | class_body {
+                  std::string name = "ClassBlock" + std::to_string(++n_nodes);
+                  $$ = new ClassBlock(name);
+                  $$->add($1);
+            }
+            ;
 
 class_body  : /* Empty */ { 
-            std::string nname = "Classbody" + std::to_string(n_nodes);
-            ++n_nodes;
-            $$ = new EmptyNode(nname);
+                  std::string name = "Classbody" + std::to_string(++n_nodes);
+                  $$ = new ClassBodyNode(name);
             }
             | class_body function { 
-                  $$ = new ClassBodyNode("ClassBody");
-                  $$->add($2);
+                  $1->add($2);
+                  $$ = $1;
             }
             | class_body assignment { 
-                  $$ = new ClassBodyNode("ClassBody");
-                  $$->add($2);
-            }
-            | class_body NEWLINE{
+                  $1->add($2);
                   $$ = $1;
+            }
+            | class_body NEWLINE    {
+                  std::string name = "Classbody" + std::to_string(++n_nodes);
+                  $$ = new ClassBodyNode(name);
+                  $$->add($1);
             }
             ;
 
@@ -427,31 +428,41 @@ function    : KEYWORD_DEF IDENTIFIER LEFT_PARENTHES args RIGHT_PARENTHES COLON b
             };
 
 block : NEWLINE INDENT statements DEDENT  {     
-                  std::string name = "block" + std::to_string(n_nodes);
-                  ++n_nodes;
-                  $$ = new BlockNode(name);
-                  $$->add($3);
-            }
+            std::string name = "block" + std::to_string(++n_nodes);
+            $$ = new BlockNode(name);
+            $$->add($3);
+      }
       ;
 
-args  : /* EMPTY */     { 
-            std::string name = "Args" + std::to_string(++n_nodes);
-            $$ = new EmptyNode(name); 
+args  : args arg {
+            $1->add($2);
+            $$ = $1;
       }
-      | args expression COMMA 
-      | args expression 
-      | expression COMMA
-      | expression
+      | arg { 
+            std::string name = "Args" + std::to_string(++n_nodes);
+            $$ = new Args(name);
+            $$->add($1);
+      }
+      ;
+
+arg: /*Empty*/    { 
+            std::string name = "Arg" + std::to_string(++n_nodes);
+            $$ = new Arg(name);
+      }
+      | arg expression {
+            $1->add($2);
+            $$ = $1;
+      }
+      | arg expression COMMA  {
+            $1->add($2);
+            $$ = $1;
+      }
       ;
 
 member_expression : IDENTIFIER      {
-                        std::string name = "identifire" + std::to_string(++n_nodes);
-                        $1->name=name;
                         $$ = $1;
                   }
                   | member_expression %prec '.' IDENTIFIER  {
-                        std::string name = "identifire" + std::to_string(++n_nodes);
-                        $2->name=name;
                         $$ = new MemberExpression($1, $2);
                         $$->add($1); 
                         $$->add($2); 
@@ -489,7 +500,7 @@ logical_expression: expression      { $$ = $1; }
                         $$ = new BinaryLogicalExpression("or", $1, $3);
                   }
                   | KEYWORD_NOT logical_expression    {
-                        $$ = new BinaryLogicalExpression("not", $1, $2);
+                        
                   }
                   | KEYWORD_TRUE    { $$ = $1; }
                   | KEYWORD_FALSE   { $$ = $1; }
@@ -585,24 +596,15 @@ while_statement   : KEYWORD_WHILE logical_expression COLON block {
 
 %%
 
-int main(int argc, char **argv)
-{
- /*success("This is a valid python expression");
- expression : NUMBER  { }
-            ;
-                : expression '+' expression     { }
-    | expression '-' expression     { }
-    | expression '*' expression     { }
-    | expression '/' expression     { }*/
-     if (argc > 1){
-        for(int i=0;i<argc;i++)
-            // printf("value of argv[%d] = %s\n\n",i,argv[i]);
-            yyin=fopen(argv[1],"r");
-      }
+int main(int argc, char **argv) {
+      if (argc > 1)
+            for(int i=0;i<argc;i++)
+                  yyin=fopen(argv[1],"r");
       else
-        yyin=stdin;
+            yyin=stdin;
       
       yyparse();
+
       if (root != NULL) {
             AST ast(root);
             ast.Print();
@@ -610,7 +612,6 @@ int main(int argc, char **argv)
       return 0;
 }
 
-
 void yyerror(const char* s) {
-    std::cerr << "Parser error: " << s << std::endl;
+      std::cerr << "Parser error: " << s << std::endl;
 }

@@ -42,7 +42,6 @@ public:
     virtual void add(AstNode* node) = 0;
     virtual void print() const = 0;
     virtual ~AstNode() {}
-    
 };
 
 // Composite node for representing function declare
@@ -137,7 +136,7 @@ public:
 // base node for representing identifier ,will create object  from lexer
 class IdentifierNode : public AstNode {
 public:
-    IdentifierNode(std::string name, std::string label, std::string value) {
+    IdentifierNode(const std::string& name, const std::string& label, const std::string& value) {
         this->name = name;
         this->label = label;
         this->value = value; 
@@ -593,6 +592,7 @@ public:
         }
     }
 };
+
 class Arg : public AstNode {
 private:
     std::vector<AstNode*> next;
@@ -607,6 +607,7 @@ public:
     void print() const override {
         std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
         for (const auto& arg : next) {
+            std::cout << "\t" << name << " -> " << arg->name << ";" << std::endl;
             arg->print();
         }
     }
@@ -662,7 +663,6 @@ public:
     }
 };
 
-
 class MatchBlock : public AstNode {
 private:
     std::vector<AstNode*> next;
@@ -687,6 +687,36 @@ public:
         }
     }
     ~MatchBlock() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
+class ClassBlock : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    ClassBlock(const std::string& name) {
+        this->name = name;
+        this->label = "ClassBlock";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        // std::vector<AstNode*>::iterator it;
+        // for (it = next.begin(); it != next.end(); ++it) {
+        //     std::cout << "\t" << name << " -> " << (*it)->name << ";" << std::endl;
+        //     (*it)->print();
+        // }
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~ClassBlock() {
         for (const auto& stmt : next) {
             delete stmt;
         }
@@ -775,7 +805,7 @@ public:
 class NumberNode : public AstNode {
 public:
     int value;
-    NumberNode(std::string name, std::string label, int value) {
+    NumberNode(const std::string name, const std::string label, int value) {
         this->name = name;
         this->label = label;
         this->value = value; 
@@ -833,42 +863,42 @@ private:
     AstNode* right;
 public:
     BinaryExpressionNode(const std::string& op, AstNode* l, AstNode* r) {
-            this->operation = op;
-            this->left = l;
-            this->right = r;
-            next.push_back(l);
-            next.push_back(r);
-            if(op == "+"){
-                this->name = "BinaryExpression_" + l->name + "PLUS" + r->name;
-                this->label = "BinaryExpression_" + l->name + "PLUS" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "-"){
-                this->name = "BinaryExpression_" + l->name + "MINUS" + r->name;
-                this->label = "BinaryExpression_" + l->name + "MINUS" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "*"){
-                this->name = "BinaryExpression_" + l->name + "MULTIPLY" + r->name;
-                this->label = "BinaryExpression_" + l->name + "MULTIPLY" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "/"){
-                this->name = "BinaryExpression_" + l->name + "DIVIDE" + r->name;
-                this->label = "BinaryExpression_" + l->name + "DIVIDE" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "**"){
-                this->name = "BinaryExpression_" + l->name + "POWER" + r->name;
-                this->label = "BinaryExpression_" + l->name + "POWER" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "%"){
-                this->name = "BinaryExpression_" + l->name + "MODULO" + r->name;
-                this->label = "BinaryExpression_" + l->name + "MODULO" + r->name;
-                this->value = l->value + r->value;
-            }
+        this->operation = op;
+        this->left = l;
+        this->right = r;
+        next.push_back(l);
+        next.push_back(r);
+        if(op == "+"){
+            this->name = "BinaryExpression_" + l->name + "PLUS" + r->name;
+            this->label = "BinaryExpression_" + l->name + "PLUS" + r->name;
+            this->value = l->value + r->value;
         }
+        if(op == "-"){
+            this->name = "BinaryExpression_" + l->name + "MINUS" + r->name;
+            this->label = "BinaryExpression_" + l->name + "MINUS" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "*"){
+            this->name = "BinaryExpression_" + l->name + "MULTIPLY" + r->name;
+            this->label = "BinaryExpression_" + l->name + "MULTIPLY" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "/"){
+            this->name = "BinaryExpression_" + l->name + "DIVIDE" + r->name;
+            this->label = "BinaryExpression_" + l->name + "DIVIDE" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "**"){
+            this->name = "BinaryExpression_" + l->name + "POWER" + r->name;
+            this->label = "BinaryExpression_" + l->name + "POWER" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "%"){
+            this->name = "BinaryExpression_" + l->name + "MODULO" + r->name;
+            this->label = "BinaryExpression_" + l->name + "MODULO" + r->name;
+            this->value = l->value + r->value;
+        }
+    }
     void add(AstNode* node) override {
         if (!left){
             left = node;
@@ -903,57 +933,52 @@ private:
     AstNode* right;
 public:
     BinaryLogicalExpression(const std::string& op, AstNode* l, AstNode* r) {
-            this->operation = op;
-            this->left = l;
-            this->right = r;
-            next.push_back(l);
-            next.push_back(r);
-            if(op == ">="){
-                this->name = "BinaryLogicalExpression_" + l->name + "GREATERTHANOREQUAL" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "GREATERTHANOREQUAL" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == ">"){
-                this->name = "BinaryLogicalExpression_" + l->name + "GREATERTHAN" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "GREATERTHAN" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "<="){
-                this->name = "BinaryLogicalExpression_" + l->name + "LESSTHANOREQUAL" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "LESSTHANOREQUAL" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "<"){
-                this->name = "BinaryLogicalExpression_" + l->name + "LESSTHAN" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "LESSTHAN" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "=="){
-                this->name = "BinaryLogicalExpression_" + l->name + "EQUAL" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "EQUAL" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "!="){
-                this->name = "BinaryLogicalExpression_" + l->name + "NOTEQUAL" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "NOTEQUAL" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "and"){
-                this->name = "BinaryLogicalExpression_" + l->name + "AND" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "AND" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "or"){
-                this->name = "BinaryLogicalExpression_" + l->name + "OR" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "OR" + r->name;
-                this->value = l->value + r->value;
-            }
-            if(op == "not"){
-                this->name = "BinaryLogicalExpression_" + l->name + "NOT" + r->name;
-                this->label = "BinaryLogicalExpression_" + l->name + "NOT" + r->name;
-                this->value = l->value + r->value;
-            }
+        this->operation = op;
+        this->left = l;
+        this->right = r;
+        next.push_back(l);
+        next.push_back(r);
+        if(op == ">="){
+            this->name = "BinaryLogicalExpression_" + l->name + "GREATERTHANOREQUAL" + r->name;
+            this->label = "BinaryLogicalExpression_" + l->name + "GREATERTHANOREQUAL" + r->name;
+            this->value = l->value + r->value;
         }
+        if(op == ">"){
+            this->name = "BinaryLogicalExpression_" + l->name + "GREATERTHAN" + r->name;
+            this->label = "BinaryLogicalExpression_" + l->name + "GREATERTHAN" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "<="){
+            this->name = "BinaryLogicalExpression_" + l->name + "LESSTHANOREQUAL" + r->name;
+            this->label = "BinaryLogicalExpression_" + l->name + "LESSTHANOREQUAL" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "<"){
+            this->name = "BinaryLogicalExpression_" + l->name + "LESSTHAN" + r->name;
+            this->label = "BinaryLogicalExpression_" + l->name + "LESSTHAN" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "=="){
+            this->name = "BinaryLogicalExpression_" + l->name + "EQUAL" + r->name;
+            this->label = "BinaryLogicalExpression_" + l->name + "EQUAL" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "!="){
+            this->name = "BinaryLogicalExpression_" + l->name + "NOTEQUAL" + r->name;
+            this->label = "BinaryLogicalExpression_" + l->name + "NOTEQUAL" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "and"){
+            this->name = "BinaryLogicalExpression_" + l->name + "AND" + r->name;
+            this->label = "BinaryLogicalExpression_" + l->name + "AND" + r->name;
+            this->value = l->value + r->value;
+        }
+        if(op == "or"){
+            this->name = "BinaryLogicalExpression_" + l->name + "OR" + r->name;
+            this->label = "BinaryLogicalExpression_" + l->name + "OR" + r->name;
+            this->value = l->value + r->value;
+        }
+    }
     void add(AstNode* node) override {
         if (!left){
             left = node;
