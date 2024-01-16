@@ -349,8 +349,13 @@ finally     : KEYWORD_FINALLY COLON block {
                   }
             ;
 
-except_statements : except_statements except
-                  | except
+except_statements : except_statements except {
+                  $1->add($2);
+                  $$ = $1;
+}
+                  | except {
+                        $$ = $1;
+                  }
                   ;
 
 with     : KEYWORD_WITH with_statements COLON block {
@@ -438,10 +443,26 @@ args  : /* EMPTY */     {
             std::string name = "Args" + std::to_string(++n_nodes);
             $$ = new EmptyNode(name); 
       }
-      | args expression COMMA 
-      | args expression 
-      | expression COMMA
-      | expression
+      | args expression COMMA { 
+            std::string name = "Args" + std::to_string(++n_nodes);
+            $1 = new Args(name);
+            $1->add($2);
+      }
+      | args expression {
+            std::string name = "Args" + std::to_string(++n_nodes);
+            $1 = new Args(name);
+            $1->add($2);
+      }
+      | expression COMMA {
+            std::string name = "Args" + std::to_string(++n_nodes);
+            $$ = new Args(name);
+            $1->add($1);
+      }
+      | expression {
+            std::string name = "Args" + std::to_string(++n_nodes);
+            $$ = new Args(name);
+            $1->add($1);
+      }
       ;
 
 member_expression : IDENTIFIER      {
@@ -561,12 +582,51 @@ elif_statement    : KEYWORD_ELSE_IF logical_expression COLON block      {
                   }
                   ;
 
-for_statement     : KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block
-                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST COLON block
-                  | KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block
-                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON block
-                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call COLON block
-                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block
+for_statement     : KEYWORD_FOR IDENTIFIER KEYWORD_IN function_call COLON block {
+                        std::string name = "For" + std::to_string(++n_nodes);
+                        $$ = new ForNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                        $$->add($6);
+                  }
+                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN LIST COLON block {
+                        std::string name = "For" + std::to_string(++n_nodes);
+                        $$ = new ForNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                        $$->add($6);
+                  }
+                  | KEYWORD_FOR LEFT_PARENTHES args RIGHT_PARENTHES KEYWORD_IN function_call COLON block {
+                        std::string name = "For" + std::to_string(++n_nodes);
+                        $$ = new ForNode(name);
+                        $$->add($3);
+                        $$->add($6);
+                        $$->add($8);
+                  }
+                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression COLON block {
+                        std::string name = "For" + std::to_string(++n_nodes);
+                        $$ = new ForNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                        $$->add($6);
+                  }
+                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call COLON block {
+                        std::string name = "For" + std::to_string(++n_nodes);
+                        $$ = new ForNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                        $$->add($5);
+                        $$->add($7);
+                  }
+                  | KEYWORD_FOR IDENTIFIER KEYWORD_IN member_expression function_call '.' IDENTIFIER COLON block {
+                        std::string name = "For" + std::to_string(++n_nodes);
+                        $$ = new ForNode(name);
+                        $$->add($2);
+                        $$->add($4);
+                        $$->add($5);
+                        $$->add($7);
+                        $$->add($9);
+                  }
                   ;
 
 while_statement   : KEYWORD_WHILE logical_expression COLON block {

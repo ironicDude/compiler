@@ -245,6 +245,27 @@ public:
     }
 };
 
+class ForNode : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    ForNode(const std::string& name) {
+        this->name = name;
+        this->label = "For";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [shape=box,label=\"" << label << ": " << value << "()" << "\"]" << std::endl;
+        std::vector<AstNode*>::iterator it;
+        for (const auto& item : next) {
+            std::cout << "\t" << name << " -> " << item->name << ";" << std::endl;
+            item->print();
+        }
+    }
+};
+
 class DelNode : public AstNode {
 private:
     std::vector<AstNode*> next;
