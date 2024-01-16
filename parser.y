@@ -37,7 +37,7 @@
 %type  <astNode> prog statements statement simple_statement compound_statement import_statment
 %type  <astNode> assignment expression number del_statment return_statement yield_statement assert_statement 
 %type  <astNode> raise_statement global_statement nonlocal_statement global_nonlocal_targets match_statement match_block 
-%type  <astNode> cases case try_statement try except finally except_statements with_statment with_stmt class 
+%type  <astNode> case try_statement try except finally except_statements with_statment with_stmt class 
 %type  <astNode> class_block  class_body function_call function block args member_expression logical_expression
 %type  <astNode> conditional_statement elif_else elif_stmts if_statement else_statement elif_statement for_statement while_statement
 %error-verbose
@@ -260,37 +260,33 @@ global_nonlocal_targets : IDENTIFIER {
                         | IDENTIFIER COMMA global_nonlocal_targets { 
                               $1->add($3);
                               $$ = $1;
-                         }
+                        }
                         ;
 
-match_statement   : KEYWORD_MATCH IDENTIFIER COLON match_block {
-                        std::string name = "Match" + std::to_string(++n_nodes);
+match_statement   : KEYWORD_MATCH IDENTIFIER COLON NEWLINE INDENT match_block DEDENT {
+                        std::string name = dynamic_cast<IdentifierNode*>($2)->value;
                         $$ = new MatchNode(name);
                         $$->add($2);
-                        $$->add($4);
+                        $$->add($6);
                   }
                   ;
 
-match_block : NEWLINE INDENT cases DEDENT { $$ = $3; }
+match_block : match_block case      { 
+                  $1->add($2);
+            }
+            | case      {
+                  std::string name = "MatchBlock" + std::to_string(++n_nodes);
+                  $$ = new MatchBlock(name);
+                  $$->add($1);
+            }
             ;
 
-cases : cases case {
-      std::string name = "Case" + std::to_string(++n_nodes);
-      $$ = new CaseNode(name);
-      $1->add($2);
-      $$ = $1;
-}
-      | case { 
-            $$ = $1; 
+case  : KEYWORD_CASE expression COLON block {
             std::string name = "Case" + std::to_string(++n_nodes);
             $$ = new CaseNode(name);
+            $$->add($2);
+            $$->add($4);
       }
-      ;
-
-case  : KEYWORD_CASE expression COLON block {
-                        $$->add($2);
-                        $$->add($4);
-                  }
       ;
 
 try_statement     : try finally
