@@ -662,6 +662,37 @@ public:
     }
 };
 
+
+class MatchBlock : public AstNode {
+private:
+    std::vector<AstNode*> next;
+public:
+    MatchBlock(const std::string& name) {
+        this->name = name;
+        this->label = "MatchBlock";
+    }
+    void add(AstNode* node) override {
+        next.push_back(node);
+    }
+    void print() const override {
+        std::cout << "\t" << name << " [label=\"" << label << ": " << name << "\"]" << std::endl;
+        // std::vector<AstNode*>::iterator it;
+        // for (it = next.begin(); it != next.end(); ++it) {
+        //     std::cout << "\t" << name << " -> " << (*it)->name << ";" << std::endl;
+        //     (*it)->print();
+        // }
+        for (const auto& stmt : next) {
+            std::cout << "\t" << name << " -> " << stmt->name << ";" << std::endl;
+            stmt->print();
+        }
+    }
+    ~MatchBlock() {
+        for (const auto& stmt : next) {
+            delete stmt;
+        }
+    }
+};
+
 class EmptyNode : public AstNode {
 private:
     std::vector<AstNode*> next;
